@@ -580,6 +580,5 @@ func registerCommands() {
 	raft.RegisterCommand(&GetCommand{})
 	raft.RegisterCommand(&DeleteCommand{})
 	raft.RegisterCommand(&WatchCommand{})
-	//raft.RegisterCommand(&ListCommand{})
 	raft.RegisterCommand(&TestAndSetCommand{})
 }
