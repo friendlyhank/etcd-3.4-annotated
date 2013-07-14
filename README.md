@@ -249,6 +249,29 @@ Let the join two more nodes to this cluster using the -C argument:
 ./etcd -c 4003 -s 7003 -C 127.0.0.1:7001 -d nod/node3
 ```
 
+Get the machines in the cluster
+
+```sh
+curl http://127.0.0.1:4001/machines
+```
+
+We should see there are three nodes in the cluster
+
+```
+0.0.0.0:7001,0.0.0.0:7002,0.0.0.0:7003
+```
+
+Also try to get the current leader in the cluster
+
+```
+curl http://127.0.0.1:4001/leader
+```
+The first server we set up should be the leader, if it has not dead during these commands.
+
+```
+0.0.0.0:7001
+```
+
 Now we can do normal SET and GET operations on keys as we explored earlier.
 
 See [reporting bugs](Documentation/reporting_bugs.md) for details about reporting any issues.
@@ -260,6 +283,16 @@ See [reporting bugs](Documentation/reporting_bugs.md) for details about reportin
 Let's kill the leader of the cluster and get the value from the other machine:
 
 See [PR management](Documentation/triage/PRs.md) for guidelines on how pull requests are managed.
+
+A new leader should have been elected.
+
+```
+curl http://127.0.0.1:4001/leader
+```
+
+```
+0.0.0.0:7002 or 0.0.0.0:7003
+```
 
 You should be able to see this:
 
