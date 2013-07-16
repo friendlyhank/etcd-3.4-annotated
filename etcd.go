@@ -202,8 +202,7 @@ func startRaft(securityType int) {
 	raftServer, err = raft.NewServer(raftName, dirPath, raftTransporter, etcdStore, nil)
 
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		fatal(fmt.Sprintln(err))
 	}
 
 	// LoadSnapshot
@@ -397,8 +396,7 @@ func startClientTransport(port int, st int) {
 		err := server.ListenAndServeTLS(clientCertFile, clientKeyFile)
 
 		if err != nil {
-			log.Fatal(err)
-			os.Exit(1)
+			fatal(fmt.Sprintln(err))
 		}
 	}
 }
@@ -521,8 +519,7 @@ func createCertPool(CAFile string) *x509.CertPool {
 	cert, err := x509.ParseCertificate(block.Bytes)
 
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		fatal(fmt.Sprintln(err))
 	}
 
 	certPool := x509.NewCertPool()
