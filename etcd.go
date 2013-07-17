@@ -248,7 +248,7 @@ func startRaft(securityType int) {
 
 				err = joinCluster(raftServer, machine)
 				if err != nil {
-					debug("cannot join to cluster via machine %s", machine)
+					debug("cannot join to cluster via machine %s %s", machine, err)
 				} else {
 					break
 				}
@@ -266,7 +266,7 @@ func startRaft(securityType int) {
 	}
 
 	// open the snapshot
-	// go server.Snapshot()
+	go raftServer.Snapshot()
 
 	// start to response to raft requests
 	go startRaftTransport(info.RaftPort, securityType)
@@ -331,6 +331,7 @@ func startRaftTransport(port int, st int) {
 	http.HandleFunc("/log", GetLogHttpHandler)
 	http.HandleFunc("/log/append", AppendEntriesHttpHandler)
 	http.HandleFunc("/snapshot", SnapshotHttpHandler)
+	http.HandleFunc("/snapshotRecovery", SnapshotRecoveryHttpHandler)
 	http.HandleFunc("/client", ClientHttpHandler)
 
 	switch st {
@@ -565,6 +566,9 @@ func joinCluster(s *raft.Server, serverName string) error {
 				json.NewEncoder(&b).Encode(command)
 				resp, err = t.Post(fmt.Sprintf("%s/join", address), &b)
 			} else {
+				b, _ := ioutil.ReadAll(resp.Body)
+				fmt.Println(string(b))
+				resp.Body.Close()
 				return fmt.Errorf("Unable to join")
 			}
 		}
