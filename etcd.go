@@ -266,7 +266,7 @@ func startRaft(securityType int) {
 	}
 
 	// open the snapshot
-	go raftServer.Snapshot()
+	//go raftServer.Snapshot()
 
 	// start to response to raft requests
 	go startRaftTransport(info.RaftPort, securityType)
