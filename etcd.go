@@ -224,6 +224,9 @@ func startRaft(securityType int) {
 	raftServer.SetElectionTimeout(ELECTIONTIMTOUT)
 	raftServer.SetHeartbeatTimeout(HEARTBEATTIMEOUT)
 
+	// start to response to raft requests
+	go startRaftTransport(info.RaftPort, securityType)
+
 	if raftServer.IsLogEmpty() {
 
 		// start as a leader in a new cluster
@@ -248,7 +251,7 @@ func startRaft(securityType int) {
 
 			// start as a follower in a existing cluster
 		} else {
-			raftServer.StartFollower()
+			raftServer.StartFollower(false)
 
 			for _, machine := range cluster {
 				if len(machine) == 0 {
@@ -269,7 +272,7 @@ func startRaft(securityType int) {
 
 	} else {
 		// rejoin the previous cluster
-		raftServer.StartFollower()
+		raftServer.StartFollower(true)
 		debug("%s restart as a follower", raftServer.Name())
 	}
 
@@ -277,9 +280,6 @@ func startRaft(securityType int) {
 	if snapshot {
 		go raftServer.Snapshot()
 	}
-
-	// start to response to raft requests
-	go startRaftTransport(info.RaftPort, securityType)
 
 }
 
