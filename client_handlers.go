@@ -35,6 +35,14 @@ func Multiplexer(w http.ResponseWriter, req *http.Request) {
 func SetHttpHandler(w *http.ResponseWriter, req *http.Request) {
 	key := req.URL.Path[len("/v1/keys/"):]
 
+	if store.CheckKeyword(key) {
+
+		(*w).WriteHeader(http.StatusBadRequest)
+
+		(*w).Write(newJsonError(400, "Set"))
+		return
+	}
+
 	debug("[recv] POST http://%v/v1/keys/%s", raftServer.Name(), key)
 
 	value := req.FormValue("value")
@@ -57,6 +65,7 @@ func SetHttpHandler(w *http.ResponseWriter, req *http.Request) {
 		(*w).WriteHeader(http.StatusBadRequest)
 
 		(*w).Write(newJsonError(202, "Set"))
+		return
 	}
 
 	if len(prevValue) != 0 {
@@ -227,7 +236,7 @@ func GetHttpHandler(w *http.ResponseWriter, req *http.Request) {
 
 		(*w).WriteHeader(http.StatusInternalServerError)
 		(*w).Write(newJsonError(300, ""))
-		return
+
 	} else {
 		body, ok := body.([]byte)
 		if !ok {
@@ -237,7 +246,6 @@ func GetHttpHandler(w *http.ResponseWriter, req *http.Request) {
 		(*w).WriteHeader(http.StatusOK)
 		(*w).Write(body)
 
-		return
 	}
 
 }
@@ -268,7 +276,6 @@ func ListHttpHandler(w http.ResponseWriter, req *http.Request) {
 		}
 
 		w.Write(body)
-		return
 	}
 
 }
@@ -305,7 +312,6 @@ func WatchHttpHandler(w http.ResponseWriter, req *http.Request) {
 	if body, err := command.Apply(raftServer); err != nil {
 		warn("Unable to do watch command: %v", err)
 		w.WriteHeader(http.StatusInternalServerError)
-		return
 	} else {
 		w.WriteHeader(http.StatusOK)
 
