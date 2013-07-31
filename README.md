@@ -349,8 +349,8 @@ Let start by creating 3 new etcd instances.
 Let the join two more nodes to this cluster using the -C argument:
 
 ```sh
-./etcd -c 4002 -s 7002 -C 127.0.0.1:7001 -d nod/node2
-./etcd -c 4003 -s 7003 -C 127.0.0.1:7001 -d nod/node3
+./etcd -c 4002 -s 7002 -C 127.0.0.1:7001 -d nodes/node2
+./etcd -c 4003 -s 7003 -C 127.0.0.1:7001 -d nodes/node3
 ```
 
 Get the machines in the cluster
@@ -364,6 +364,18 @@ We should see there are three nodes in the cluster
 ```
 0.0.0.0:4001,0.0.0.0:4002,0.0.0.0:4003
 ```
+
+You can get the machinse in another way
+
+```sh 
+curl -L http://127.0.0.1:4001/v1/keys/machines
+```
+
+```json
+[{"action":"GET","key":"/machines/node1","value":"0.0.0.0,7001,4001","index":4},{"action":"GET","key":"/machines/node3","value":"0.0.0.0,7002,4002","index":4},{"action":"GET","key":"/machines/node4","value":"0.0.0.0,7003,4003","index":4}]
+```
+
+The key of the machine is based on the ```commit index``` when it was added. The value of the machine is ```hostname```, ```raft port``` and ```client port```.
 
 Also try to get the current leader in the cluster
 
