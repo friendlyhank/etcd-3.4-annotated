@@ -422,11 +422,7 @@ func startRaftTransport(port int, st int) {
 			Addr: fmt.Sprintf(":%d", port),
 		}
 		fmt.Printf("raft server [%s] listen on https port %v\n", hostname, port)
-		err := server.ListenAndServeTLS(serverCertFile, serverKeyFile)
-
-		if err != nil {
-			log.Fatal(err)
-		}
+		log.Fatal(server.ListenAndServeTLS(serverCertFile, serverKeyFile), nil)
 	}
 
 }
@@ -459,11 +455,7 @@ func startClientTransport(port int, st int) {
 			Addr: fmt.Sprintf(":%d", port),
 		}
 		fmt.Printf("etcd [%s] listen on https port %v\n", hostname, clientPort)
-		err := server.ListenAndServeTLS(clientCertFile, clientKeyFile)
-
-		if err != nil {
-			fatal(fmt.Sprintln(err))
-		}
+		log.Fatal(server.ListenAndServeTLS(clientCertFile, clientKeyFile), nil)
 	}
 }
 
