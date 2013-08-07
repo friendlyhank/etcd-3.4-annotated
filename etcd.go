@@ -554,7 +554,7 @@ func getInfo(path string) *Info {
 		info := &Info{
 			Hostname: hostname,
 
-			RaftPort: raftPort,
+			RaftPort:   raftPort,
 			ClientPort: clientPort,
 			WebPort:    webPort,
 
