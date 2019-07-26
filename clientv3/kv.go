@@ -22,6 +22,12 @@ import (
 	"google.golang.org/grpc"
 )
 
+/**
+ *KV接口,具体
+ *所有的Command进来都会根绝配置参数生成Client,然后调用KV接口
+ */
+
+//KV响应Respnse
 type (
 	CompactResponse pb.CompactionResponse
 	PutResponse     pb.PutResponse
@@ -93,7 +99,7 @@ type kv struct {
 	remote   pb.KVClient
 	callOpts []grpc.CallOption
 }
-
+//hank-sure
 func NewKV(c *Client) KV {
 	api := &kv{remote: RetryKVClient(c)}
 	if c != nil {

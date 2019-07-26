@@ -38,6 +38,7 @@ var (
 )
 
 var (
+	//引用第三方指令集
 	rootCmd = &cobra.Command{
 		Use:        cliName,
 		Short:      cliDescription,
@@ -45,7 +46,9 @@ var (
 	}
 )
 
+//etcdctl/ctlv3/ctl_nocov.go start()会执行init
 func init() {
+	//Flags设置
 	rootCmd.PersistentFlags().StringSliceVar(&globalFlags.Endpoints, "endpoints", []string{"127.0.0.1:2379"}, "gRPC endpoints")
 	rootCmd.PersistentFlags().BoolVar(&globalFlags.Debug, "debug", false, "enable client-side debug logging")
 
@@ -69,6 +72,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&globalFlags.TLS.ServerName, "discovery-srv", "d", "", "domain name to query for SRV records describing cluster endpoints")
 	rootCmd.PersistentFlags().StringVarP(&globalFlags.DNSClusterServiceName, "discovery-srv-name", "", "", "service name to query when using DNS discovery")
 
+	//设置各种Command
 	rootCmd.AddCommand(
 		command.NewGetCommand(),
 		command.NewPutCommand(),

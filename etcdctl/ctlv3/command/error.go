@@ -33,6 +33,7 @@ const (
 	ExitBadArgs = 128
 )
 
+//command错误处理
 func ExitWithError(code int, err error) {
 	fmt.Fprintln(os.Stderr, "Error:", err)
 	if cerr, ok := err.(*client.ClusterError); ok {

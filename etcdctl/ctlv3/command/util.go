@@ -79,6 +79,7 @@ func commandCtx(cmd *cobra.Command) (context.Context, context.CancelFunc) {
 	if err != nil {
 		ExitWithError(ExitError, err)
 	}
+	//context的超时设置
 	return context.WithTimeout(context.Background(), timeOut)
 }
 

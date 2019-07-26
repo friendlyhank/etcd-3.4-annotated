@@ -66,11 +66,11 @@ func init() {
 
 // Client provides and manages an etcd v3 client session.
 type Client struct {
-	Cluster
-	KV
+	Cluster //集群接口 hank-sure
+	KV		//KV接口 hank-sure
 	Lease
-	Watcher
-	Auth
+	Watcher  //Watcher接口
+	Auth	//授权接口
 	Maintenance
 
 	conn *grpc.ClientConn
@@ -96,6 +96,7 @@ type Client struct {
 }
 
 // New creates a new etcdv3 client from a given configuration.
+//根据配置Net etcdv3客户端信息
 func New(cfg Config) (*Client, error) {
 	if len(cfg.Endpoints) == 0 {
 		return nil, ErrNoAvailableEndpoints
@@ -420,6 +421,7 @@ func WithRequireLeader(ctx context.Context) context.Context {
 	return metadata.NewOutgoingContext(ctx, md)
 }
 
+//根据Config去new Client
 func newClient(cfg *Config) (*Client, error) {
 	if cfg == nil {
 		cfg = &Config{}
@@ -506,7 +508,7 @@ func newClient(cfg *Config) (*Client, error) {
 	client.conn = conn
 
 	client.Cluster = NewCluster(client)
-	client.KV = NewKV(client)
+	client.KV = NewKV(client) //NewKV 为KV接口调用做准备
 	client.Lease = NewLease(client)
 	client.Watcher = NewWatcher(client)
 	client.Auth = NewAuth(client)

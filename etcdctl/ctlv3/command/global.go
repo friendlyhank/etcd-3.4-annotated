@@ -38,6 +38,7 @@ import (
 
 // GlobalFlags are flags that defined globally
 // and are inherited to all sub-commands.
+//GlobalFlags参数说明
 type GlobalFlags struct {
 	Insecure              bool
 	InsecureSkipVerify    bool

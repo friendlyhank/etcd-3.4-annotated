@@ -64,9 +64,10 @@ will store the content of the file to <key>.
 }
 
 // putCommandFunc executes the "put" command.
+//put 的执行命令函数
 func putCommandFunc(cmd *cobra.Command, args []string) {
 	key, value, opts := getPutOp(args)
-
+	//context超时设置
 	ctx, cancel := commandCtx(cmd)
 	resp, err := mustClientFromCmd(cmd).Put(ctx, key, value, opts...)
 	cancel()
@@ -76,7 +77,7 @@ func putCommandFunc(cmd *cobra.Command, args []string) {
 	display.Put(*resp)
 }
 
-func getPutOp(args []string) (string, string, []clientv3.OpOption) {
+func  getPutOp(args []string) (string, string, []clientv3.OpOption) {
 	if len(args) == 0 {
 		ExitWithError(ExitBadArgs, fmt.Errorf("put command needs 1 argument and input from stdin or 2 arguments"))
 	}

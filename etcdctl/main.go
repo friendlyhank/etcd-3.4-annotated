@@ -31,8 +31,6 @@ const (
 func main() {
 	apiv := os.Getenv(apiEnv)
 
-	fmt.Println("ss")
-
 	// unset apiEnv to avoid side-effect for future env and flag parsing.
 	os.Unsetenv(apiEnv)
 	//根据配置去读取V3还是V2
