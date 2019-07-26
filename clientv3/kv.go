@@ -100,6 +100,7 @@ type kv struct {
 	callOpts []grpc.CallOption
 }
 //hank-sure
+//clientv3/client.go newClient
 func NewKV(c *Client) KV {
 	api := &kv{remote: RetryKVClient(c)}
 	if c != nil {

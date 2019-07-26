@@ -31,6 +31,7 @@ func NewVersionCommand() *cobra.Command {
 	}
 }
 
+//输出版本信息
 func versionCommandFunc(cmd *cobra.Command, args []string) {
 	fmt.Println("etcdctl version:", version.Version)
 	fmt.Println("API version:", version.APIVersion)
