@@ -20,7 +20,7 @@ import (
 	"sort"
 	"strings"
 
-	"go.etcd.io/etcd/pkg/types"
+	"hank.com/etcd-3.3.12-annotated/pkg/types"
 )
 
 // UniqueURLs contains unique URLs

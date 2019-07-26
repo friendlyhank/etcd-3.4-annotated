@@ -17,7 +17,7 @@ package etcdserver
 import (
 	"sync"
 
-	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
+	pb "hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
 
 	humanize "github.com/dustin/go-humanize"
 	"go.uber.org/zap"

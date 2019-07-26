@@ -23,7 +23,7 @@ import (
 
 	_ "github.com/gogo/protobuf/gogoproto"
 
-	etcdserverpb "go.etcd.io/etcd/etcdserver/etcdserverpb"
+	etcdserverpb "hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
 
 	io "io"
 )

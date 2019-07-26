@@ -22,8 +22,8 @@ import (
 	"testing"
 	"time"
 
-	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
-	"go.etcd.io/etcd/pkg/testutil"
+	pb "hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
+	"hank.com/etcd-3.3.12-annotated/pkg/testutil"
 
 	"google.golang.org/grpc"
 )

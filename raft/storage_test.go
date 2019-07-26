@@ -19,7 +19,7 @@ import (
 	"reflect"
 	"testing"
 
-	pb "go.etcd.io/etcd/raft/raftpb"
+	pb "hank.com/etcd-3.3.12-annotated/raft/raftpb"
 )
 
 func TestStorageTerm(t *testing.T) {

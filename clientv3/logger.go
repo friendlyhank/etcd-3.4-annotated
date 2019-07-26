@@ -18,7 +18,7 @@ import (
 	"io/ioutil"
 	"sync"
 
-	"go.etcd.io/etcd/pkg/logutil"
+	"hank.com/etcd-3.3.12-annotated/pkg/logutil"
 
 	"google.golang.org/grpc/grpclog"
 )

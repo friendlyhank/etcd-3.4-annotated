@@ -19,12 +19,12 @@ import (
 	"net/http"
 	"time"
 
-	"go.etcd.io/etcd/clientv3"
-	"go.etcd.io/etcd/etcdserver"
-	"go.etcd.io/etcd/etcdserver/api"
-	"go.etcd.io/etcd/etcdserver/api/membership"
-	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
-	"go.etcd.io/etcd/pkg/types"
+	"hank.com/etcd-3.3.12-annotated/clientv3"
+	"hank.com/etcd-3.3.12-annotated/etcdserver"
+	"hank.com/etcd-3.3.12-annotated/etcdserver/api"
+	"hank.com/etcd-3.3.12-annotated/etcdserver/api/membership"
+	pb "hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
+	"hank.com/etcd-3.3.12-annotated/pkg/types"
 
 	"github.com/coreos/go-semver/semver"
 	"go.uber.org/zap"

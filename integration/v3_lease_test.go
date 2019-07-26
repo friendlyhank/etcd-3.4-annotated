@@ -20,10 +20,10 @@ import (
 	"testing"
 	"time"
 
-	"go.etcd.io/etcd/etcdserver/api/v3rpc/rpctypes"
-	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
-	"go.etcd.io/etcd/mvcc/mvccpb"
-	"go.etcd.io/etcd/pkg/testutil"
+	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v3rpc/rpctypes"
+	pb "hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
+	"hank.com/etcd-3.3.12-annotated/mvcc/mvccpb"
+	"hank.com/etcd-3.3.12-annotated/pkg/testutil"
 
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"

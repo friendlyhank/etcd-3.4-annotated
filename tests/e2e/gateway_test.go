@@ -19,7 +19,7 @@ import (
 	"strings"
 	"testing"
 
-	"go.etcd.io/etcd/pkg/expect"
+	"hank.com/etcd-3.3.12-annotated/pkg/expect"
 )
 
 var (

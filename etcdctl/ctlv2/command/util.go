@@ -28,8 +28,8 @@ import (
 	"syscall"
 	"time"
 
-	"go.etcd.io/etcd/client"
-	"go.etcd.io/etcd/pkg/transport"
+	"hank.com/etcd-3.3.12-annotated/client"
+	"hank.com/etcd-3.3.12-annotated/pkg/transport"
 
 	"github.com/bgentry/speakeasy"
 	"github.com/urfave/cli"

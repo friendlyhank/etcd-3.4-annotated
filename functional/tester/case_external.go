@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"os/exec"
 
-	"go.etcd.io/etcd/functional/rpcpb"
+	"hank.com/etcd-3.3.12-annotated/functional/rpcpb"
 )
 
 type caseExternal struct {

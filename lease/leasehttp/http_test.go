@@ -22,8 +22,8 @@ import (
 	"testing"
 	"time"
 
-	"go.etcd.io/etcd/lease"
-	"go.etcd.io/etcd/mvcc/backend"
+	"hank.com/etcd-3.3.12-annotated/lease"
+	"hank.com/etcd-3.3.12-annotated/mvcc/backend"
 	"go.uber.org/zap"
 )
 

@@ -21,7 +21,7 @@ import (
 	"strings"
 	"time"
 
-	"go.etcd.io/etcd/pkg/expect"
+	"hank.com/etcd-3.3.12-annotated/pkg/expect"
 )
 
 func waitReadyExpectProc(exproc *expect.ExpectProcess, readyStrs []string) error {

@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"os"
 
-	"go.etcd.io/etcd/client"
+	"hank.com/etcd-3.3.12-annotated/client"
 )
 
 // printResponseKey only supports to print key correctly.

@@ -19,7 +19,7 @@ import (
 	"sort"
 	"strings"
 
-	"go.etcd.io/etcd/raft/quorum"
+	"hank.com/etcd-3.3.12-annotated/raft/quorum"
 )
 
 // Config reflects the configuration tracked in a ProgressTracker.

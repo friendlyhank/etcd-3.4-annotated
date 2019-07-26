@@ -24,8 +24,9 @@ import (
 )
 
 func Main() {
+	//检查架构支持
 	checkSupportArch()
-
+	//处理参数指令
 	if len(os.Args) > 1 {
 		cmd := os.Args[1]
 		if covArgs := os.Getenv("ETCDCOV_ARGS"); len(covArgs) > 0 {
@@ -42,7 +43,7 @@ func Main() {
 			return
 		}
 	}
-
+	//启动主程序
 	startEtcdOrProxyV2()
 }
 

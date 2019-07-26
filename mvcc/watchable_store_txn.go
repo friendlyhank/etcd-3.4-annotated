@@ -14,7 +14,7 @@
 
 package mvcc
 
-import "go.etcd.io/etcd/mvcc/mvccpb"
+import "hank.com/etcd-3.3.12-annotated/mvcc/mvccpb"
 
 func (tw *watchableStoreTxnWrite) End() {
 	changes := tw.Changes()

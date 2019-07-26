@@ -14,4 +14,4 @@ Joe Betz <jpbetz@google.com> (@jpbetz) pkg:*
 Sam Batschelet <sbatsche@redhat.com> (@hexfusion) pkg:*
 Xiang Li <xiangli.cs@gmail.com> (@xiang90) pkg:*
 
-Ben Darnell <ben@cockroachlabs.com> (@bdarnell) pkg:go.etcd.io/etcd/raft
+Ben Darnell <ben@cockroachlabs.com> (@bdarnell) pkg:hank.com/etcd-3.3.12-annotated/raft

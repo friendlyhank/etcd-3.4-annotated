@@ -18,8 +18,8 @@ import (
 	"encoding/binary"
 	"fmt"
 
-	"go.etcd.io/etcd/mvcc/backend"
-	"go.etcd.io/etcd/mvcc/mvccpb"
+	"hank.com/etcd-3.3.12-annotated/mvcc/backend"
+	"hank.com/etcd-3.3.12-annotated/mvcc/mvccpb"
 )
 
 func UpdateConsistentIndex(be backend.Backend, index uint64) {

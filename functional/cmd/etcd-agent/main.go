@@ -18,7 +18,7 @@ package main
 import (
 	"flag"
 
-	"go.etcd.io/etcd/functional/agent"
+	"hank.com/etcd-3.3.12-annotated/functional/agent"
 
 	"go.uber.org/zap"
 )

@@ -23,7 +23,7 @@ import (
 	"reflect"
 	"testing"
 
-	"go.etcd.io/etcd/pkg/types"
+	"hank.com/etcd-3.3.12-annotated/pkg/types"
 )
 
 func TestMembersAPIActionList(t *testing.T) {

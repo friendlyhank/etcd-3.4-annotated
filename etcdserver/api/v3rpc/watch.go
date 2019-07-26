@@ -21,12 +21,12 @@ import (
 	"sync"
 	"time"
 
-	"go.etcd.io/etcd/auth"
-	"go.etcd.io/etcd/etcdserver"
-	"go.etcd.io/etcd/etcdserver/api/v3rpc/rpctypes"
-	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
-	"go.etcd.io/etcd/mvcc"
-	"go.etcd.io/etcd/mvcc/mvccpb"
+	"hank.com/etcd-3.3.12-annotated/auth"
+	"hank.com/etcd-3.3.12-annotated/etcdserver"
+	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v3rpc/rpctypes"
+	pb "hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
+	"hank.com/etcd-3.3.12-annotated/mvcc"
+	"hank.com/etcd-3.3.12-annotated/mvcc/mvccpb"
 
 	"go.uber.org/zap"
 )

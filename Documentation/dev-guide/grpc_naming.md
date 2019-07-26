@@ -10,8 +10,8 @@ The etcd client provides a gRPC resolver for resolving gRPC endpoints with an et
 
 ```go
 import (
-	"go.etcd.io/etcd/clientv3"
-	etcdnaming "go.etcd.io/etcd/clientv3/naming"
+	"hank.com/etcd-3.3.12-annotated/clientv3"
+	etcdnaming "hank.com/etcd-3.3.12-annotated/clientv3/naming"
 
 	"google.golang.org/grpc"
 )

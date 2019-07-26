@@ -110,7 +110,7 @@ for pb in etcdserverpb/rpc api/v3lock/v3lockpb/v3lock api/v3election/v3electionp
 	sed -i.bak -E "s/New[A-Za-z]*Client/${pkg}.&/" ${gwfile}
 	# darwin doesn't like newlines in sed...
 	# shellcheck disable=SC1117
-	sed -i.bak -E "s|import \(|& \"go.etcd.io/etcd/${pkgpath}\"|" ${gwfile}
+	sed -i.bak -E "s|import \(|& \"hank.com/etcd-3.3.12-annotated/${pkgpath}\"|" ${gwfile}
 	mkdir -p  "${pkgpath}"/gw/
 	go fmt ${gwfile}
 	mv ${gwfile} "${pkgpath}/gw/"

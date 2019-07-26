@@ -20,9 +20,9 @@ import (
 
 	"net/http"
 
-	"go.etcd.io/etcd/etcdserver/api/v2error"
-	"go.etcd.io/etcd/etcdserver/api/v2http/httptypes"
-	"go.etcd.io/etcd/etcdserver/etcdserverpb"
+	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v2error"
+	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v2http/httptypes"
+	"hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
 
 	"github.com/prometheus/client_golang/prometheus"
 )

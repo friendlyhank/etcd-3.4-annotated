@@ -18,8 +18,8 @@ import (
 	"fmt"
 	"math"
 
-	"go.etcd.io/etcd/mvcc/mvccpb"
-	"go.etcd.io/etcd/pkg/adt"
+	"hank.com/etcd-3.3.12-annotated/mvcc/mvccpb"
+	"hank.com/etcd-3.3.12-annotated/pkg/adt"
 )
 
 var (

@@ -19,9 +19,9 @@ import (
 	"strings"
 	"testing"
 
-	"go.etcd.io/etcd/clientv3"
-	"go.etcd.io/etcd/etcdserver/api/v2store"
-	"go.etcd.io/etcd/etcdserver/api/v2v3"
+	"hank.com/etcd-3.3.12-annotated/clientv3"
+	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v2store"
+	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v2v3"
 )
 
 func TestCreateKV(t *testing.T) {

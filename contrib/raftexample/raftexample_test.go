@@ -24,7 +24,7 @@ import (
 	"testing"
 	"time"
 
-	"go.etcd.io/etcd/raft/raftpb"
+	"hank.com/etcd-3.3.12-annotated/raft/raftpb"
 )
 
 type cluster struct {

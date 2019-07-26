@@ -31,7 +31,7 @@ import (
 	"strings"
 	"time"
 
-	"go.etcd.io/etcd/pkg/tlsutil"
+	"hank.com/etcd-3.3.12-annotated/pkg/tlsutil"
 
 	"go.uber.org/zap"
 )

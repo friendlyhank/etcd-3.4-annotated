@@ -19,7 +19,7 @@ import (
 	"os"
 	"testing"
 
-	"go.etcd.io/etcd/auth"
+	"hank.com/etcd-3.3.12-annotated/auth"
 )
 
 // TestStartEtcdWrongToken ensures that StartEtcd with wrong configs returns with error.

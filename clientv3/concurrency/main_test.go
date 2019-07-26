@@ -20,8 +20,8 @@ import (
 	"testing"
 	"time"
 
-	"go.etcd.io/etcd/integration"
-	"go.etcd.io/etcd/pkg/testutil"
+	"hank.com/etcd-3.3.12-annotated/integration"
+	"hank.com/etcd-3.3.12-annotated/pkg/testutil"
 )
 
 var endpoints []string

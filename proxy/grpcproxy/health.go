@@ -19,9 +19,9 @@ import (
 	"net/http"
 	"time"
 
-	"go.etcd.io/etcd/clientv3"
-	"go.etcd.io/etcd/etcdserver/api/etcdhttp"
-	"go.etcd.io/etcd/etcdserver/api/v3rpc/rpctypes"
+	"hank.com/etcd-3.3.12-annotated/clientv3"
+	"hank.com/etcd-3.3.12-annotated/etcdserver/api/etcdhttp"
+	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v3rpc/rpctypes"
 )
 
 // HandleHealth registers health handler on '/health'.

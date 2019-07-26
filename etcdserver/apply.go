@@ -21,12 +21,12 @@ import (
 	"sort"
 	"time"
 
-	"go.etcd.io/etcd/auth"
-	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
-	"go.etcd.io/etcd/lease"
-	"go.etcd.io/etcd/mvcc"
-	"go.etcd.io/etcd/mvcc/mvccpb"
-	"go.etcd.io/etcd/pkg/types"
+	"hank.com/etcd-3.3.12-annotated/auth"
+	pb "hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
+	"hank.com/etcd-3.3.12-annotated/lease"
+	"hank.com/etcd-3.3.12-annotated/mvcc"
+	"hank.com/etcd-3.3.12-annotated/mvcc/mvccpb"
+	"hank.com/etcd-3.3.12-annotated/pkg/types"
 
 	"github.com/gogo/protobuf/proto"
 	"go.uber.org/zap"

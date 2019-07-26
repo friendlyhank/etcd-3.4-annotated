@@ -22,10 +22,10 @@ import (
 	"testing"
 	"time"
 
-	"go.etcd.io/etcd/etcdserver"
-	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
-	"go.etcd.io/etcd/pkg/testutil"
-	"go.etcd.io/etcd/pkg/transport"
+	"hank.com/etcd-3.3.12-annotated/etcdserver"
+	pb "hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
+	"hank.com/etcd-3.3.12-annotated/pkg/testutil"
+	"hank.com/etcd-3.3.12-annotated/pkg/transport"
 )
 
 // TestMetricDbSizeBoot checks that the db size metric is set on boot.

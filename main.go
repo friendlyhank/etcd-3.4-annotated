@@ -13,17 +13,17 @@
 // limitations under the License.
 
 // Package main is a simple wrapper of the real etcd entrypoint package
-// (located at go.etcd.io/etcd/etcdmain) to ensure that etcd is still
+// (located at hank.com/etcd-3.3.12-annotated/etcdmain) to ensure that etcd is still
 // "go getable"; e.g. `go get go.etcd.io/etcd` works as expected and
 // builds a binary in $GOBIN/etcd
 //
 // This package should NOT be extended or modified in any way; to modify the
-// etcd binary, work in the `go.etcd.io/etcd/etcdmain` package.
+// etcd binary, work in the `hank.com/etcd-3.3.12-annotated/etcdmain` package.
 //
 package main
 
-import "go.etcd.io/etcd/etcdmain"
+import "hank.com/etcd-3.3.12-annotated/etcdmain"
 
 func main() {
-	etcdmain.Main()
+	etcdmain.Main()//服务端主入口
 }

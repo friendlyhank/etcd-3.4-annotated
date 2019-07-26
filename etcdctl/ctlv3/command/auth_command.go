@@ -18,7 +18,7 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-	"go.etcd.io/etcd/etcdserver/api/v3rpc/rpctypes"
+	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v3rpc/rpctypes"
 )
 
 // NewAuthCommand returns the cobra command for "auth".

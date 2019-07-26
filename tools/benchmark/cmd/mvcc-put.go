@@ -21,8 +21,8 @@ import (
 	"runtime/pprof"
 	"time"
 
-	"go.etcd.io/etcd/lease"
-	"go.etcd.io/etcd/pkg/report"
+	"hank.com/etcd-3.3.12-annotated/lease"
+	"hank.com/etcd-3.3.12-annotated/pkg/report"
 
 	"github.com/spf13/cobra"
 )

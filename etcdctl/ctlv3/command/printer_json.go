@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"os"
 
-	"go.etcd.io/etcd/clientv3/snapshot"
+	"hank.com/etcd-3.3.12-annotated/clientv3/snapshot"
 )
 
 type jsonPrinter struct{ printer }

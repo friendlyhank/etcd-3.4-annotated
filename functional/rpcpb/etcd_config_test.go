@@ -18,8 +18,8 @@ import (
 	"reflect"
 	"testing"
 
-	"go.etcd.io/etcd/embed"
-	"go.etcd.io/etcd/pkg/types"
+	"hank.com/etcd-3.3.12-annotated/embed"
+	"hank.com/etcd-3.3.12-annotated/pkg/types"
 )
 
 func TestEtcd(t *testing.T) {

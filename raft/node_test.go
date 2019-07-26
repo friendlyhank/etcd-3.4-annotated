@@ -24,8 +24,8 @@ import (
 	"testing"
 	"time"
 
-	"go.etcd.io/etcd/pkg/testutil"
-	"go.etcd.io/etcd/raft/raftpb"
+	"hank.com/etcd-3.3.12-annotated/pkg/testutil"
+	"hank.com/etcd-3.3.12-annotated/raft/raftpb"
 )
 
 // readyWithTimeout selects from n.Ready() with a 1-second timeout. It

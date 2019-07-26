@@ -21,8 +21,8 @@ import (
 	"strings"
 
 	"github.com/urfave/cli"
-	"go.etcd.io/etcd/client"
-	"go.etcd.io/etcd/pkg/pathutil"
+	"hank.com/etcd-3.3.12-annotated/client"
+	"hank.com/etcd-3.3.12-annotated/pkg/pathutil"
 )
 
 func NewRoleCommands() cli.Command {

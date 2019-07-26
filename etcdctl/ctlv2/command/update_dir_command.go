@@ -19,7 +19,7 @@ import (
 	"time"
 
 	"github.com/urfave/cli"
-	"go.etcd.io/etcd/client"
+	"hank.com/etcd-3.3.12-annotated/client"
 )
 
 // NewUpdateDirCommand returns the CLI command for "updatedir".

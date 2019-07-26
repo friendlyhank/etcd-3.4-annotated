@@ -21,12 +21,12 @@ import (
 	"net/http"
 	"strings"
 
-	"go.etcd.io/etcd/etcdserver"
-	"go.etcd.io/etcd/etcdserver/api"
-	"go.etcd.io/etcd/etcdserver/api/v2error"
-	"go.etcd.io/etcd/etcdserver/api/v2http/httptypes"
-	"go.etcd.io/etcd/pkg/logutil"
-	"go.etcd.io/etcd/version"
+	"hank.com/etcd-3.3.12-annotated/etcdserver"
+	"hank.com/etcd-3.3.12-annotated/etcdserver/api"
+	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v2error"
+	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v2http/httptypes"
+	"hank.com/etcd-3.3.12-annotated/pkg/logutil"
+	"hank.com/etcd-3.3.12-annotated/version"
 
 	"github.com/coreos/pkg/capnslog"
 	"go.uber.org/zap"

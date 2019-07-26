@@ -12,7 +12,7 @@ Clone `etcd` to `<directory>/src/go.etcd.io/etcd`
 
 ```sh
 export GOPATH=<directory>
-cd <directory>/src/go.etcd.io/etcd/contrib/raftexample
+cd <directory>/src/hank.com/etcd-3.3.12-annotated/contrib/raftexample
 go build -o raftexample
 ```
 

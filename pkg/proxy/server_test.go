@@ -29,7 +29,7 @@ import (
 	"testing"
 	"time"
 
-	"go.etcd.io/etcd/pkg/transport"
+	"hank.com/etcd-3.3.12-annotated/pkg/transport"
 
 	"go.uber.org/zap"
 )

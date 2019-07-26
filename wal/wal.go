@@ -25,11 +25,11 @@ import (
 	"sync"
 	"time"
 
-	"go.etcd.io/etcd/pkg/fileutil"
-	"go.etcd.io/etcd/pkg/pbutil"
-	"go.etcd.io/etcd/raft"
-	"go.etcd.io/etcd/raft/raftpb"
-	"go.etcd.io/etcd/wal/walpb"
+	"hank.com/etcd-3.3.12-annotated/pkg/fileutil"
+	"hank.com/etcd-3.3.12-annotated/pkg/pbutil"
+	"hank.com/etcd-3.3.12-annotated/raft"
+	"hank.com/etcd-3.3.12-annotated/raft/raftpb"
+	"hank.com/etcd-3.3.12-annotated/wal/walpb"
 
 	"github.com/coreos/pkg/capnslog"
 	"go.uber.org/zap"

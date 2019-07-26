@@ -20,7 +20,7 @@ import (
 	"sync/atomic"
 	"testing"
 
-	"go.etcd.io/etcd/contrib/recipes"
+	"hank.com/etcd-3.3.12-annotated/contrib/recipes"
 )
 
 const (

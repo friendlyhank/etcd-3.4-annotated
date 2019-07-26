@@ -17,8 +17,8 @@ package command
 import (
 	"os"
 
-	v3 "go.etcd.io/etcd/clientv3"
-	"go.etcd.io/etcd/clientv3/snapshot"
+	v3 "hank.com/etcd-3.3.12-annotated/clientv3"
+	"hank.com/etcd-3.3.12-annotated/clientv3/snapshot"
 
 	"github.com/olekukonko/tablewriter"
 )

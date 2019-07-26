@@ -21,12 +21,12 @@ import (
 	"testing"
 	"time"
 
-	"go.etcd.io/etcd/etcdserver/api/membership"
-	"go.etcd.io/etcd/pkg/mock/mockstorage"
-	"go.etcd.io/etcd/pkg/pbutil"
-	"go.etcd.io/etcd/pkg/types"
-	"go.etcd.io/etcd/raft"
-	"go.etcd.io/etcd/raft/raftpb"
+	"hank.com/etcd-3.3.12-annotated/etcdserver/api/membership"
+	"hank.com/etcd-3.3.12-annotated/pkg/mock/mockstorage"
+	"hank.com/etcd-3.3.12-annotated/pkg/pbutil"
+	"hank.com/etcd-3.3.12-annotated/pkg/types"
+	"hank.com/etcd-3.3.12-annotated/raft"
+	"hank.com/etcd-3.3.12-annotated/raft/raftpb"
 	"go.uber.org/zap"
 )
 
