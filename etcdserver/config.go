@@ -33,16 +33,22 @@ import (
 
 // ServerConfig holds the configuration of etcd as taken from the command line or discovery.
 type ServerConfig struct {
-	Name           string
-	DiscoveryURL   string
-	DiscoveryProxy string
+	Name           string //etcdserver名称,对应flag "name"
+	DiscoveryURL   string//etcd 用于发现服务,无需知道具体etcd节点ip即可访问etcd服务,对应flag "discovery"
+	DiscoveryProxy string//供服务发现的代理地址,对应flag "discovery-proxy"
+	// 由ip+port组成，默认DefaultListenClientURLs = "http://localhost:2379";
+	// 实际情况使用https schema，用以外部etcd client访问，对应flag "listen-client-urls"
 	ClientURLs     types.URLs
+	// 由ip+port组成，默认DefaultListenPeerURLs   = "http://localhost:2380";
+	// 实际生产环境使用http schema, 供etcd member 通信，对应flag "peer-client-urls"
 	PeerURLs       types.URLs
+	// 数据目录地址，为全路径，对应flag "data-dir"
 	DataDir        string
 	// DedicatedWALDir config will make the etcd to write the WAL to the WALDir
 	// rather than the dataDir/member/wal.
 	DedicatedWALDir string
-
+	// 默认是10000次事件做一次快照:DefaultSnapCount = 100000
+	// 可以作为调优参数进行参考，对应flag "snapshot-count",
 	SnapshotCount uint64
 
 	// SnapshotCatchUpEntries is the number of entries for a slow follower
@@ -52,8 +58,11 @@ type ServerConfig struct {
 	// follower to catch up.
 	// WARNING: only change this for tests. Always use "DefaultSnapshotCatchUpEntries"
 	SnapshotCatchUpEntries uint64
-
+	// 默认是5，这是v2的参数，v3内只有一个db文件，
+	// DefaultMaxSnapshots = 5，对应flag "max-snapshots"
 	MaxSnapFiles uint
+	// 默认是5，DefaultMaxWALs      = 5，表示最大存储wal文件的个数，
+	// 对应flag "max-wals"，保留的文件可以作为etcd-dump-logs工具进行debug使用。
 	MaxWALFiles  uint
 
 	// BackendBatchInterval is the maximum time before commit the backend transaction.
@@ -63,10 +72,14 @@ type ServerConfig struct {
 
 	// BackendFreelistType is the type of the backend boltdb freelist.
 	BackendFreelistType bolt.FreelistType
-
+	// peerUrl 与 etcd name对应的map,由方法cfg.PeerURLsMapAndToken("etcd")生成。
 	InitialPeerURLsMap  types.URLsMap
+	// etcd 集群token, 对应flang "initial-cluster-token"
 	InitialClusterToken string
+	// 确定是否为新建集群，对应flag "initial-cluster-state",
+	// 由方法func (cfg Config) IsNewCluster() bool { return cfg.ClusterState == ClusterStateFlagNew }确定；
 	NewCluster          bool
+	// member间通信使用的证书信息，若peerURL为https时使用，对应flag "peer-ca-file","peer-cert-file", "peer-key-file"
 	PeerTLSInfo         transport.TLSInfo
 
 	CORS map[string]struct{}
@@ -75,8 +88,11 @@ type ServerConfig struct {
 	// If server is insecure (no TLS), server only accepts requests
 	// whose Host header value exists in this white list.
 	HostWhitelist map[string]struct{}
-
+	// raft node 发送心跳信息的超时时间。 "heartbeat-interval"
 	TickMs        uint
+	// raft node 发起选举的超时时间，最大为5000ms maxElectionMs = 50000,
+	// 对应flag "election-timeout",
+	// 选举时间与心跳时间在最佳实践内建议是10倍关系。
 	ElectionTicks int
 
 	// InitialElectionTickAdvance is true, then local member fast-forwards
@@ -107,11 +123,18 @@ type ServerConfig struct {
 	//
 	// See https://github.com/etcd-io/etcd/issues/9333 for more detail.
 	InitialElectionTickAdvance bool
-
+	// etcd server启动的超时时间，默认为1s,
+	// 由方法func (c *ServerConfig) bootstrapTimeout() time.Duration确定；
 	BootstrapTimeout time.Duration
-
+	// 默认为0，单位为小时，主要为了方便用户快速查询，
+	// 定时对key进行合并处理，对应flag "auto-compaction-retention",
+	// 由方法func NewPeriodic(h int, rg RevGetter, c Compactable) *Periodic确定，
+	// 具体compact的实现方法为：
+	//func (s *kvServer) Compact(ctx context.Context, r *pb.CompactionRequest) (*pb.CompactionResponse, error)
 	AutoCompactionRetention time.Duration
 	AutoCompactionMode      string
+	// etcd后端数据文件的大小，默认为2GB，最大为8GB, v3的参数，
+	// 对应flag  "quota-backend-bytes" ，具体定义：etcd\etcdserver\quota.go
 	QuotaBackendBytes       int64
 	MaxTxnOps               uint
 
@@ -147,7 +170,10 @@ type ServerConfig struct {
 	LoggerWriteSyncer zapcore.WriteSyncer
 
 	Debug bool
-
+	// 对应flag "force-new-cluster",默认为false,若为true，
+	// 在生产环境内，一般用于含v2数据的集群恢复，
+	// 效果为以现有数据或者空数据新建一个单节点的etcd集群，
+	// 如果存在数据，则会清楚数据内的元数据信息，并重建只包含该etcd的元数据信息。
 	ForceNewCluster bool
 
 	// EnableLeaseCheckpoint enables primary lessor to persist lease remainingTTL to prevent indefinite auto-renewal of long lived leases.

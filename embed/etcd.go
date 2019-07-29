@@ -74,9 +74,9 @@ type Etcd struct {
 	sctxs            map[string]*serveCtx
 	metricsListeners []net.Listener
 
-	Server *etcdserver.EtcdServer
+	Server *etcdserver.EtcdServer //Etcd Server的核心配置
 
-	cfg   Config
+	cfg   Config  //配置参数
 	stopc chan struct{}
 	errc  chan error
 

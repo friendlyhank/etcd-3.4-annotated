@@ -596,10 +596,10 @@ func (cfg *Config) Validate() error {
 	if cfg.ElectionMs <= 0 {
 		return fmt.Errorf("--election-timeout must be >0 (set to %dms)", cfg.ElectionMs)
 	}
-	if 5*cfg.TickMs > cfg.ElectionMs {
+	if 5*cfg.TickMs > cfg.ElectionMs {//选举超时时间必须大于五倍于心跳的时间
 		return fmt.Errorf("--election-timeout[%vms] should be at least as 5 times as --heartbeat-interval[%vms]", cfg.ElectionMs, cfg.TickMs)
 	}
-	if cfg.ElectionMs > maxElectionMs {
+	if cfg.ElectionMs > maxElectionMs {//选举超时时间必须小于5000ms
 		return fmt.Errorf("--election-timeout[%vms] is too long, and should be set less than %vms", cfg.ElectionMs, maxElectionMs)
 	}
 
