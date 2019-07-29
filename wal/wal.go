@@ -100,6 +100,7 @@ func Create(lg *zap.Logger, dirpath string, metadata []byte) (*WAL, error) {
 	}
 
 	// keep temporary wal directory so WAL initialization appears atomic
+	// 先在.tmp临时文件上做修改，修改完之后可以直接执行rename,这样起到了原子修改文件的效果
 	tmpdirpath := filepath.Clean(dirpath) + ".tmp"
 	if fileutil.Exist(tmpdirpath) {
 		if err := os.RemoveAll(tmpdirpath); err != nil {
@@ -119,6 +120,7 @@ func Create(lg *zap.Logger, dirpath string, metadata []byte) (*WAL, error) {
 	}
 
 	p := filepath.Join(tmpdirpath, walName(0, 0))
+	//对文件上互斥锁
 	f, err := fileutil.LockFile(p, os.O_WRONLY|os.O_CREATE, fileutil.PrivateFileMode)
 	if err != nil {
 		if lg != nil {

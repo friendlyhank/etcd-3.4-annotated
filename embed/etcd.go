@@ -68,15 +68,15 @@ const (
 
 // Etcd contains a running etcd server and its listeners.
 type Etcd struct {
-	Peers   []*peerListener
-	Clients []net.Listener
+	Peers   []*peerListener  //集群Listener
+	Clients []net.Listener  //客户端Listener
 	// a map of contexts for the servers that serves client requests.
 	sctxs            map[string]*serveCtx
 	metricsListeners []net.Listener
 
-	Server *etcdserver.EtcdServer
+	Server *etcdserver.EtcdServer //Etcd Server的核心配置
 
-	cfg   Config
+	cfg   Config  //配置参数
 	stopc chan struct{}
 	errc  chan error
 
@@ -119,6 +119,7 @@ func StartEtcd(inCfg *Config) (e *Etcd, err error) {
 			zap.Strings("listen-peer-urls", e.cfg.getLPURLs()),
 		)
 	}
+	//集群监听Listeners
 	if e.Peers, err = configurePeerListeners(cfg); err != nil {
 		return e, err
 	}
@@ -129,6 +130,7 @@ func StartEtcd(inCfg *Config) (e *Etcd, err error) {
 			zap.Strings("listen-client-urls", e.cfg.getLCURLs()),
 		)
 	}
+	//客户端监听listeners
 	if e.sctxs, err = configureClientListeners(cfg); err != nil {
 		return e, err
 	}
@@ -251,6 +253,7 @@ func StartEtcd(inCfg *Config) (e *Etcd, err error) {
 	return e, nil
 }
 
+//启动etcdmain的打印配置设置信息
 func print(lg *zap.Logger, ec Config, sc etcdserver.ServerConfig, memberInitialized bool) {
 	// TODO: remove this after dropping "capnslog"
 	if lg == nil {

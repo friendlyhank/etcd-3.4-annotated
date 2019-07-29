@@ -37,6 +37,10 @@ import (
 
 const snapSuffix = ".snap"
 
+/**
+ *快照信息
+ */
+
 var (
 	plog = capnslog.NewPackageLogger("hank.com/etcd-3.3.12-annotated/v3", "snap")
 

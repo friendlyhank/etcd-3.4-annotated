@@ -22,7 +22,9 @@ import (
 
 	"github.com/coreos/go-semver/semver"
 )
-
+/**
+ *版本信息相关
+ */
 var (
 	// MinClusterVersion is the min cluster version this etcd binary is compatible with.
 	MinClusterVersion = "3.0.0"
