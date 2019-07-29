@@ -49,17 +49,18 @@ const (
 	ClusterStateFlagExisting = "existing"
 
 	DefaultName                  = "default"
-	DefaultMaxSnapshots          = 5
+	DefaultMaxSnapshots          = 5  //快照最大数量
 	DefaultMaxWALs               = 5
 	DefaultMaxTxnOps             = uint(128)
-	DefaultMaxRequestBytes       = 1.5 * 1024 * 1024
+	DefaultMaxRequestBytes       = 1.5 * 1024 * 1024 //最大请求数据
+	//GRPC心跳
 	DefaultGRPCKeepAliveMinTime  = 5 * time.Second
 	DefaultGRPCKeepAliveInterval = 2 * time.Hour
 	DefaultGRPCKeepAliveTimeout  = 20 * time.Second
 
-	DefaultListenPeerURLs   = "http://localhost:2380"
-	DefaultListenClientURLs = "http://localhost:2379"
-
+	DefaultListenPeerURLs   = "http://localhost:2380"//集群通信地址
+	DefaultListenClientURLs = "http://localhost:2379"//客户端通信地址
+	//输出设置
 	DefaultLogOutput = "default"
 	JournalLogOutput = "systemd/journal"
 	StdErrLogOutput  = "stderr"

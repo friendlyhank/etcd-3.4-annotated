@@ -77,8 +77,8 @@ type configProxy struct {
 
 // config holds the config for a command line invocation of etcd
 type config struct {
-	ec           embed.Config
-	cp           configProxy
+	ec           embed.Config  //etcd的配置
+	cp           configProxy  //代理配置
 	cf           configFlags
 	configFile   string
 	printVersion bool
