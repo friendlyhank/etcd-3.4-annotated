@@ -255,7 +255,7 @@ func (c *ServerConfig) advertiseMatchesCluster() error {
 
 func (c *ServerConfig) MemberDir() string { return filepath.Join(c.DataDir, "member") }
 
-func (c *ServerConfig) WALDir() string {
+func (c *ServerConfig)  WALDir() string {
 	if c.DedicatedWALDir != "" {
 		return c.DedicatedWALDir
 	}

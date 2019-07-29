@@ -46,6 +46,7 @@ import (
 	"google.golang.org/grpc/credentials"
 )
 
+//服务客户端的请求
 type serveCtx struct {
 	lg       *zap.Logger
 	l        net.Listener

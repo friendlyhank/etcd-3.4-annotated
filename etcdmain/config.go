@@ -64,14 +64,14 @@ var (
 )
 
 type configProxy struct {
-	ProxyFailureWaitMs     uint `json:"proxy-failure-wait"`
-	ProxyRefreshIntervalMs uint `json:"proxy-refresh-interval"`
-	ProxyDialTimeoutMs     uint `json:"proxy-dial-timeout"`
-	ProxyWriteTimeoutMs    uint `json:"proxy-write-timeout"`
-	ProxyReadTimeoutMs     uint `json:"proxy-read-timeout"`
+	ProxyFailureWaitMs     uint `json:"proxy-failure-wait"`//当后端发生错误时proxy下次发给它的等待时间
+	ProxyRefreshIntervalMs uint `json:"proxy-refresh-interval"`//后端刷新时间间隔
+	ProxyDialTimeoutMs     uint `json:"proxy-dial-timeout"`//与后端建链的超时时间
+	ProxyWriteTimeoutMs    uint `json:"proxy-write-timeout"`//写后端的超时时间
+	ProxyReadTimeoutMs     uint `json:"proxy-read-timeout"`//读后端的超时时间
 	Fallback               string
 	Proxy                  string
-	ProxyJSON              string `json:"proxy"`
+	ProxyJSON              string `json:"proxy"`//设置proxy模式与否:off、readonly、on
 	FallbackJSON           string `json:"discovery-fallback"`
 }
 

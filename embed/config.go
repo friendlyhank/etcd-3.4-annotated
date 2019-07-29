@@ -117,10 +117,10 @@ func init() {
 // Config holds the arguments for configuring an etcd server.
 type Config struct {
 	Name   string `json:"name"`
-	Dir    string `json:"data-dir"`
-	WalDir string `json:"wal-dir"`
+	Dir    string `json:"data-dir"` //数据目录的路径
+	WalDir string `json:"wal-dir"` //WAL文件专用目录
 
-	SnapshotCount uint64 `json:"snapshot-count"`
+	SnapshotCount uint64 `json:"snapshot-count"` //触发一次磁盘快照的提交事务的次数
 
 	// SnapshotCatchUpEntries is the number of entries for a slow follower
 	// to catch-up after compacting the raft storage entries.
@@ -131,14 +131,14 @@ type Config struct {
 	// Always use "DefaultSnapshotCatchUpEntries"
 	SnapshotCatchUpEntries uint64
 
-	MaxSnapFiles uint `json:"max-snapshots"`
-	MaxWalFiles  uint `json:"max-wals"`
+	MaxSnapFiles uint `json:"max-snapshots"`//etcd保存的最大快照文件数
+	MaxWalFiles  uint `json:"max-wals"`  //etcd保存的最大快照文件数
 
 	// TickMs is the number of milliseconds between heartbeat ticks.
 	// TODO: decouple tickMs and heartbeat tick (current heartbeat tick = 1).
 	// make ticks a cluster wide configuration.
-	TickMs     uint `json:"heartbeat-interval"`
-	ElectionMs uint `json:"election-timeout"`
+	TickMs     uint `json:"heartbeat-interval"`//Leader心跳时间间隔
+	ElectionMs uint `json:"election-timeout"` //一次等待选举的超时时间
 
 	// InitialElectionTickAdvance is true, then local member fast-forwards
 	// election ticks to speed up "initial" leader election trigger. This
@@ -189,15 +189,15 @@ type Config struct {
 	// Note that cipher suites are prioritized in the given order.
 	CipherSuites []string `json:"cipher-suites"`
 
-	ClusterState          string `json:"initial-cluster-state"`
-	DNSCluster            string `json:"discovery-srv"`
+	ClusterState          string `json:"initial-cluster-state"`//初始化集群状态
+	DNSCluster            string `json:"discovery-srv"`//最初创建一个集群的服务发现DNS src域名
 	DNSClusterServiceName string `json:"discovery-srv-name"`
-	Dproxy                string `json:"discovery-proxy"`
-	Durl                  string `json:"discovery"`
-	InitialCluster        string `json:"initial-cluster"`
-	InitialClusterToken   string `json:"initial-cluster-token"`
-	StrictReconfigCheck   bool   `json:"strict-reconfig-check"`
-	EnableV2              bool   `json:"enable-v2"`
+	Dproxy                string `json:"discovery-proxy"`//服务发现使用的HTTP代理
+	Durl                  string `json:"discovery"` //最初创建一个集群的服务发现URL
+	InitialCluster        string `json:"initial-cluster"` //初始启动集群配置
+	InitialClusterToken   string `json:"initial-cluster-token"` //集群初始化 token
+	StrictReconfigCheck   bool   `json:"strict-reconfig-check"`//拒绝所有会引起quorum丢失的重配置
+	EnableV2              bool   `json:"enable-v2"`//接收V2的API请求
 
 	// AutoCompactionMode is either 'periodic' or 'revision'.
 	AutoCompactionMode string `json:"auto-compaction-mode"`
@@ -205,7 +205,7 @@ type Config struct {
 	// (e.g. '5m' for 5-minute), or revision unit (e.g. '5000').
 	// If no time unit is provided and compaction mode is 'periodic',
 	// the unit defaults to hour. For example, '5' translates into 5-hour.
-	AutoCompactionRetention string `json:"auto-compaction-retention"`
+	AutoCompactionRetention string `json:"auto-compaction-retention"` //MVCC键值存储不被自动压缩的时间
 
 	// GRPCKeepAliveMinTime is the minimum interval that a client should
 	// wait before pinging server. When client pings "too fast", server
@@ -347,7 +347,7 @@ type configYAML struct {
 type configJSON struct {
 	LPUrlsJSON string `json:"listen-peer-urls"`
 	LCUrlsJSON string `json:"listen-client-urls"`
-	APUrlsJSON string `json:"initial-advertise-peer-urls"`
+	APUrlsJSON string `json:"initial-advertise-peer-urls"` //该member的perr URL地址用于etcd数据在集群内进行交互
 	ACUrlsJSON string `json:"advertise-client-urls"`
 
 	CORSJSON          string `json:"cors"`

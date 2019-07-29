@@ -26,6 +26,7 @@ import (
 func Main() {
 	//检查架构支持
 	checkSupportArch()
+
 	//处理参数指令
 	if len(os.Args) > 1 {
 		cmd := os.Args[1]
