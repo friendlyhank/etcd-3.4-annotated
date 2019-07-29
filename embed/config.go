@@ -44,22 +44,24 @@ import (
 	"sigs.k8s.io/yaml"
 )
 
+//默认的配置信息
 const (
 	ClusterStateFlagNew      = "new"
 	ClusterStateFlagExisting = "existing"
 
 	DefaultName                  = "default"
-	DefaultMaxSnapshots          = 5
+	DefaultMaxSnapshots          = 5  //最大快照数量
 	DefaultMaxWALs               = 5
 	DefaultMaxTxnOps             = uint(128)
-	DefaultMaxRequestBytes       = 1.5 * 1024 * 1024
+	DefaultMaxRequestBytes       = 1.5 * 1024 * 1024 //最大请求数据大小
+	//GRPC心跳
 	DefaultGRPCKeepAliveMinTime  = 5 * time.Second
 	DefaultGRPCKeepAliveInterval = 2 * time.Hour
 	DefaultGRPCKeepAliveTimeout  = 20 * time.Second
 
-	DefaultListenPeerURLs   = "http://localhost:2380"
-	DefaultListenClientURLs = "http://localhost:2379"
-
+	DefaultListenPeerURLs   = "http://localhost:2380" //集群通信URL
+	DefaultListenClientURLs = "http://localhost:2379" //客户端通信URL
+	//输出设置
 	DefaultLogOutput = "default"
 	JournalLogOutput = "systemd/journal"
 	StdErrLogOutput  = "stderr"
