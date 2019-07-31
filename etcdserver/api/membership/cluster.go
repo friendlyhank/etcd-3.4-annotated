@@ -40,6 +40,10 @@ import (
 	"go.uber.org/zap"
 )
 
+/**
+ *集群成员
+ */
+
 const maxLearners = 1
 
 // RaftCluster is a list of Members that belong to the same raft cluster
@@ -72,6 +76,7 @@ type ConfigChangeContext struct {
 
 // NewClusterFromURLsMap creates a new raft cluster using provided urls map. Currently, it does not support creating
 // cluster with raft learner member.
+//根据配置中的集群token和配置中initial-cluster生成的Map去New集群节点
 func NewClusterFromURLsMap(lg *zap.Logger, token string, urlsmap types.URLsMap) (*RaftCluster, error) {
 	c := NewCluster(lg, token)
 	for name, urls := range urlsmap {
@@ -97,6 +102,7 @@ func NewClusterFromMembers(lg *zap.Logger, token string, id types.ID, membs []*M
 	return c
 }
 
+//New集群节点
 func NewCluster(lg *zap.Logger, token string) *RaftCluster {
 	return &RaftCluster{
 		lg:      lg,
@@ -220,6 +226,7 @@ func (c *RaftCluster) String() string {
 	return b.String()
 }
 
+//生成集群唯一ID号
 func (c *RaftCluster) genID() {
 	mIDs := c.MemberIDs()
 	b := make([]byte, 8*len(mIDs))
@@ -230,6 +237,7 @@ func (c *RaftCluster) genID() {
 	c.cid = types.ID(binary.BigEndian.Uint64(hash[:8]))
 }
 
+//设置集群CID 成员localID
 func (c *RaftCluster) SetID(localID, cid types.ID) {
 	c.localID = localID
 	c.cid = cid

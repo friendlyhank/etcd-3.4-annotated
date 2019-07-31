@@ -247,6 +247,7 @@ type msgWithResult struct {
 }
 
 // node is the canonical implementation of the Node interface
+//节点
 type node struct {
 	propc      chan msgWithResult
 	recvc      chan pb.Message
@@ -262,6 +263,7 @@ type node struct {
 	rn *RawNode
 }
 
+//newNode节点
 func newNode(rn *RawNode) node {
 	return node{
 		propc:      make(chan msgWithResult),

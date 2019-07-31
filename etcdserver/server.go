@@ -346,6 +346,7 @@ func NewServer(cfg ServerConfig) (srv *EtcdServer, err error) {
 	)
 
 	switch {
+	//没有WAL并且不是新的节点
 	case !haveWAL && !cfg.NewCluster:
 		if err = cfg.VerifyJoinExisting(); err != nil {
 			return nil, err
@@ -371,11 +372,12 @@ func NewServer(cfg ServerConfig) (srv *EtcdServer, err error) {
 		cl.SetBackend(be)
 		id, n, s, w = startNode(cfg, cl, nil)
 		cl.SetID(id, existingCluster.ID())
-
+	//没有WAL并且是新的节点
 	case !haveWAL && cfg.NewCluster:
 		if err = cfg.VerifyBootstrap(); err != nil {
 			return nil, err
 		}
+		//设置集群节点信息和设置member
 		cl, err = membership.NewClusterFromURLsMap(cfg.Logger, cfg.InitialClusterToken, cfg.InitialPeerURLsMap)
 		if err != nil {
 			return nil, err
@@ -384,6 +386,7 @@ func NewServer(cfg ServerConfig) (srv *EtcdServer, err error) {
 		if isMemberBootstrapped(cfg.Logger, cl, cfg.Name, prt, cfg.bootstrapTimeout()) {
 			return nil, fmt.Errorf("member %s has already been bootstrapped", m.ID)
 		}
+		//是否需要服务发现
 		if cfg.ShouldDiscover() {
 			var str string
 			str, err = v2discovery.JoinCluster(cfg.Logger, cfg.DiscoveryURL, cfg.DiscoveryProxy, m.ID, cfg.InitialPeerURLsMap.String())
@@ -404,9 +407,10 @@ func NewServer(cfg ServerConfig) (srv *EtcdServer, err error) {
 		}
 		cl.SetStore(st)
 		cl.SetBackend(be)
+		//hank-import 启动节点
 		id, n, s, w = startNode(cfg, cl, cl.MemberIDs())
 		cl.SetID(id, cl.ID())
-
+	//有WAL
 	case haveWAL:
 		if err = fileutil.IsDirWriteable(cfg.MemberDir()); err != nil {
 			return nil, fmt.Errorf("cannot write to member directory: %v", err)
@@ -426,6 +430,7 @@ func NewServer(cfg ServerConfig) (srv *EtcdServer, err error) {
 				plog.Warningf("discovery token ignored since a cluster has already been initialized. Valid log found at %q", cfg.WALDir())
 			}
 		}
+		//下载快照信息
 		snapshot, err = ss.Load()
 		if err != nil && err != snap.ErrNoSnapshot {
 			return nil, err
@@ -469,6 +474,7 @@ func NewServer(cfg ServerConfig) (srv *EtcdServer, err error) {
 		}
 
 		if !cfg.ForceNewCluster {
+			//根据WAL和snapshot去重启节点
 			id, cl, n, s, w = restartNode(cfg, snapshot)
 		} else {
 			id, cl, n, s, w = restartAsStandaloneNode(cfg, snapshot)
@@ -617,6 +623,8 @@ func NewServer(cfg ServerConfig) (srv *EtcdServer, err error) {
 		LeaderStats: lstats,
 		ErrorC:      srv.errorc,
 	}
+
+	//hank-import hank-return
 	if err = tr.Start(); err != nil {
 		return nil, err
 	}
@@ -802,6 +810,7 @@ func (s *EtcdServer) start() {
 
 	// TODO: if this is an empty log, writes all peer infos
 	// into the first entry
+	//hank-return hank-import
 	go s.run()
 }
 
@@ -981,6 +990,8 @@ func (s *EtcdServer) run() {
 			}
 		},
 	}
+
+	//hank-import hank-return raft启动
 	s.r.start(rh)
 
 	ep := etcdProgress{

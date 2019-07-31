@@ -28,6 +28,9 @@ import (
 	"go.uber.org/zap"
 )
 
+/*
+ *存储
+ */
 type Storage interface {
 	// Save function saves ents and state to the underlying stable storage.
 	// Save MUST block until st and ents are on stable storage.
@@ -39,8 +42,8 @@ type Storage interface {
 }
 
 type storage struct {
-	*wal.WAL
-	*snap.Snapshotter
+	*wal.WAL  //WAL
+	*snap.Snapshotter //快照
 }
 
 func NewStorage(w *wal.WAL, s *snap.Snapshotter) Storage {
@@ -49,6 +52,7 @@ func NewStorage(w *wal.WAL, s *snap.Snapshotter) Storage {
 
 // SaveSnap saves the snapshot to disk and release the locked
 // wal files since they will not be used.
+//保存快照到磁盘
 func (st *storage) SaveSnap(snap raftpb.Snapshot) error {
 	walsnap := walpb.Snapshot{
 		Index: snap.Metadata.Index,
@@ -65,6 +69,7 @@ func (st *storage) SaveSnap(snap raftpb.Snapshot) error {
 	return st.WAL.ReleaseLockTo(snap.Metadata.Index)
 }
 
+//读取WAL
 func readWAL(lg *zap.Logger, waldir string, snap walpb.Snapshot) (w *wal.WAL, id, cid types.ID, st raftpb.HardState, ents []raftpb.Entry) {
 	var (
 		err       error

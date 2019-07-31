@@ -85,6 +85,7 @@ type peerMemberPromoteHandler struct {
 	server  etcdserver.Server
 }
 
+/* 获取集群成员列表 */
 func (h *peerMembersHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if !allowMethod(w, r, "GET") {
 		return
@@ -95,9 +96,9 @@ func (h *peerMembersHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "bad path", http.StatusBadRequest)
 		return
 	}
-	ms := h.cluster.Members()
+	ms := h.cluster.Members()//获取集群成员列表
 	w.Header().Set("Content-Type", "application/json")
-	if err := json.NewEncoder(w).Encode(ms); err != nil {
+	if err := json.NewEncoder(w).Encode(ms); err != nil {//调用json接口,进行格式化并且将数据写到缓冲区中
 		if h.lg != nil {
 			h.lg.Warn("failed to encode membership members", zap.Error(err))
 		} else {

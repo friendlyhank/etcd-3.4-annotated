@@ -53,6 +53,7 @@ type Member struct {
 
 // NewMember creates a Member without an ID and generates one based on the
 // cluster name, peer URLs, and time. This is used for bootstrapping/adding new member.
+//NewMember 根据name,peerURLs,token(token会作为集群的Name)
 func NewMember(name string, peerURLs types.URLs, clusterName string, now *time.Time) *Member {
 	return newMember(name, peerURLs, clusterName, now, false)
 }

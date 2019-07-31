@@ -123,6 +123,7 @@ type raftNodeConfig struct {
 	transport rafthttp.Transporter
 }
 
+//newRaftNode节点
 func newRaftNode(cfg raftNodeConfig) *raftNode {
 	r := &raftNode{
 		lg:             cfg.lg,
@@ -140,7 +141,7 @@ func newRaftNode(cfg raftNodeConfig) *raftNode {
 	if r.heartbeat == 0 {
 		r.ticker = &time.Ticker{}
 	} else {
-		r.ticker = time.NewTicker(r.heartbeat)
+		r.ticker = time.NewTicker(r.heartbeat)//调用内置定时器
 	}
 	return r
 }
@@ -164,7 +165,7 @@ func (r *raftNode) start(rh *raftReadyHandler) {
 		for {
 			select {
 			case <-r.ticker.C:
-				r.tick()
+				r.tick()//定时器
 			case rd := <-r.Ready():
 				if rd.SoftState != nil {
 					newLeader := rd.SoftState.Lead != raft.None && rh.getLead() != rd.SoftState.Lead
@@ -417,6 +418,7 @@ func (r *raftNode) advanceTicks(ticks int) {
 	}
 }
 
+//启动节点
 func startNode(cfg ServerConfig, cl *membership.RaftCluster, ids []types.ID) (id types.ID, n raft.Node, s *raft.MemoryStorage, w *wal.WAL) {
 	var err error
 	member := cl.MemberByName(cfg.Name)
@@ -490,6 +492,7 @@ func startNode(cfg ServerConfig, cl *membership.RaftCluster, ids []types.ID) (id
 	return id, n, s, w
 }
 
+//重新启动节点
 func restartNode(cfg ServerConfig, snapshot *raftpb.Snapshot) (types.ID, *membership.RaftCluster, raft.Node, *raft.MemoryStorage, *wal.WAL) {
 	var walsnap walpb.Snapshot
 	if snapshot != nil {

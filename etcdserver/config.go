@@ -72,7 +72,7 @@ type ServerConfig struct {
 
 	// BackendFreelistType is the type of the backend boltdb freelist.
 	BackendFreelistType bolt.FreelistType
-	// peerUrl 与 etcd name对应的map,由方法cfg.PeerURLsMapAndToken("etcd")生成。
+	// peerUrl与 etcd name对应的map,由方法cfg.PeerURLsMapAndToken("etcd")生成。
 	InitialPeerURLsMap  types.URLsMap
 	// etcd 集群token, 对应flang "initial-cluster-token"
 	InitialClusterToken string
@@ -174,7 +174,7 @@ type ServerConfig struct {
 	// 在生产环境内，一般用于含v2数据的集群恢复，
 	// 效果为以现有数据或者空数据新建一个单节点的etcd集群，
 	// 如果存在数据，则会清楚数据内的元数据信息，并重建只包含该etcd的元数据信息。
-	ForceNewCluster bool
+	 ForceNewCluster bool
 
 	// EnableLeaseCheckpoint enables primary lessor to persist lease remainingTTL to prevent indefinite auto-renewal of long lived leases.
 	EnableLeaseCheckpoint bool

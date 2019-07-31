@@ -60,6 +60,7 @@ type Snapshotter struct {
 	dir string
 }
 
+//New快照信息
 func New(lg *zap.Logger, dir string) *Snapshotter {
 	return &Snapshotter{
 		lg:  lg,
@@ -112,6 +113,7 @@ func (s *Snapshotter) save(snapshot *raftpb.Snapshot) error {
 	return nil
 }
 
+//Load快照
 func (s *Snapshotter) Load() (*raftpb.Snapshot, error) {
 	names, err := s.snapNames()
 	if err != nil {
@@ -129,6 +131,7 @@ func (s *Snapshotter) Load() (*raftpb.Snapshot, error) {
 	return snap, nil
 }
 
+//load快照信息
 func loadSnap(lg *zap.Logger, dir, name string) (*raftpb.Snapshot, error) {
 	fpath := filepath.Join(dir, name)
 	snap, err := Read(lg, fpath)
