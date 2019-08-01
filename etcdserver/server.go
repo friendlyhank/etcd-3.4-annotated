@@ -734,6 +734,7 @@ func (s *EtcdServer) adjustTicks() {
 // begin serving requests. It must be called before Do or Process.
 // Start must be non-blocking; any long-running server functionality
 // should be implemented in goroutines.
+//EtcdServer Start启动
 func (s *EtcdServer) Start() {
 	s.start()
 	s.goAttach(func() { s.adjustTicks() })
@@ -812,7 +813,7 @@ func (s *EtcdServer) start() {
 
 	// TODO: if this is an empty log, writes all peer infos
 	// into the first entry
-	//hank-return hank-import
+	//EtcdServer run  hank-return hank-import
 	go s.run()
 }
 
@@ -993,7 +994,7 @@ func (s *EtcdServer) run() {
 		},
 	}
 
-	//hank-import hank-return raft启动
+	//raftNode启动 hank-import hank-return
 	s.r.start(rh)
 
 	ep := etcdProgress{

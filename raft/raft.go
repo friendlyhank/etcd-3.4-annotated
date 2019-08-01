@@ -312,7 +312,7 @@ type raft struct {
 	randomizedElectionTimeout int
 	disableProposalForwarding bool
 
-	tick func()
+	tick func()  //内置定时器调用方法
 	step stepFunc
 
 	logger Logger

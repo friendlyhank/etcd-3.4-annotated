@@ -402,9 +402,10 @@ func (n *node) run() {
 
 // Tick increments the internal logical clock for this Node. Election timeouts
 // and heartbeat timeouts are in units of ticks.
+//节点Tick
 func (n *node) Tick() {
 	select {
-	case n.tickc <- struct{}{}:
+	case n.tickc <- struct{}{}://传入空值促发选举
 	case <-n.done:
 	default:
 		n.rn.raft.logger.Warningf("%x (leader %v) A tick missed to fire. Node blocks too long!", n.rn.raft.id, n.rn.raft.id == n.rn.raft.lead)

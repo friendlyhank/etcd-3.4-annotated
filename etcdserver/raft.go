@@ -147,6 +147,7 @@ func newRaftNode(cfg raftNodeConfig) *raftNode {
 }
 
 // raft.Node does not have locks in Raft package
+//调用Node Tick接口 (n *node) Tick()
 func (r *raftNode) tick() {
 	r.tickMu.Lock()
 	r.Tick()
@@ -164,7 +165,7 @@ func (r *raftNode) start(rh *raftReadyHandler) {
 
 		for {
 			select {
-			case <-r.ticker.C:
+			case <-r.ticker.C: //raftNode里内置定时器
 				r.tick()//定时器
 			case rd := <-r.Ready():
 				if rd.SoftState != nil {

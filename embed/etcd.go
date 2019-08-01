@@ -226,6 +226,8 @@ func StartEtcd(inCfg *Config) (e *Etcd, err error) {
 			return e, err
 		}
 	}
+
+	//EtcdServer启动
 	e.Server.Start()
 
 	if err = e.servePeers(); err != nil {
