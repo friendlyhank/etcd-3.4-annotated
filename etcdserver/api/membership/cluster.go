@@ -405,6 +405,7 @@ func (c *RaftCluster) AddMember(m *Member) {
 			zap.Strings("added-peer-peer-urls", m.PeerURLs),
 		)
 	} else {
+		//控制台添加成员的控制信息打印 cid为集群id ID为节点成员唯一ID
 		plog.Infof("added member %s %v to cluster %s", m.ID, m.PeerURLs, c.cid)
 	}
 }

@@ -300,6 +300,7 @@ func (t *Transport) AddRemote(id types.ID, us []string) {
 	}
 }
 
+//AddPeer
 func (t *Transport) AddPeer(id types.ID, us []string) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
@@ -331,6 +332,7 @@ func (t *Transport) AddPeer(id types.ID, us []string) {
 			zap.Strings("remote-peer-urls", us),
 		)
 	} else {
+		//控制台 add perr输出
 		plog.Infof("added peer %s", id)
 	}
 }

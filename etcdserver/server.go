@@ -634,6 +634,7 @@ func NewServer(cfg ServerConfig) (srv *EtcdServer, err error) {
 			tr.AddRemote(m.ID, m.PeerURLs)
 		}
 	}
+	//add Peer
 	for _, m := range cl.Members() {
 		if m.ID != id {
 			tr.AddPeer(m.ID, m.PeerURLs)
@@ -792,6 +793,7 @@ func (s *EtcdServer) start() {
 				zap.String("cluster-version", version.Cluster(s.ClusterVersion().String())),
 			)
 		} else {
+			//控制台启动EtcdServer打印
 			plog.Infof("starting server... [version: %v, cluster version: %v]", version.Version, version.Cluster(s.ClusterVersion().String()))
 		}
 		membership.ClusterVersionMetrics.With(prometheus.Labels{"cluster_version": s.ClusterVersion().String()}).Set(1)

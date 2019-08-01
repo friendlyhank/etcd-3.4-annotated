@@ -382,6 +382,7 @@ func newRaft(c *Config) *raft {
 	return r
 }
 
+//是否是领导
 func (r *raft) hasLeader() bool { return r.lead != None }
 
 func (r *raft) softState() *SoftState { return &SoftState{Lead: r.lead, RaftState: r.state} }
@@ -678,7 +679,7 @@ func (r *raft) tickHeartbeat() {
 			r.abortLeaderTransfer()
 		}
 	}
-
+	//只有leader才会发送心跳
 	if r.state != StateLeader {
 		return
 	}
@@ -689,6 +690,7 @@ func (r *raft) tickHeartbeat() {
 	}
 }
 
+//设置为Follower
 func (r *raft) becomeFollower(term uint64, lead uint64) {
 	r.step = stepFollower
 	r.reset(term)
@@ -698,6 +700,7 @@ func (r *raft) becomeFollower(term uint64, lead uint64) {
 	r.logger.Infof("%x became follower at term %d", r.id, r.Term)
 }
 
+//成为候选人
 func (r *raft) becomeCandidate() {
 	// TODO(xiangli) remove the panic when the raft implementation is stable
 	if r.state == StateLeader {
@@ -708,6 +711,8 @@ func (r *raft) becomeCandidate() {
 	r.tick = r.tickElection
 	r.Vote = r.id
 	r.state = StateCandidate
+
+	//控制台日志追踪
 	r.logger.Infof("%x became candidate at term %d", r.id, r.Term)
 }
 
@@ -727,6 +732,7 @@ func (r *raft) becomePreCandidate() {
 	r.logger.Infof("%x became pre-candidate at term %d", r.id, r.Term)
 }
 
+//成为Leader
 func (r *raft) becomeLeader() {
 	// TODO(xiangli) remove the panic when the raft implementation is stable
 	if r.state == StateFollower {
@@ -765,6 +771,7 @@ func (r *raft) becomeLeader() {
 
 // campaign transitions the raft instance to candidate state. This must only be
 // called after verifying that this is a legitimate transition.
+//竞选活动,竞选成功会成为候选人状态
 func (r *raft) campaign(t CampaignType) {
 	if !r.promotable() {
 		// This path should not be hit (callers are supposed to check), but
@@ -818,6 +825,7 @@ func (r *raft) poll(id uint64, t pb.MessageType, v bool) (granted int, rejected 
 	return r.prs.TallyVotes()
 }
 
+//发起竞选的核心步骤方法
 func (r *raft) Step(m pb.Message) error {
 	// Handle the message term, which may result in our stepping down to a follower.
 	switch {
@@ -908,7 +916,7 @@ func (r *raft) Step(m pb.Message) error {
 				r.logger.Warningf("%x cannot campaign at term %d since there are still %d pending configuration changes to apply", r.id, r.Term, n)
 				return nil
 			}
-
+			//启动了新的一轮竞选
 			r.logger.Infof("%x is starting a new election at term %d", r.id, r.Term)
 			if r.preVote {
 				r.campaign(campaignPreElection)

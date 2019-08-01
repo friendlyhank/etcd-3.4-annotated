@@ -428,6 +428,7 @@ func startNode(cfg ServerConfig, cl *membership.RaftCluster, ids []types.ID) (id
 			ClusterID: uint64(cl.ID()),
 		},
 	)
+	//创建WAL信息
 	if w, err = wal.Create(cfg.Logger, cfg.WALDir(), metadata); err != nil {
 		if cfg.Logger != nil {
 			cfg.Logger.Panic("failed to create WAL", zap.Error(err))
@@ -456,6 +457,7 @@ func startNode(cfg ServerConfig, cl *membership.RaftCluster, ids []types.ID) (id
 			zap.String("cluster-id", cl.ID().String()),
 		)
 	} else {
+		//控制台会打印出这个集群节点信息
 		plog.Infof("starting member %s in cluster %s", id, cl.ID())
 	}
 	s = raft.NewMemoryStorage()

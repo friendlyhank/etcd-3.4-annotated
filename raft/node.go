@@ -221,7 +221,7 @@ func StartNode(c *Config, peers []Peer) Node {
 	}
 	rn.Bootstrap(peers)
 
-	n := newNode(rn)
+	n := newNode(rn)//
 
 	go n.run()
 	return &n
