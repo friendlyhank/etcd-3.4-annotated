@@ -94,7 +94,8 @@ type WAL struct {
 
 // Create creates a WAL ready for appending records. The given metadata is
 // recorded at the head of each WAL file, and can be retrieved with ReadAll.
-//Wal创建
+
+//创建WAL信息
 func Create(lg *zap.Logger, dirpath string, metadata []byte) (*WAL, error) {
 	if Exist(dirpath) {
 		return nil, os.ErrExist

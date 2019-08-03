@@ -147,6 +147,7 @@ func newRaftNode(cfg raftNodeConfig) *raftNode {
 }
 
 // raft.Node does not have locks in Raft package
+//调用Node Tick接口 (n *node) Tick()
 func (r *raftNode) tick() {
 	r.tickMu.Lock()
 	r.Tick()
@@ -164,7 +165,7 @@ func (r *raftNode) start(rh *raftReadyHandler) {
 
 		for {
 			select {
-			case <-r.ticker.C:
+			case <-r.ticker.C: //raftNode里内置定时器
 				r.tick()//定时器
 			case rd := <-r.Ready():
 				if rd.SoftState != nil {
@@ -428,7 +429,8 @@ func startNode(cfg ServerConfig, cl *membership.RaftCluster, ids []types.ID) (id
 			ClusterID: uint64(cl.ID()),
 		},
 	)
-	//创建Wal
+
+	//创建WAL信息
 	if w, err = wal.Create(cfg.Logger, cfg.WALDir(), metadata); err != nil {
 		if cfg.Logger != nil {
 			cfg.Logger.Panic("failed to create WAL", zap.Error(err))
@@ -457,6 +459,7 @@ func startNode(cfg ServerConfig, cl *membership.RaftCluster, ids []types.ID) (id
 			zap.String("cluster-id", cl.ID().String()),
 		)
 	} else {
+		//控制台会打印出这个集群节点信息
 		plog.Infof("starting member %s in cluster %s", id, cl.ID())
 	}
 	s = raft.NewMemoryStorage()

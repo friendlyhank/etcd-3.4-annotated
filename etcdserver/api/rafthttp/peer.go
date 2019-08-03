@@ -123,6 +123,7 @@ type peer struct {
 	stopc  chan struct{}
 }
 
+//startPeer启动Peer
 func startPeer(t *Transport, urls types.URLs, peerID types.ID, fs *stats.FollowerStats) *peer {
 	if t.Logger != nil {
 		t.Logger.Info("starting remote peer", zap.String("remote-peer-id", peerID.String()))

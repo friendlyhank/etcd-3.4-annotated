@@ -70,7 +70,7 @@ func (n *node) start() {
 		for {
 			select {
 			case <-ticker:
-				n.Tick()
+				n.Tick()//etcdserver/raft.go (r *raftNode) tick()
 			case rd := <-n.Ready():
 				if !raft.IsEmptyHardState(rd.HardState) {
 					n.mu.Lock()
