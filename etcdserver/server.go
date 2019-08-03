@@ -916,6 +916,7 @@ type raftReadyHandler struct {
 	updateCommittedIndex func(uint64)
 }
 
+//服务启动
 func (s *EtcdServer) run() {
 	lg := s.getLogger()
 
