@@ -178,7 +178,7 @@ type Config struct {
 	// PreVote enables the Pre-Vote algorithm described in raft thesis section
 	// 9.6. This prevents disruption when a node that has been partitioned away
 	// rejoins the cluster.
-	PreVote bool
+	PreVote bool //是否要开启预候选人选举
 
 	// ReadOnlyOption specifies how the read only request is processed.
 	//
@@ -655,6 +655,7 @@ func (r *raft) appendEntry(es ...pb.Entry) (accepted bool) {
 }
 
 // tickElection is run by followers and candidates after r.electionTimeout.
+//tickElection Step会进入选举
 func (r *raft) tickElection() {
 	r.electionElapsed++
 
@@ -740,7 +741,7 @@ func (r *raft) becomeLeader() {
 	}
 	r.step = stepLeader
 	r.reset(r.Term)
-	r.tick = r.tickHeartbeat
+	r.tick = r.tickHeartbeat  //定时发送心跳给Follower
 	r.lead = r.id
 	r.state = StateLeader
 	// Followers enter replicate mode when they've been successfully probed
@@ -787,7 +788,7 @@ func (r *raft) campaign(t CampaignType) {
 		term = r.Term + 1
 	} else {
 		r.becomeCandidate()
-		voteMsg = pb.MsgVote
+		voteMsg = pb.MsgVote //状态发起投票
 		term = r.Term
 	}
 	if _, _, res := r.poll(r.id, voteRespMsgType(voteMsg), true); res == quorum.VoteWon {
@@ -825,7 +826,7 @@ func (r *raft) poll(id uint64, t pb.MessageType, v bool) (granted int, rejected 
 	return r.prs.TallyVotes()
 }
 
-//发起竞选的核心步骤方法
+//发起竞选的核心步骤方法 raft状态机
 func (r *raft) Step(m pb.Message) error {
 	// Handle the message term, which may result in our stepping down to a follower.
 	switch {

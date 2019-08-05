@@ -155,7 +155,7 @@ type ServerConfig struct {
 	CorruptCheckTime    time.Duration
 
 	// PreVote is true to enable Raft Pre-Vote.
-	PreVote bool
+	PreVote bool	//是否开启预候选人选举
 
 	// Logger logs server-side operations.
 	// If not nil, it disables "capnslog" and uses the given logger.
