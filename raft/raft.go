@@ -801,6 +801,7 @@ func (r *raft) campaign(t CampaignType) {
 		}
 		return
 	}
+	//向集群各个节点发起投票的请求
 	for id := range r.prs.Voters.IDs() {
 		if id == r.id {
 			continue
@@ -816,13 +817,17 @@ func (r *raft) campaign(t CampaignType) {
 	}
 }
 
+//发起投票
 func (r *raft) poll(id uint64, t pb.MessageType, v bool) (granted int, rejected int, result quorum.VoteResult) {
+	//接收投票日志
 	if v {
 		r.logger.Infof("%x received %s from %x at term %d", r.id, t, id, r.Term)
 	} else {
 		r.logger.Infof("%x received %s rejection from %x at term %d", r.id, t, id, r.Term)
 	}
+	//记录投票
 	r.prs.RecordVote(id, v)
+	//Tally计算投票结果
 	return r.prs.TallyVotes()
 }
 
