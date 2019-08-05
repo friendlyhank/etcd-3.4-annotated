@@ -927,7 +927,7 @@ func (r *raft) Step(m pb.Message) error {
 		} else {
 			r.logger.Debugf("%x ignoring MsgHup because already leader", r.id)
 		}
-
+	//发起领导者投票或预选候选人的投票
 	case pb.MsgVote, pb.MsgPreVote:
 		if r.isLearner {
 			// TODO: learner may need to vote, in case of node down when confchange.
@@ -936,6 +936,7 @@ func (r *raft) Step(m pb.Message) error {
 			return nil
 		}
 		// We can vote if this is a repeat of a vote we've already cast...
+		//发起投票的条件
 		canVote := r.Vote == m.From ||
 			// ...we haven't voted and we don't think there's a leader yet in this term...
 			(r.Vote == None && r.lead == None) ||
