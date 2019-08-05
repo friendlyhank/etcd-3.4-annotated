@@ -634,7 +634,7 @@ func NewServer(cfg ServerConfig) (srv *EtcdServer, err error) {
 			tr.AddRemote(m.ID, m.PeerURLs)
 		}
 	}
-	//add Peer
+	//add Peer 会startPeer并且启动监听
 	for _, m := range cl.Members() {
 		if m.ID != id {
 			tr.AddPeer(m.ID, m.PeerURLs)

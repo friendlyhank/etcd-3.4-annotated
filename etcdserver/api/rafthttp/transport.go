@@ -300,7 +300,7 @@ func (t *Transport) AddRemote(id types.ID, us []string) {
 	}
 }
 
-//AddPeer
+//AddPeer添加Peer
 func (t *Transport) AddPeer(id types.ID, us []string) {
 	t.mu.Lock()
 	defer t.mu.Unlock()
@@ -320,6 +320,7 @@ func (t *Transport) AddPeer(id types.ID, us []string) {
 		}
 	}
 	fs := t.LeaderStats.Follower(id.String())
+
 	t.peers[id] = startPeer(t, urls, id, fs)
 	addPeerToProber(t.Logger, t.pipelineProber, id.String(), us, RoundTripperNameSnapshot, rttSec)
 	addPeerToProber(t.Logger, t.streamProber, id.String(), us, RoundTripperNameRaftMessage, rttSec)

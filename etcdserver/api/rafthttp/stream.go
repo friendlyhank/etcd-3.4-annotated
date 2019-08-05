@@ -387,6 +387,7 @@ type streamReader struct {
 	done   chan struct{}
 }
 
+//streamReader数据流读取启动
 func (cr *streamReader) start() {
 	cr.done = make(chan struct{})
 	if cr.errorc == nil {
@@ -413,6 +414,7 @@ func (cr *streamReader) run() {
 	}
 
 	for {
+		//dial
 		rc, err := cr.dial(t)
 		if err != nil {
 			if err != errUnsupportedStreamType {

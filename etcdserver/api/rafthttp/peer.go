@@ -151,6 +151,8 @@ func startPeer(t *Transport, urls types.URLs, peerID types.ID, fs *stats.Followe
 		raft:          r,
 		errorc:        errorc,
 	}
+
+	//启动pipeline start
 	pipeline.start()
 
 	p := &peer{
@@ -160,8 +162,8 @@ func startPeer(t *Transport, urls types.URLs, peerID types.ID, fs *stats.Followe
 		r:              r,
 		status:         status,
 		picker:         picker,
-		msgAppV2Writer: startStreamWriter(t.Logger, t.ID, peerID, status, fs, r),
-		writer:         startStreamWriter(t.Logger, t.ID, peerID, status, fs, r),
+		msgAppV2Writer: startStreamWriter(t.Logger, t.ID, peerID, status, fs, r),//peer writer
+		writer:         startStreamWriter(t.Logger, t.ID, peerID, status, fs, r),//peer writer
 		pipeline:       pipeline,
 		snapSender:     newSnapshotSender(t, picker, peerID, status),
 		recvc:          make(chan raftpb.Message, recvBufSize),
