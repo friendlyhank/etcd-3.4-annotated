@@ -655,7 +655,7 @@ func (r *raft) appendEntry(es ...pb.Entry) (accepted bool) {
 }
 
 // tickElection is run by followers and candidates after r.electionTimeout.
-//tickElection Step会进入选举
+//tickElection 选举定时器超时后 触发选举 此方法一般由follower、candidate调用
 func (r *raft) tickElection() {
 	r.electionElapsed++
 
@@ -666,6 +666,7 @@ func (r *raft) tickElection() {
 }
 
 // tickHeartbeat is run by leaders to send a MsgBeat after r.heartbeatTimeout.
+//leader发送心跳
 func (r *raft) tickHeartbeat() {
 	r.heartbeatElapsed++
 	r.electionElapsed++
