@@ -609,6 +609,7 @@ func (r *raft) reset(term uint64) {
 
 	r.electionElapsed = 0
 	r.heartbeatElapsed = 0
+	//随机一下选举超时
 	r.resetRandomizedElectionTimeout()
 
 	r.abortLeaderTransfer()
@@ -659,6 +660,7 @@ func (r *raft) appendEntry(es ...pb.Entry) (accepted bool) {
 func (r *raft) tickElection() {
 	r.electionElapsed++
 
+	//electionElapsed大于选举超时时间促发
 	if r.promotable() && r.pastElectionTimeout() {
 		r.electionElapsed = 0
 		r.Step(pb.Message{From: r.id, Type: pb.MsgHup})
@@ -695,7 +697,7 @@ func (r *raft) tickHeartbeat() {
 //设置为Follower
 func (r *raft) becomeFollower(term uint64, lead uint64) {
 	r.step = stepFollower
-	r.reset(term)
+	r.reset(term) //重置一些参数
 	r.tick = r.tickElection
 	r.lead = lead
 	r.state = StateFollower
@@ -775,24 +777,25 @@ func (r *raft) becomeLeader() {
 // called after verifying that this is a legitimate transition.
 //竞选活动,竞选成功会成为候选人状态
 func (r *raft) campaign(t CampaignType) {
-	if !r.promotable() {
-		// This path should not be hit (callers are supposed to check), but
-		// better safe than sorry.
-		r.logger.Warningf("%x is unpromotable; campaign() should have been called", r.id)
-	}
-	var term uint64
-	var voteMsg pb.MessageType
-	if t == campaignPreElection {
-		r.becomePreCandidate()
-		voteMsg = pb.MsgPreVote
-		// PreVote RPCs are sent for the next term before we've incremented r.Term.
-		term = r.Term + 1
-	} else {
-		r.becomeCandidate()
+			if !r.promotable() {
+				// This path should not be hit (callers are supposed to check), but
+				// better safe than sorry.
+				r.logger.Warningf("%x is unpromotable; campaign() should have been called", r.id)
+			}
+			var term uint64
+			var voteMsg pb.MessageType
+			if t == campaignPreElection {
+				r.becomePreCandidate()
+				voteMsg = pb.MsgPreVote
+				// PreVote RPCs are sent for the next term before we've incremented r.Term.
+				term = r.Term + 1
+			} else {
+				r.becomeCandidate()
 		voteMsg = pb.MsgVote //状态发起投票
 		term = r.Term
 	}
-	if _, _, res := r.poll(r.id, voteRespMsgType(voteMsg), true); res == quorum.VoteWon {
+			//自己给自己投票
+	if _, _, res := r.poll(r.id, voteRespMsgType(voteMsg), true,); res == quorum.VoteWon {
 		// We won the election after voting for ourselves (which must mean that
 		// this is a single-node cluster). Advance to the next state.
 		if t == campaignPreElection {
@@ -820,12 +823,14 @@ func (r *raft) campaign(t CampaignType) {
 
 //发起投票
 func (r *raft) poll(id uint64, t pb.MessageType, v bool) (granted int, rejected int, result quorum.VoteResult) {
-	//接收投票日志
+
+	//v TRUE 为投递支持票 FALSE为投递反对票
 	if v {
 		r.logger.Infof("%x received %s from %x at term %d", r.id, t, id, r.Term)
 	} else {
 		r.logger.Infof("%x received %s rejection from %x at term %d", r.id, t, id, r.Term)
 	}
+
 	//记录投票
 	r.prs.RecordVote(id, v)
 	//Tally计算投票结果
@@ -1262,9 +1267,11 @@ func stepCandidate(r *raft, m pb.Message) error {
 		r.becomeFollower(m.Term, m.From) // always m.Term == r.Term
 		r.handleSnapshot(m)
 	case myVoteRespType:
+		//别的节点给机器投票
 		gr, rj, res := r.poll(m.From, m.Type, !m.Reject)
 		r.logger.Infof("%x has received %d %s votes and %d vote rejections", r.id, gr, m.Type, rj)
 		switch res {
+		//竞选获得胜利
 		case quorum.VoteWon:
 			if r.state == StatePreCandidate {
 				r.campaign(campaignElection)
@@ -1272,6 +1279,7 @@ func stepCandidate(r *raft, m pb.Message) error {
 				r.becomeLeader()
 				r.bcastAppend()
 			}
+			//竞选失败,重新成为follower
 		case quorum.VoteLost:
 			// pb.MsgPreVoteResp contains future term of pre-candidate
 			// m.Term > r.Term; reuse r.Term
