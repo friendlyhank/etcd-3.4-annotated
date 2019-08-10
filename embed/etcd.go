@@ -68,7 +68,7 @@ const (
 
 // Etcd contains a running etcd server and its listeners.
 type Etcd struct {
-	Peers   []*peerListener  //集群Listener
+	Peers   []*peerListener //集群Listener
 	Clients []net.Listener  //客户端Listener
 	// a map of contexts for the servers that serves client requests.
 	sctxs            map[string]*serveCtx
@@ -76,7 +76,7 @@ type Etcd struct {
 
 	Server *etcdserver.EtcdServer //Etcd Server的核心配置
 
-	cfg   Config  //配置参数
+	cfg   Config //配置参数
 	stopc chan struct{}
 	errc  chan error
 
@@ -209,6 +209,7 @@ func StartEtcd(inCfg *Config) (e *Etcd, err error) {
 		EnableLeaseCheckpoint:      cfg.ExperimentalEnableLeaseCheckpoint,
 	}
 	print(e.cfg.logger, *cfg, srvcfg, memberInitialized)
+	//创建EtcdServer并且创建raftNode并运行raftNode
 	if e.Server, err = etcdserver.NewServer(srvcfg); err != nil {
 		return e, err
 	}
@@ -230,6 +231,8 @@ func StartEtcd(inCfg *Config) (e *Etcd, err error) {
 	//EtcdServer启动
 	e.Server.Start()
 
+	//configure peer handlers after rafhttp.Transport started
+	//生成http.handle 用于处理peer请求
 	if err = e.servePeers(); err != nil {
 		return e, err
 	}
@@ -530,7 +533,9 @@ func configurePeerListeners(cfg *Config) (peers []*peerListener, err error) {
 }
 
 // configure peer handlers after rafthttp.Transport started
+//配置handlers在启动transport之后
 func (e *Etcd) servePeers() (err error) {
+	//e.Server  etcdserver.EtcdServer实现了etcdserver.ServerPeer接口
 	ph := etcdhttp.NewPeerHandler(e.GetLogger(), e.Server)
 	var peerTLScfg *tls.Config
 	if !e.cfg.PeerTLSInfo.Empty() {
@@ -541,6 +546,8 @@ func (e *Etcd) servePeers() (err error) {
 
 	for _, p := range e.Peers {
 		u := p.Listener.Addr().String()
+
+		//v3 启动grpc服务
 		gs := v3rpc.Server(e.Server, peerTLScfg)
 		m := cmux.New(p.Listener)
 		go gs.Serve(m.Match(cmux.HTTP2()))

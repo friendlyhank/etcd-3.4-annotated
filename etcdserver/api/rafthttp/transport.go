@@ -136,6 +136,8 @@ type Transport struct {
 
 func (t *Transport) Start() error {
 	var err error
+	//Transport启动会创建两个 streamRt和pipelineRt
+	//hank-return hank-problem http.RoundTripper咋用的
 	t.streamRt, err = newStreamRoundTripper(t.TLSInfo, t.DialTimeout)
 	if err != nil {
 		return err

@@ -159,6 +159,7 @@ func (m *cMux) Serve() error {
 	}()
 
 	for {
+		//开启监听
 		c, err := m.root.Accept()
 		if err != nil {
 			if !m.handleErr(err) {

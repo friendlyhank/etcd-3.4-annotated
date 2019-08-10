@@ -312,7 +312,7 @@ type raft struct {
 	randomizedElectionTimeout int
 	disableProposalForwarding bool
 
-	tick func()  //内置定时器调用方法
+	tick func() //内置定时器调用方法
 	step stepFunc
 
 	logger Logger
@@ -396,6 +396,7 @@ func (r *raft) hardState() pb.HardState {
 }
 
 // send persists state to stable storage and then sends to its mailbox.
+//发送消息
 func (r *raft) send(m pb.Message) {
 	m.From = r.id
 	if m.Type == pb.MsgVote || m.Type == pb.MsgVoteResp || m.Type == pb.MsgPreVote || m.Type == pb.MsgPreVoteResp {
@@ -404,7 +405,7 @@ func (r *raft) send(m pb.Message) {
 			// sending.
 			// - MsgVote: m.Term is the term the node is campaigning for,
 			//   non-zero as we increment the term when campaigning.
-			// - MsgVoteResp: m.Term is the new r.Term if the MsgVote was
+			// - MsgVoteResp: m.TebecomeFollowerrm is the new r.Term if the MsgVote was
 			//   granted, non-zero for the same reason MsgVote is
 			// - MsgPreVote: m.Term is the term the node will campaign,
 			//   non-zero as we use m.Term to indicate the next term we'll be
@@ -710,6 +711,7 @@ func (r *raft) becomeCandidate() {
 	if r.state == StateLeader {
 		panic("invalid transition [leader -> candidate]")
 	}
+	//一般会在(r *raft) Step(m pb.Message) default触发
 	r.step = stepCandidate
 	r.reset(r.Term + 1)
 	r.tick = r.tickElection
@@ -744,7 +746,7 @@ func (r *raft) becomeLeader() {
 	}
 	r.step = stepLeader
 	r.reset(r.Term)
-	r.tick = r.tickHeartbeat  //定时发送心跳给Follower
+	r.tick = r.tickHeartbeat //定时发送心跳给Follower
 	r.lead = r.id
 	r.state = StateLeader
 	// Followers enter replicate mode when they've been successfully probed
@@ -777,25 +779,26 @@ func (r *raft) becomeLeader() {
 // called after verifying that this is a legitimate transition.
 //竞选活动,竞选成功会成为候选人状态
 func (r *raft) campaign(t CampaignType) {
-			if !r.promotable() {
-				// This path should not be hit (callers are supposed to check), but
-				// better safe than sorry.
-				r.logger.Warningf("%x is unpromotable; campaign() should have been called", r.id)
-			}
-			var term uint64
-			var voteMsg pb.MessageType
-			if t == campaignPreElection {
-				r.becomePreCandidate()
-				voteMsg = pb.MsgPreVote
-				// PreVote RPCs are sent for the next term before we've incremented r.Term.
-				term = r.Term + 1
-			} else {
-				r.becomeCandidate()
+	if !r.promotable() {
+		// This path should not be hit (callers are supposed to check), but
+		// better safe than sorry.
+		r.logger.Warningf("%x is unpromotable; campaign() should have been called", r.id)
+	}
+	var term uint64
+	var voteMsg pb.MessageType
+	if t == campaignPreElection {
+		r.becomePreCandidate()
+		voteMsg = pb.MsgPreVote
+		// PreVote RPCs are sent for the next term before we've incremented r.Term.
+		term = r.Term + 1
+	} else {
+		r.becomeCandidate()
+
 		voteMsg = pb.MsgVote //状态发起投票
 		term = r.Term
 	}
-			//自己给自己投票
-	if _, _, res := r.poll(r.id, voteRespMsgType(voteMsg), true,); res == quorum.VoteWon {
+	//自己给自己投票
+	if _, _, res := r.poll(r.id, voteRespMsgType(voteMsg), true); res == quorum.VoteWon {
 		// We won the election after voting for ourselves (which must mean that
 		// this is a single-node cluster). Advance to the next state.
 		if t == campaignPreElection {
@@ -979,6 +982,7 @@ func (r *raft) Step(m pb.Message) error {
 		}
 
 	default:
+		//这里出发raft的step方法
 		err := r.step(r, m)
 		if err != nil {
 			return err
