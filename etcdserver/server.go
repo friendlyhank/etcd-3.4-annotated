@@ -862,6 +862,7 @@ type ServerPeer interface {
 	LeaseHandler() http.Handler
 }
 
+//LeaseHandler handle
 func (s *EtcdServer) LeaseHandler() http.Handler {
 	if s.lessor == nil {
 		return nil
@@ -869,6 +870,7 @@ func (s *EtcdServer) LeaseHandler() http.Handler {
 	return leasehttp.NewHandler(s.lessor, s.ApplyWait)
 }
 
+//RaftHandler handler
 func (s *EtcdServer) RaftHandler() http.Handler { return s.r.transport.Handler() }
 
 // Process takes a raft message and applies it to the server's raft state

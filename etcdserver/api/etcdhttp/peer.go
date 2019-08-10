@@ -37,16 +37,20 @@ const (
 )
 
 // NewPeerHandler generates an http.Handler to handle etcd peer requests.
+//etcdserver handle
 func NewPeerHandler(lg *zap.Logger, s etcdserver.ServerPeer) http.Handler {
 	return newPeerHandler(lg, s, s.RaftHandler(), s.LeaseHandler())
 }
 
 //mewPeerHandler
 func newPeerHandler(lg *zap.Logger, s etcdserver.Server, raftHandler http.Handler, leaseHandler http.Handler) http.Handler {
+	//创建peerMember handers
 	peerMembersHandler := newPeerMembersHandler(lg, s.Cluster())
+	//创建peerMemberPromote handler
 	peerMemberPromoteHandler := newPeerMemberPromoteHandler(lg, s)
 
 	mux := http.NewServeMux()
+	//路由 到对应的HandleFunc
 	mux.HandleFunc("/", http.NotFound)
 	mux.Handle(rafthttp.RaftPrefix, raftHandler)
 	mux.Handle(rafthttp.RaftPrefix+"/", raftHandler)
@@ -56,6 +60,7 @@ func newPeerHandler(lg *zap.Logger, s etcdserver.Server, raftHandler http.Handle
 		mux.Handle(leasehttp.LeasePrefix, leaseHandler)
 		mux.Handle(leasehttp.LeaseInternalPrefix, leaseHandler)
 	}
+	//对应的方法
 	mux.HandleFunc(versionPath, versionHandler(s.Cluster(), serveVersion))
 	return mux
 }
