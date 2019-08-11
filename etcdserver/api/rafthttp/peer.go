@@ -124,7 +124,7 @@ type peer struct {
 	stopc  chan struct{}
 }
 
-//startPeer启动Peer
+//startPeer启动Peer 启动的时候会start write and Reader
 func startPeer(t *Transport, urls types.URLs, peerID types.ID, fs *stats.FollowerStats) *peer {
 	if t.Logger != nil {
 		t.Logger.Info("starting remote peer", zap.String("remote-peer-id", peerID.String()))
@@ -164,7 +164,7 @@ func startPeer(t *Transport, urls types.URLs, peerID types.ID, fs *stats.Followe
 		status:         status,
 		picker:         picker,
 		msgAppV2Writer: startStreamWriter(t.Logger, t.ID, peerID, status, fs, r), //peer writer
-		writer:         startStreamWriter(t.Logger, t.ID, peerID, status, fs, r), //peer writer
+		writer:         startStreamWriter(t.Logger, t.ID, peerID, status, fs, r), //peer writer 启动writer
 		pipeline:       pipeline,
 		snapSender:     newSnapshotSender(t, picker, peerID, status),
 		recvc:          make(chan raftpb.Message, recvBufSize),
@@ -178,6 +178,7 @@ func startPeer(t *Transport, urls types.URLs, peerID types.ID, fs *stats.Followe
 		for {
 			select {
 			case mm := <-p.recvc:
+				//etcdserver (s *EtcdServer) Process
 				if err := r.Process(ctx, mm); err != nil {
 					if t.Logger != nil {
 						t.Logger.Warn("failed to process Raft message", zap.Error(err))
@@ -230,8 +231,8 @@ func startPeer(t *Transport, urls types.URLs, peerID types.ID, fs *stats.Followe
 		rl:     rate.NewLimiter(t.DialRetryFrequency, 1),
 	}
 
-	p.msgAppV2Reader.start()
-	p.msgAppReader.start()
+	p.msgAppV2Reader.start() //启动Reader
+	p.msgAppReader.start()   //启动Reader
 
 	return p
 }
@@ -247,6 +248,8 @@ func (p *peer) send(m raftpb.Message) {
 	}
 
 	writec, name := p.pick(m)
+	//将消息写入channel中
+	//接收端的channel位于stream.go streamWriter.run msgc
 	select {
 	case writec <- m:
 	default:
@@ -364,6 +367,7 @@ func (p *peer) pick(m raftpb.Message) (writec chan<- raftpb.Message, picked stri
 	var ok bool
 	// Considering MsgSnap may have a big size, e.g., 1G, and will block
 	// stream for a long time, only use one of the N pipelines to send MsgSnap.
+	//如果消息类型是snapshot则返回pipeline,如果是MsgApp则返回msgAppV2Writer,否则返回writer
 	if isMsgSnap(m) {
 		return p.pipeline.msgc, pipelineMsg
 	} else if writec, ok = p.msgAppV2Writer.writec(); ok && isMsgApp(m) {

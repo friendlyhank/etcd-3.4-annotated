@@ -200,13 +200,13 @@ func (cw *streamWriter) run() {
 			}
 			heartbeatc, msgc = nil, nil
 
-		case m := <-msgc:
-			err := enc.encode(&m)
+		case m := <-msgc: //要发送的消息在这里接收
+			err := enc.encode(&m) //格式化消息
 			if err == nil {
 				unflushed += m.Size()
 
 				if len(msgc) == 0 || batched > streamBufSize/2 {
-					flusher.Flush()
+					flusher.Flush() //刷新缓冲区,发送到对端
 					sentBytes.WithLabelValues(cw.peerID.String()).Add(float64(unflushed))
 					unflushed = 0
 					batched = 0
@@ -214,11 +214,11 @@ func (cw *streamWriter) run() {
 					batched++
 				}
 
-				continue
+				continue //发送完成之后返回上层 并没有结束对话
 			}
 
 			cw.status.deactivate(failureType{source: t.String(), action: "write"}, err.Error())
-			cw.close()
+			cw.close() //本次发送结束,即http会话结束
 			if cw.lg != nil {
 				cw.lg.Warn(
 					"lost TCP streaming connection with remote peer",
@@ -399,6 +399,7 @@ func (cr *streamReader) start() {
 	go cr.run()
 }
 
+//启动streamReader run
 func (cr *streamReader) run() {
 	t := cr.typ
 
@@ -485,9 +486,11 @@ func (cr *streamReader) run() {
 	}
 }
 
+//循环去接收并解读消息
 func (cr *streamReader) decodeLoop(rc io.ReadCloser, t streamType) error {
 	var dec decoder
 	cr.mu.Lock()
+	//根据stream类型，创建不同解码器
 	switch t {
 	case streamTypeMsgAppV2:
 		dec = newMsgAppV2Decoder(rc, cr.tr.ID, cr.peerID)
@@ -547,7 +550,7 @@ func (cr *streamReader) decodeLoop(rc io.ReadCloser, t streamType) error {
 		}
 
 		select {
-		case recvc <- m:
+		case recvc <- m: /* 将消息写到channel中 channel另外一段是rafthttp/peer.go startPeer*/
 		default:
 			if cr.status.isActive() {
 				if cr.lg != nil {

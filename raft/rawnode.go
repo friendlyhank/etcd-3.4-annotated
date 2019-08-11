@@ -143,6 +143,7 @@ func (rn *RawNode) readyWithoutAccept() Ready {
 // acceptReady is called when the consumer of the RawNode has decided to go
 // ahead and handle a Ready. Nothing must alter the state of the RawNode between
 // this call and the prior call to Ready().
+//在消息发送完成之后去置空消息和读状态
 func (rn *RawNode) acceptReady(rd Ready) {
 	if rd.SoftState != nil {
 		rn.prevSoftSt = rd.SoftState

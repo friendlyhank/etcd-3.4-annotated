@@ -221,7 +221,7 @@ func StartNode(c *Config, peers []Peer) Node {
 	}
 	rn.Bootstrap(peers)
 
-	n := newNode(rn)//
+	n := newNode(rn) //
 
 	go n.run()
 	return &n
@@ -384,7 +384,7 @@ func (n *node) run() {
 			}
 		case <-n.tickc:
 			n.rn.Tick()
-		case readyc <- rd:
+		case readyc <- rd: //rd由最上面赋值，去启动发送消息
 			n.rn.acceptReady(rd)
 			advancec = n.advancec
 		case <-advancec:

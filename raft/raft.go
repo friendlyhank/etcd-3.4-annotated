@@ -951,6 +951,8 @@ func (r *raft) Step(m pb.Message) error {
 		}
 		// We can vote if this is a repeat of a vote we've already cast...
 		//发起投票的条件
+		//1.投票的节点是来源方 2.还没选出lead并且没有投票 3.预选候选人并且被投票的任期号大于当前节点任期号
+		//4.被投票人任期号大于等于当前节点任期号  5.日志索引lastindex要大于等于当前节点lastindex
 		canVote := r.Vote == m.From ||
 			// ...we haven't voted and we don't think there's a leader yet in this term...
 			(r.Vote == None && r.lead == None) ||
