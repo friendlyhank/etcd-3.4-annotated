@@ -60,6 +60,7 @@ type Peer interface {
 	// and has no promise that the message will be received by the remote.
 	// When it fails to send message out, it will report the status to underlying
 	// raft.
+	//发送消息
 	send(m raftpb.Message)
 
 	// sendSnap sends the merged snapshot message to the remote peer. Its behavior
@@ -162,8 +163,8 @@ func startPeer(t *Transport, urls types.URLs, peerID types.ID, fs *stats.Followe
 		r:              r,
 		status:         status,
 		picker:         picker,
-		msgAppV2Writer: startStreamWriter(t.Logger, t.ID, peerID, status, fs, r),//peer writer
-		writer:         startStreamWriter(t.Logger, t.ID, peerID, status, fs, r),//peer writer
+		msgAppV2Writer: startStreamWriter(t.Logger, t.ID, peerID, status, fs, r), //peer writer
+		writer:         startStreamWriter(t.Logger, t.ID, peerID, status, fs, r), //peer writer
 		pipeline:       pipeline,
 		snapSender:     newSnapshotSender(t, picker, peerID, status),
 		recvc:          make(chan raftpb.Message, recvBufSize),
@@ -235,6 +236,7 @@ func startPeer(t *Transport, urls types.URLs, peerID types.ID, fs *stats.Followe
 	return p
 }
 
+//peer节点发送消息
 func (p *peer) send(m raftpb.Message) {
 	p.mu.Lock()
 	paused := p.paused

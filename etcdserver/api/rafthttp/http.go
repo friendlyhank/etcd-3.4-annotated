@@ -469,11 +469,12 @@ func (h *streamHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
+	//hank-return hank-problem http的flush用法是啥
 	w.(http.Flusher).Flush()
 
 	c := newCloseNotifier()
 	conn := &outgoingConn{
-		t:       t,
+		t:       t, //连接类型
 		Writer:  w,
 		Flusher: w.(http.Flusher),
 		Closer:  c,
@@ -481,7 +482,7 @@ func (h *streamHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		peerID:  h.id,
 	}
 	p.attachOutgoingConn(conn)
-	<-c.closeNotify()
+	<-c.closeNotify() //等待close channel,若一直没有数据可读则阻塞
 }
 
 // checkClusterCompatibilityFromHeader checks the cluster compatibility of

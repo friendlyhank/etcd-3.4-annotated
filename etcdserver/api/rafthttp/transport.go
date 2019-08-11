@@ -178,6 +178,7 @@ func (t *Transport) Get(id types.ID) Peer {
 	return t.peers[id]
 }
 
+//发送消息
 func (t *Transport) Send(msgs []raftpb.Message) {
 	for _, m := range msgs {
 		if m.To == 0 {
