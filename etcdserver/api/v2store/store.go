@@ -39,48 +39,48 @@ func init() {
 }
 
 type Store interface {
-	Version() int
-	Index() uint64
+	Version() int	//记录版本
+	Index() uint64  //唯一id
 
-	Get(nodePath string, recursive, sorted bool) (*Event, error)
-	Set(nodePath string, dir bool, value string, expireOpts TTLOptionSet) (*Event, error)
-	Update(nodePath string, newValue string, expireOpts TTLOptionSet) (*Event, error)
+	Get(nodePath string, recursive, sorted bool) (*Event, error)//获取
+	Set(nodePath string, dir bool, value string, expireOpts TTLOptionSet) (*Event, error)//设置
+	Update(nodePath string, newValue string, expireOpts TTLOptionSet) (*Event, error)//更新
 	Create(nodePath string, dir bool, value string, unique bool,
-		expireOpts TTLOptionSet) (*Event, error)
+		expireOpts TTLOptionSet) (*Event, error)//创建
 	CompareAndSwap(nodePath string, prevValue string, prevIndex uint64,
-		value string, expireOpts TTLOptionSet) (*Event, error)
-	Delete(nodePath string, dir, recursive bool) (*Event, error)
-	CompareAndDelete(nodePath string, prevValue string, prevIndex uint64) (*Event, error)
+		value string, expireOpts TTLOptionSet) (*Event, error)//交换
+	Delete(nodePath string, dir, recursive bool) (*Event, error)//删除
+	CompareAndDelete(nodePath string, prevValue string, prevIndex uint64) (*Event, error)//比较删除
 
-	Watch(prefix string, recursive, stream bool, sinceIndex uint64) (Watcher, error)
+	Watch(prefix string, recursive, stream bool, sinceIndex uint64) (Watcher, error)//watch
 
-	Save() ([]byte, error)
-	Recovery(state []byte) error
+	Save() ([]byte, error)//保存
+	Recovery(state []byte) error//恢复
 
-	Clone() Store
-	SaveNoCopy() ([]byte, error)
+	Clone() Store//备份
+	SaveNoCopy() ([]byte, error)//保存
 
-	JsonStats() []byte
-	DeleteExpiredKeys(cutoff time.Time)
+	JsonStats() []byte//统计
+	DeleteExpiredKeys(cutoff time.Time)//删除失效的key
 
-	HasTTLKeys() bool
+	HasTTLKeys() bool//是否有TTL的key
 }
 
 type TTLOptionSet struct {
-	ExpireTime time.Time
-	Refresh    bool
+	ExpireTime time.Time	//key的有效期
+	Refresh    bool	//刷新
 }
 
 type store struct {
-	Root           *node
+	Root           *node//根节点
 	WatcherHub     *watcherHub
-	CurrentIndex   uint64
+	CurrentIndex   uint64//对应存储内容的index
 	Stats          *Stats
-	CurrentVersion int
-	ttlKeyHeap     *ttlKeyHeap  // need to recovery manually
-	worldLock      sync.RWMutex // stop the world lock
+	CurrentVersion int//最新数据的版本
+	ttlKeyHeap     *ttlKeyHeap  // 用于数据恢复的(需手动操作)need to recovery manually
+	worldLock      sync.RWMutex //停止当前存储的world锁 stop the world lock
 	clock          clockwork.Clock
-	readonlySet    types.Set
+	readonlySet    types.Set//只读操作
 }
 
 // New creates a store where the given namespaces will be created as initial directories.
@@ -91,25 +91,28 @@ func New(namespaces ...string) Store {
 }
 
 func newStore(namespaces ...string) *store {
-	s := new(store)
-	s.CurrentVersion = defaultVersion
-	s.Root = newDir(s, "/", s.CurrentIndex, nil, Permanent)
-	for _, namespace := range namespaces {
+	s := new(store)// 新增store实例
+	s.CurrentVersion = defaultVersion// 指定其当前版本
+	s.Root = newDir(s, "/", s.CurrentIndex, nil, Permanent)//创建其在etcd中对应的目录，第一个目录是以(/)
+	for _, namespace := range namespaces {// 循环迭代namespace，一个namespace对应一个目录
 		s.Root.Add(newDir(s, namespace, s.CurrentIndex, s.Root, Permanent))
 	}
-	s.Stats = newStats()
+	s.Stats = newStats()// 累计值
 	s.WatcherHub = newWatchHub(1000)
-	s.ttlKeyHeap = newTtlKeyHeap()
+	s.ttlKeyHeap = newTtlKeyHeap()// 新建key heap
 	s.readonlySet = types.NewUnsafeSet(append(namespaces, "/")...)
 	return s
 }
 
 // Version retrieves current version of the store.
+// 当前store的版本.
 func (s *store) Version() int {
 	return s.CurrentVersion
 }
 
 // Index retrieves the current index of the store.
+// 当前store的index.
+// 通过使用store的world lock【读锁】锁定当前store的 防止读取当前store的index出现数据安全问题
 func (s *store) Index() uint64 {
 	s.worldLock.RLock()
 	defer s.worldLock.RUnlock()
@@ -121,12 +124,13 @@ func (s *store) Index() uint64 {
 // If sorted is true, it will sort the content by keys.
 func (s *store) Get(nodePath string, recursive, sorted bool) (*Event, error) {
 	var err *v2error.Error
-
+	// get操作时为了防止内容读取过程中出现变更 通过使用读取锁store的world lock，来锁定当前store
 	s.worldLock.RLock()
 	defer s.worldLock.RUnlock()
 
 	defer func() {
 		if err == nil {
+			// 变更stats的内容  增加成次数
 			s.Stats.Inc(GetSuccess)
 			if recursive {
 				reportReadSuccess(GetRecursive)
@@ -135,7 +139,7 @@ func (s *store) Get(nodePath string, recursive, sorted bool) (*Event, error) {
 			}
 			return
 		}
-
+		// 增长fail次数
 		s.Stats.Inc(GetFail)
 		if recursive {
 			reportReadFailure(GetRecursive)
