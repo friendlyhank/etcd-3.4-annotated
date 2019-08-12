@@ -447,6 +447,7 @@ func (r *raft) maybeSendAppend(to uint64, sendIfEmpty bool) bool {
 		return false
 	}
 	m := pb.Message{}
+	//消息的发送目的server的id
 	m.To = to
 
 	term, errt := r.raftLog.term(pr.Next - 1)
@@ -480,10 +481,15 @@ func (r *raft) maybeSendAppend(to uint64, sendIfEmpty bool) bool {
 		pr.BecomeSnapshot(sindex)
 		r.logger.Debugf("%x paused sending replication messages to %x [%s]", r.id, to, pr)
 	} else {
+		//消息类型：附加日志消息
 		m.Type = pb.MsgApp
+		//上一次发送给该follower的日志索引
 		m.Index = pr.Next - 1
+		//上一次发送给follower的日志的任期号
 		m.LogTerm = term
+		//要发送的日志条目
 		m.Entries = ents
+		//leader的日志提交位置
 		m.Commit = r.raftLog.committed
 		if n := len(m.Entries); n != 0 {
 			switch pr.State {
@@ -504,6 +510,7 @@ func (r *raft) maybeSendAppend(to uint64, sendIfEmpty bool) bool {
 }
 
 // sendHeartbeat sends a heartbeat RPC to the given peer.
+//发送心跳
 func (r *raft) sendHeartbeat(to uint64, ctx []byte) {
 	// Attach the commit as min(to.matched, r.committed).
 	// When the leader sends out heartbeat message,
@@ -515,7 +522,7 @@ func (r *raft) sendHeartbeat(to uint64, ctx []byte) {
 	m := pb.Message{
 		To:      to,
 		Type:    pb.MsgHeartbeat,
-		Commit:  commit,
+		Commit:  commit,//leader的日志当前提交的索引
 		Context: ctx,
 	}
 
@@ -597,7 +604,9 @@ func (r *raft) advance(rd Ready) {
 // maybeCommit attempts to advance the commit index. Returns true if
 // the commit index changed (in which case the caller should call
 // r.bcastAppend).
+//日志是否可以提交
 func (r *raft) maybeCommit() bool {
+	//日志是否可以提交，复制到过半的节点就可以提交
 	mci := r.prs.Committed()
 	return r.raftLog.maybeCommit(mci, r.Term)
 }
@@ -997,6 +1006,7 @@ func (r *raft) Step(m pb.Message) error {
 
 type stepFunc func(r *raft, m pb.Message) error
 
+//stepLeader的步骤定时
 func stepLeader(r *raft, m pb.Message) error {
 	// These message types do not require any progress for m.From.
 	switch m.Type {
@@ -1107,8 +1117,10 @@ func stepLeader(r *raft, m pb.Message) error {
 		pr.RecentActive = true
 
 		if m.Reject {
+			//如果处于ProgressStateReplicate状态，则将pr.Next降低为pr.Match + 1，以便去和follower的日志进行匹配
 			r.logger.Debugf("%x received MsgAppResp(MsgApp was rejected, lastindex: %d) from %x for index %d",
 				r.id, m.RejectHint, m.From, m.Index)
+			//如果处于ProgressStateReplicate状态，则转变为ProgressStateProbe状态，去探测follower的匹配位置
 			if pr.MaybeDecrTo(m.Index, m.RejectHint) {
 				r.logger.Debugf("%x decreased progress of %x to [%s]", r.id, m.From, pr)
 				if pr.State == tracker.StateReplicate {
@@ -1118,8 +1130,10 @@ func stepLeader(r *raft, m pb.Message) error {
 			}
 		} else {
 			oldPaused := pr.IsPaused()
+			//m.Index为follower的最新日志索引位置，根据该位置更新pr.Match和pr.Next, pr.Match=m.Index, pr.Next=m.Index+1
 			if pr.MaybeUpdate(m.Index) {
 				switch {
+				//一旦追加日志成功，则从ProgressStateProbe状态转变为ProgressStateReplicate状态，加快日志追加过程
 				case pr.State == tracker.StateProbe:
 					pr.BecomeReplicate()
 				case pr.State == tracker.StateSnapshot && pr.Match >= pr.PendingSnapshot:
@@ -1134,8 +1148,9 @@ func stepLeader(r *raft, m pb.Message) error {
 				case pr.State == tracker.StateReplicate:
 					pr.Inflights.FreeLE(m.Index)
 				}
-
+				//收到follower的日志追加成功响应后判断是否能commit一部分日志
 				if r.maybeCommit() {
+					//向其他follower发送commit日志消息
 					r.bcastAppend()
 				} else if oldPaused {
 					// If we were paused before, this node may be missing the
@@ -1165,6 +1180,8 @@ func stepLeader(r *raft, m pb.Message) error {
 		if pr.State == tracker.StateReplicate && pr.Inflights.Full() {
 			pr.Inflights.FreeFirstOne()
 		}
+
+		//如何节点日志小于leader节点日志，说明日志需要同步
 		if pr.Match < r.raftLog.lastIndex() {
 			r.sendAppend(m.From)
 		}
@@ -1312,7 +1329,7 @@ func stepFollower(r *raft, m pb.Message) error {
 		}
 		m.To = r.lead
 		r.send(m)
-	case pb.MsgApp:
+	case pb.MsgApp://相应日志同步的请求
 		r.electionElapsed = 0
 		r.lead = m.From
 		r.handleAppendEntries(m)
@@ -1359,21 +1376,29 @@ func stepFollower(r *raft, m pb.Message) error {
 }
 
 func (r *raft) handleAppendEntries(m pb.Message) {
+	// m.Index表示leader发送给follower的上一条日志的索引位置
+	// 如果当前follower在该位置的日志已经提交过了(有可能该leader是刚选举产生的，没有follower的日志信息，所以设置m.Index=0)，
+	// 则把follower当前提日志交的索引位置告诉leader，让leader从该follower提交位置的下一条位置的日志开始发送给follower
 	if m.Index < r.raftLog.committed {
 		r.send(pb.Message{To: m.From, Type: pb.MsgAppResp, Index: r.raftLog.committed})
 		return
 	}
-
+	//将日志追加到follower的日志中，可能存在冲突，因此需要先找到冲突的位置，然后用leader发送来的日志中从冲突位置开始覆盖follower的日志
 	if mlastIndex, ok := r.raftLog.maybeAppend(m.Index, m.LogTerm, m.Commit, m.Entries...); ok {
+		//mlastIndex为follower已经追加好的最新日志的位置，追加成功后要把该信息告诉leader，以便leader会把该位置之后的日志再发送给该follower
 		r.send(pb.Message{To: m.From, Type: pb.MsgAppResp, Index: mlastIndex})
 	} else {
 		r.logger.Debugf("%x [logterm: %d, index: %d] rejected MsgApp [logterm: %d, index: %d] from %x",
 			r.id, r.raftLog.zeroTermOnErrCompacted(r.raftLog.term(m.Index)), m.Index, m.LogTerm, m.Index, m.From)
+		// 如果leader与follower的日志还没有匹配上，那么把follower的最新日志的索引位置告诉leader，
+		// 以便leader下一次从该follower的最新日志位置之后开始尝试发送附加日志，直到leader与follower的日志匹配上了就能追加日志成功了
 		r.send(pb.Message{To: m.From, Type: pb.MsgAppResp, Index: m.Index, Reject: true, RejectHint: r.raftLog.lastIndex()})
 	}
 }
 
+//follower或Candidate应答心跳
 func (r *raft) handleHeartbeat(m pb.Message) {
+	//根据leader的心跳请求中的日志提交位置信息，将自己的日志提交索引设置到对应的位置,并发送心跳相应给leader
 	r.raftLog.commitTo(m.Commit)
 	r.send(pb.Message{To: m.From, Type: pb.MsgHeartbeatResp, Context: m.Context})
 }

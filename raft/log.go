@@ -31,6 +31,7 @@ type raftLog struct {
 
 	// committed is the highest log position that is known to be in
 	// stable storage on a quorum of nodes.
+	//最新的日志提交的索引
 	committed uint64
 	// applied is the highest log position that the application has
 	// been instructed to apply to its state machine.
@@ -85,9 +86,14 @@ func (l *raftLog) String() string {
 
 // maybeAppend returns (0, false) if the entries cannot be appended. Otherwise,
 // it returns (last index of new entries, true).
+//追加日志
 func (l *raftLog) maybeAppend(index, logTerm, committed uint64, ents ...pb.Entry) (lastnewi uint64, ok bool) {
+	//index，logTerm为leader上次发送给该follower的日志索引和日志的term，committed是可以提交的日志索引，ents为发过来的日志条目
+	//只有follower能够匹配eader上次发送的日志索引和term，才能正常响应
 	if l.matchTerm(index, logTerm) {
+		//最新的日志索引
 		lastnewi = index + uint64(len(ents))
+		//获取冲突的日志索引，有些情况下leader发过来的日志不能直接追加，索引需要找到最新匹配的位置，从该位置之后的日志全部被leader覆盖
 		ci := l.findConflict(ents)
 		switch {
 		case ci == 0:
@@ -95,8 +101,10 @@ func (l *raftLog) maybeAppend(index, logTerm, committed uint64, ents ...pb.Entry
 			l.logger.Panicf("entry %d conflict with committed entry [committed(%d)]", ci, l.committed)
 		default:
 			offset := index + 1
+			//取出从冲突的位置开始的日志，覆盖自己的日志，即出现冲突时以leader的日志为准
 			l.append(ents[ci-offset:]...)
 		}
+		//如果leader的已提交的日志索引大于leader复制给当前follower的最新日志的索引，说明follower落后了，对于这次复制来的日志全都直接提交，否则提交leader已经提交的日志索引的日志
 		l.commitTo(min(committed, lastnewi))
 		return lastnewi, true
 	}
