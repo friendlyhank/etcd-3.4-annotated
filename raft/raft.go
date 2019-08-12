@@ -253,7 +253,7 @@ func (c *Config) validate() error {
 type raft struct {
 	id uint64
 
-	Term uint64
+	Term uint64 //任期号
 	Vote uint64
 
 	readStates []ReadState
@@ -263,14 +263,14 @@ type raft struct {
 
 	maxMsgSize         uint64
 	maxUncommittedSize uint64
-	prs                tracker.ProgressTracker
+	prs                tracker.ProgressTracker //投票
 
 	state StateType
 
 	// isLearner is true if the local raft node is a learner.
 	isLearner bool
 
-	msgs []pb.Message
+	msgs []pb.Message //消息
 
 	// the leader id
 	lead uint64
@@ -313,7 +313,7 @@ type raft struct {
 	disableProposalForwarding bool
 
 	tick func() //内置定时器调用方法
-	step stepFunc
+	step stepFunc //当前步骤方法
 
 	logger Logger
 }
@@ -535,6 +535,7 @@ func (r *raft) bcastAppend() {
 }
 
 // bcastHeartbeat sends RPC, without entries to all the peers.
+//广播方式发送心跳
 func (r *raft) bcastHeartbeat() {
 	lastCtx := r.readOnly.lastPendingRequestCtx()
 	if len(lastCtx) == 0 {
@@ -1000,6 +1001,7 @@ func stepLeader(r *raft, m pb.Message) error {
 	// These message types do not require any progress for m.From.
 	switch m.Type {
 	case pb.MsgBeat:
+		//广播发送心跳
 		r.bcastHeartbeat()
 		return nil
 	case pb.MsgCheckQuorum:
