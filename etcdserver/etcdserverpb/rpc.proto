@@ -469,19 +469,19 @@ message PutRequest {
   bytes value = 2;
   // lease is the lease ID to associate with the key in the key-value store. A lease
   // value of 0 indicates no lease.
-  int64 lease = 3;
+  int64 lease = 3;//表示关联在key的租约ID,如果lease的值为0,就代表没有租约
 
   // If prev_kv is set, etcd gets the previous key-value pair before changing it.
   // The previous key-value pair will be returned in the put response.
-  bool prev_kv = 4;
+  bool prev_kv = 4;//boo I 类型，设置后，会返回该 PUT 请求修改前的 key-value对数据 。
 
   // If ignore_value is set, etcd updates the key using its current value.
   // Returns an error if the key does not exist.
-  bool ignore_value = 5;
+  bool ignore_value = 5;//boo 类型，设置后， PUT 操作更新 key 时不改变 当前 的
 
   // If ignore_lease is set, etcd updates the key using its current lease.
   // Returns an error if the key does not exist.
-  bool ignore_lease = 6;
+  bool ignore_lease = 6;//bool类型，设置后， PUT 操作更新 key时不改变当前租约(lease)。如果key不存在，则会返回一个错误
 }
 
 message PutResponse {
@@ -498,27 +498,27 @@ message DeleteRangeRequest {
   // If range_end is one bit larger than the given key, then the range is all the keys
   // with the prefix (the given key).
   // If range_end is '\0', the range is all keys greater than or equal to the key argument.
-  bytes range_end = 2;
+  bytes range_end = 2;//分别代表欲删除key range的左端和右端
 
   // If prev_kv is set, etcd gets the previous key-value pairs before deleting it.
   // The previous key-value pairs will be returned in the delete response.
-  bool prev_kv = 3;
+  bool prev_kv = 3;//bool类型,如果设置为true,则会在response中返回所有被删除的键值对
 }
 
 message DeleteRangeResponse {
   ResponseHeader header = 1;
   // deleted is the number of keys deleted by the delete range request.
-  int64 deleted = 2;
+  int64 deleted = 2;//表示被删除的key的数目
   // if prev_kv is set in the request, the previous key-value pairs will be returned.
-  repeated mvccpb.KeyValue prev_kvs = 3;
+  repeated mvccpb.KeyValue prev_kvs = 3;//表示所有被删除的键值对列表
 }
 
 message RequestOp {
   // request is a union of request types accepted by a transaction.
   oneof request {
-    RangeRequest request_range = 1;
-    PutRequest request_put = 2;
-    DeleteRangeRequest request_delete_range = 3;
+    RangeRequest request_range = 1;//表示一个 RangeRequest 。
+    PutRequest request_put = 2;//表示一个 PutRequest 。 这些 key 必须是独一无二的 。 这个操作应该不会与其他 PUT 或 DELETE 操作共享 key 。
+    DeleteRangeRequest request_delete_range = 3;//表示一个 DeleteRangeRequest 。 这个操作应该也不会与其他 PUT 或 DELETE 操作共享 key 。
     TxnRequest request_txn = 4;
   }
 }
@@ -548,11 +548,11 @@ message Compare {
     LEASE = 4;
   }
   // result is logical comparison operation for this comparison.
-  CompareResult result = 1;
+  CompareResult result = 1;//该逻辑比较操作的类型 ， 例如，等于 、 小于等 。
   // target is the key-value field to inspect for the comparison.
-  CompareTarget target = 2;
+  CompareTarget target = 2;//待比较 的 key-value 字段 。 可以是 key 的 version 、 create revision 、mod revision 或 value 。
   // key is the subject key for the comparison operation.
-  bytes key = 3;
+  bytes key = 3;//待 比较的 key 。
   oneof target_union {
     // version is the version of the given key
     int64 version = 4;
@@ -565,7 +565,7 @@ message Compare {
     // lease is the lease id of the given key.
     int64 lease = 8;
     // leave room for more target_union field tags, jump to 64
-  }
+  }//用于比较的用户相关的数据 。
 
   // range_end compares the given target to all keys in the range [key, range_end).
   // See RangeRequest for more details on key ranges.
@@ -594,31 +594,31 @@ message TxnRequest {
   // and the response will contain their respective responses in order.
   // If the comparisons fail, then the failure requests will be processed in order,
   // and the response will contain their respective responses in order.
-  repeated Compare compare = 1;
+  repeated Compare compare = 1;//比较，表示一组条件的 “连接”（ conjunction ），用于守护事务 。
   // success is a list of requests which will be applied when compare evaluates to true.
-  repeated RequestOp success = 2;
+  repeated RequestOp success = 2;//表示一个待处理的请求列表 ， 若所有 的比较测试的结果均为真 ，则执行 。
   // failure is a list of requests which will be applied when compare evaluates to false.
-  repeated RequestOp failure = 3;
+  repeated RequestOp failure = 3;//表示一个待处理的请求列表，只要任意一个比较测试的结果返回为假，就执行 。
 }
 
 message TxnResponse {
   ResponseHeader header = 1;
   // succeeded is set to true if the compare evaluated to true or false otherwise.
-  bool succeeded = 2;
+  bool succeeded = 2;//表明 Compare 的结果是否返回真 。
   // responses is a list of responses corresponding to the results from applying
   // success if succeeded is true or failure if succeeded is false.
-  repeated ResponseOp responses = 3;
+  repeated ResponseOp responses = 3;//表示一个响应体列表，对应于应用 success 模块或 failure 模块的结果 。
 }
 
 // CompactionRequest compacts the key-value store up to a given revision. All superseded keys
 // with a revision less than the compaction revision will be removed.
 message CompactionRequest {
   // revision is the key-value store revision for the compaction operation.
-  int64 revision = 1;
+  int64 revision = 1;//用于比较操作的键值存储的修订版本 。
   // physical is set so the RPC will wait until the compaction is physically
   // applied to the local database such that compacted entries are totally
   // removed from the backend database.
-  bool physical = 2;
+  bool physical = 2;//设置为 true 时， RPC 将会等待直到压缩物理性地应用到本地数据库，之后被压缩的项将完全从后端数据库中移除 。
 }
 
 message CompactionResponse {
@@ -680,15 +680,22 @@ message WatchCreateRequest {
   // or equal to the key argument are watched.
   // If the range_end is one bit larger than the given key,
   // then all keys with the prefix (the given key) will be watched.
-  bytes range_end = 2;
+  bytes range_end = 2;//组成了 watch 的 key 的范围 。
 
   // start_revision is an optional revision to watch from (inclusive). No start_revision is "now".
+  //表示一个可选的 watch 的起始 revisio民指定从该 revision
+  //起开始连续 watch 。 如果不指定， 就从 watch 流中建立响应头 revision
+  //开始 watch 。 如果从最后一次 revision 压缩后的版本开始 ，则能 watch所有 Event 历史 。
   int64 start_revision = 3;
 
   // progress_notify is set so that the etcd server will periodically send a WatchResponse with
   // no events to the new watcher if there are no recent events. It is useful when clients
   // wish to recover a disconnected watcher starting from a recent known revision.
   // The etcd server may decide how often it will send notifications based on current load.
+  //设置后，若近期无 Event ，则 watch 将周期性地接收
+  //到无 Event 的 WatchResponse 消息 。 这在客户端希望从最近的一个已知
+  //revision 处恢复断开的 watcher 的时候非常有用 。 至于多久发送一次通
+  //知，则取决于 etcd Server 的当前负载 。
   bool progress_notify = 4;
 
   enum FilterType {
@@ -699,10 +706,12 @@ message WatchCreateRequest {
   }
 
   // filters filter the events at server side before it sends back to the watcher.
-  repeated FilterType filters = 5;
+  repeated FilterType filters = 5;//在 Server 侧需滤除 Event 类型的列表 。
 
   // If prev_kv is set, created watcher gets the previous KV before the event happens.
   // If the previous KV is already compacted, nothing will be returned.
+  //设置后， watch 可接收 Event 发生前的 key-value 数据 。 这对
+  //于想知道数据被覆盖之前的值非常有用 。
   bool prev_kv = 6;
 
   // If watch_id is provided and non-zero, it will be assigned to this watcher.
@@ -727,7 +736,7 @@ message WatchProgressRequest {
 }
 
 message WatchResponse {
-  ResponseHeader header = 1;
+  ResponseHeader header = 1;//表示对应 watch response 的 ID 。
   // watch_id is the ID of the watcher that corresponds to the response.
   int64 watch_id = 2;
 
@@ -735,10 +744,15 @@ message WatchResponse {
   // The client should record the watch_id and expect to receive events for
   // the created watcher from the same stream.
   // All events sent to the created watcher will attach with the same watch_id.
+  //若 response 对应于一个创建 watch 的请求，则设为 true 。 客户
+  //端应该记录 watch id 并且期望在流上接收该 watch 的 Event。所有发给
+  //新创建的 Watcher 客户端的 Event 都是同一个 watch id 。
   bool created = 3;
 
   // canceled is set to true if the response is for a cancel watch request.
   // No further events will be sent to the canceled watcher.
+  //若 response 对应于取消 watch 请求， 则设为 true 。 以后，不
+  //会再有 Event 发送到一个已经取消 的 Watcher 上 。
   bool canceled = 4;
 
   // compact_revision is set to the minimum index if a watcher tries to watch
@@ -749,6 +763,10 @@ message WatchResponse {
   //
   // The client should treat the watcher as canceled and should not try to create any
   // watcher with the same start_revision again.
+  //如果一个 Watcher 尝试 watch 一个已经被压缩的历
+  //史版本， 那么 Compact_Revision 就会被设置成一个当前 etcd 可用的最
+  //小历史版本，并且 Watcher 会被取消 。 当 Watcher 无法跟上 etcd 键值
+  //存储的处理速度时，也会发生 以上情况 。 两个相同的 start revision 的watch 最多只会成功一个 。
   int64 compact_revision = 5;
 
   // cancel_reason indicates the reason for canceling the watcher.
@@ -757,25 +775,28 @@ message WatchResponse {
   // framgment is true if large watch response was split over multiple responses.
   bool fragment = 7;
 
-  repeated mvccpb.Event events = 11;
+  repeated mvccpb.Event events = 11;//对应于给定 watch ID 的新 Event 有序列表 。
 }
 
+//获得租约
 message LeaseGrantRequest {
   // TTL is the advisory time-to-live in seconds. Expired lease will return -1.
-  int64 TTL = 1;
+  int64 TTL = 1;//客户端请求的 time-to-live 值，单位是秒
   // ID is the requested ID for the lease. If ID is set to 0, the lessor chooses an ID.
-  int64 ID = 2;
+  int64 ID = 2;//为 Lease 请求的 ID ，默认值是 0 ，如果置空，那么 etcd 将为该 Lease选择一个 ID 。
 }
 
 message LeaseGrantResponse {
   ResponseHeader header = 1;
   // ID is the lease ID for the granted lease.
-  int64 ID = 2;
+  int64 ID = 2;//服务端授予的 Lease 的 ID 。
   // TTL is the server chosen lease time-to-live in seconds.
-  int64 TTL = 3;
+  int64 TTL = 3;//服务端为该 Lease 选取的 TTL 值，单位是秒 。
   string error = 4;
 }
 
+//撤销租约
+//撤销某个租约,所有关联的key都会被删除
 message LeaseRevokeRequest {
   // ID is the lease ID to revoke. When the ID is revoked, all associated keys will be deleted.
   int64 ID = 1;
@@ -801,9 +822,10 @@ message LeaseCheckpointResponse {
   ResponseHeader header = 1;
 }
 
+//双向流来刷新租约
 message LeaseKeepAliveRequest {
   // ID is the lease ID for the lease to keep alive.
-  int64 ID = 1;
+  int64 ID = 1;//保持存活的Lease ID
 }
 
 message LeaseKeepAliveResponse {
@@ -811,7 +833,7 @@ message LeaseKeepAliveResponse {
   // ID is the lease ID from the keep alive request.
   int64 ID = 2;
   // TTL is the new time-to-live for the lease.
-  int64 TTL = 3;
+  int64 TTL = 3;//新的TTL,表示Lease继续存在的时间
 }
 
 message LeaseTimeToLiveRequest {

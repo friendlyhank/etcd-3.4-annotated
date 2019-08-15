@@ -29,6 +29,7 @@ message KeyValue {
   int64 lease = 6;//表示绑定在该key上的租约ID,如果lease的值为0，则表示该key没有绑定任何的租约
 }
 
+//对于每个key而言,发生每一个变化都是以Event消息进行表示.
 message Event {
   enum EventType {
     PUT = 0;
@@ -37,14 +38,14 @@ message Event {
   // type is the kind of event. If type is a PUT, it indicates
   // new data has been stored to the key. If type is a DELETE,
   // it indicates the key was deleted.
-  EventType type = 1;
+  EventType type = 1;//Event 的类型，分为 PUT 类型和 DELETE 类型 。 PUT 类型表明新的数据已经存储到相应的 key, DELETE 类型表明 key 已经被删除了 。
   // kv holds the KeyValue for the event.
   // A PUT event contains current kv pair.
   // A PUT event with kv.Version=1 indicates the creation of a key.
   // A DELETE/EXPIRE event contains the deleted key with
   // its modification revision set to the revision of deletion.
-  KeyValue kv = 2;
+  KeyValue kv = 2;//与 Event 关联的 key-value 。 一个 PUT Event 包含当前的 KV ，一个 Version= I 的 PUT Event 表明这个 key 是新建的 。 一个 DELETE Event包含被删除的 key 和该 key 被删除时的 modification revision 。
 
   // prev_kv holds the key-value pair before the event happens.
-  KeyValue prev_kv = 3;
+  KeyValue prev_kv = 3;//该 key 在发生此 Event 之前最近一刻 revision 的 key -value对.为了节约带宽，只有在 watch 请求中显式地启用该选项时才会在响应中返回该值 。
 }
