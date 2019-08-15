@@ -9,23 +9,24 @@ option (gogoproto.unmarshaler_all) = true;
 option (gogoproto.goproto_getters_all) = false;
 option (gogoproto.goproto_enum_prefix_all) = false;
 
+//键值对
 message KeyValue {
   // key is the key in bytes. An empty key is not allowed.
   bytes key = 1;
   // create_revision is the revision of last creation on this key.
-  int64 create_revision = 2;
+  int64 create_revision = 2;//表示该key最后一次创建的版本号
   // mod_revision is the revision of last modification on this key.
-  int64 mod_revision = 3;
+  int64 mod_revision = 3;//表示最后一次修改的版本号
   // version is the version of the key. A deletion resets
   // the version to zero and any modification of the key
   // increases its version.
-  int64 version = 4;
+  int64 version = 4;表示该 key 的当前版本 。 删除动作会使 version 的值归 0 ，任何修改动作都会使 version 的值递增 。
   // value is the value held by the key, in bytes.
   bytes value = 5;
   // lease is the ID of the lease that attached to key.
   // When the attached lease expires, the key will be deleted.
   // If lease is 0, then no lease is attached to the key.
-  int64 lease = 6;
+  int64 lease = 6;//表示绑定在该key上的租约ID,如果lease的值为0，则表示该key没有绑定任何的租约
 }
 
 message Event {
