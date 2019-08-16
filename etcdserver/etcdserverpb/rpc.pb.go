@@ -223,6 +223,7 @@ type ResponseHeader struct {
 	// For watch progress responses, the header.revision indicates progress. All future events
 	// recieved in this stream are guaranteed to have a higher revision number than the
 	// header.revision number.
+	//etcd的Revision计数器
 	Revision int64 `protobuf:"varint,3,opt,name=revision,proto3" json:"revision,omitempty"`
 	// raft_term is the raft term when the request was applied.
 	RaftTerm uint64 `protobuf:"varint,4,opt,name=raft_term,json=raftTerm,proto3" json:"raft_term,omitempty"`

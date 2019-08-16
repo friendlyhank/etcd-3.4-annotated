@@ -79,6 +79,7 @@ type Watcher interface {
 }
 
 type WatchResponse struct {
+	//响应头
 	Header pb.ResponseHeader
 	Events []*Event
 
@@ -131,6 +132,7 @@ func (wr *WatchResponse) IsProgressNotify() bool {
 }
 
 // watcher implements the Watcher interface
+//watcher结构体,interface Watcher
 type watcher struct {
 	remote   pb.WatchClient
 	callOpts []grpc.CallOption
@@ -184,10 +186,11 @@ type watchStreamRequest interface {
 }
 
 // watchRequest is issued by the subscriber to start a new watcher
+//watchRequest请求
 type watchRequest struct {
 	ctx context.Context
 	key string
-	end string
+	end string //key和end组成了范围
 	rev int64
 
 	// send created notification event if this field is true
@@ -231,6 +234,7 @@ type watcherStream struct {
 	buf []*WatchResponse
 }
 
+//构造接口方法
 func NewWatcher(c *Client) Watcher {
 	return NewWatchFromWatchClient(pb.NewWatchClient(c.conn), c)
 }
@@ -279,6 +283,7 @@ func (w *watcher) newWatcherGrpcStream(inctx context.Context) *watchGrpcStream {
 }
 
 // Watch posts a watch request to run() and waits for a new watcher channel
+//Wath方法
 func (w *watcher) Watch(ctx context.Context, key string, opts ...OpOption) WatchChan {
 	ow := opWatch(key, opts...)
 
