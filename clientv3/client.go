@@ -68,10 +68,10 @@ func init() {
 type Client struct {
 	Cluster //集群接口 hank-sure
 	KV		//KV接口 hank-sure
-	Lease
+	Lease  //租约接口
 	Watcher  //Watcher接口
 	Auth	//授权接口
-	Maintenance
+	Maintenance//
 
 	conn *grpc.ClientConn
 
@@ -124,6 +124,7 @@ func NewFromURLs(urls []string) (*Client, error) {
 }
 
 // Close shuts down the client's etcd connections.
+//关闭客户端的连接
 func (c *Client) Close() error {
 	c.cancel()
 	c.Watcher.Close()
