@@ -23,6 +23,7 @@ import (
 	"google.golang.org/grpc"
 )
 
+//clientv3客户端配置信息
 type Config struct {
 	// Endpoints is a list of URLs.
 	Endpoints []string `json:"endpoints"`
