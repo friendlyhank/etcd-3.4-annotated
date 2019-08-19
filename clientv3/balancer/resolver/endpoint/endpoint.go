@@ -192,6 +192,7 @@ func (r *Resolver) Close() {
 // and returns a protocol ('tcp' or 'unix'),
 // host (or filepath if a unix socket),
 // scheme (http, https, unix, unixs).
+//Endpoint解析
 func ParseEndpoint(endpoint string) (proto string, host string, scheme string) {
 	proto = "tcp"
 	host = endpoint

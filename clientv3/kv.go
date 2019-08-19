@@ -99,6 +99,7 @@ type kv struct {
 	remote   pb.KVClient
 	callOpts []grpc.CallOption
 }
+
 //hank-sure
 //clientv3/client.go newClient
 func NewKV(c *Client) KV {
@@ -117,6 +118,7 @@ func NewKVFromKVClient(remote pb.KVClient, c *Client) KV {
 	return api
 }
 
+//key键 val值 opts操作方法
 func (kv *kv) Put(ctx context.Context, key, val string, opts ...OpOption) (*PutResponse, error) {
 	r, err := kv.Do(ctx, OpPut(key, val, opts...))
 	return r.put, toErr(ctx, err)

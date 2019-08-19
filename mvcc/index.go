@@ -22,6 +22,7 @@ import (
 	"go.uber.org/zap"
 )
 
+//维护key到reversion的映射关系索引表的接口
 type index interface {
 	Get(key []byte, atRev int64) (rev, created revision, ver int64, err error)
 	Range(key, end []byte, atRev int64) ([][]byte, []revision)

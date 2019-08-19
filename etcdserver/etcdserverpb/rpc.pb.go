@@ -3433,7 +3433,7 @@ var _ grpc.ClientConn
 const _ = grpc.SupportPackageIsVersion4
 
 // Client API for KV service
-
+//客户端的KV 服务API
 type KVClient interface {
 	// Range gets the keys in the range from the key-value store.
 	Range(ctx context.Context, in *RangeRequest, opts ...grpc.CallOption) (*RangeResponse, error)
@@ -3510,7 +3510,7 @@ func (c *kVClient) Compact(ctx context.Context, in *CompactionRequest, opts ...g
 }
 
 // Server API for KV service
-
+////服务端的KV 服务API
 type KVServer interface {
 	// Range gets the keys in the range from the key-value store.
 	Range(context.Context, *RangeRequest) (*RangeResponse, error)
@@ -3533,6 +3533,7 @@ type KVServer interface {
 	Compact(context.Context, *CompactionRequest) (*CompactionResponse, error)
 }
 
+//注册KV服务
 func RegisterKVServer(s *grpc.Server, srv KVServer) {
 	s.RegisterService(&_KV_serviceDesc, srv)
 }
@@ -3722,7 +3723,7 @@ func RegisterWatchServer(s *grpc.Server, srv WatchServer) {
 }
 
 func _Watch_Watch_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(WatchServer).Watch(&watchWatchServer{stream})
+	return srv.(WatchServer).Watch(&watchWatchServer{stream}) //具体实现对应 (ws *watchServer) Watch(stream pb.Watch_WatchServer)
 }
 
 type Watch_WatchServer interface {

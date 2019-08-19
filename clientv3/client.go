@@ -27,11 +27,6 @@ import (
 	"time"
 
 	"github.com/google/uuid"
-	"hank.com/etcd-3.3.12-annotated/clientv3/balancer"
-	"hank.com/etcd-3.3.12-annotated/clientv3/balancer/picker"
-	"hank.com/etcd-3.3.12-annotated/clientv3/balancer/resolver/endpoint"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v3rpc/rpctypes"
-	"hank.com/etcd-3.3.12-annotated/pkg/logutil"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -39,6 +34,11 @@ import (
 	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"hank.com/etcd-3.3.12-annotated/clientv3/balancer"
+	"hank.com/etcd-3.3.12-annotated/clientv3/balancer/picker"
+	"hank.com/etcd-3.3.12-annotated/clientv3/balancer/resolver/endpoint"
+	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v3rpc/rpctypes"
+	"hank.com/etcd-3.3.12-annotated/pkg/logutil"
 )
 
 var (
@@ -66,16 +66,16 @@ func init() {
 
 // Client provides and manages an etcd v3 client session.
 type Client struct {
-	Cluster //集群接口 hank-sure
-	KV		//KV接口 hank-sure
-	Lease  //租约接口
-	Watcher  //Watcher接口
-	Auth	//授权接口
-	Maintenance//
+	Cluster     //集群接口 hank-sure
+	KV          //KV接口 hank-sure
+	Lease       //租约接口
+	Watcher     //Watcher接口
+	Auth        //授权接口
+	Maintenance //
 
-	conn *grpc.ClientConn
+	conn *grpc.ClientConn //grpc client conn
 
-	cfg           Config
+	cfg           Config //配置文件
 	creds         *credentials.TransportCredentials
 	resolverGroup *endpoint.ResolverGroup
 	mu            *sync.RWMutex
@@ -340,6 +340,7 @@ func (c *Client) dialWithBalancer(ep string, dopts ...grpc.DialOption) (*grpc.Cl
 }
 
 // dial configures and dials any grpc balancer target.
+//客户端dial拨号
 func (c *Client) dial(target string, creds *credentials.TransportCredentials, dopts ...grpc.DialOption) (*grpc.ClientConn, error) {
 	opts, err := c.dialSetupOpts(creds, dopts...)
 	if err != nil {
@@ -380,6 +381,7 @@ func (c *Client) dial(target string, creds *credentials.TransportCredentials, do
 		defer cancel() // TODO: Is this right for cases where grpc.WithBlock() is not set on the dial options?
 	}
 
+	//grpc dial拨号
 	conn, err := grpc.DialContext(dctx, target, opts...)
 	if err != nil {
 		return nil, err
@@ -498,6 +500,7 @@ func newClient(cfg *Config) (*Client, error) {
 
 	// Use a provided endpoint target so that for https:// without any tls config given, then
 	// grpc will assume the certificate server name is the endpoint host.
+	//获得grpc conn
 	conn, err := client.dialWithBalancer(dialEndpoint, grpc.WithBalancerName(roundRobinBalancerName))
 	if err != nil {
 		client.cancel()
@@ -509,10 +512,10 @@ func newClient(cfg *Config) (*Client, error) {
 	client.conn = conn
 
 	client.Cluster = NewCluster(client)
-	client.KV = NewKV(client) //NewKV 为KV接口调用做准备
-	client.Lease = NewLease(client)
-	client.Watcher = NewWatcher(client)
-	client.Auth = NewAuth(client)
+	client.KV = NewKV(client)           //NewKV 为KV接口调用做准备
+	client.Lease = NewLease(client)     //NewLease
+	client.Watcher = NewWatcher(client) //NewWatch
+	client.Auth = NewAuth(client)       //NewAuth
 	client.Maintenance = NewMaintenance(client)
 
 	if cfg.RejectOldCluster {

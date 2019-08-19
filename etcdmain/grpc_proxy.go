@@ -90,6 +90,7 @@ var (
 
 const defaultGRPCMaxCallSendMsgSize = 1.5 * 1024 * 1024
 
+//etcdadmin 初始化grpc
 func init() {
 	rootCmd.AddCommand(newGRPCProxyCommand())
 }
@@ -196,7 +197,9 @@ func startGRPCProxy(cmd *cobra.Command, args []string) {
 
 	srvhttp, httpl := mustHTTPListener(lg, m, tlsinfo, client)
 	errc := make(chan error)
+	//gRPC proxy服务
 	go func() { errc <- newGRPCProxyServer(lg, client).Serve(grpcl) }()
+
 	go func() { errc <- srvhttp.Serve(httpl) }()
 	go func() { errc <- m.Serve() }()
 	if len(grpcProxyMetricsListenAddr) > 0 {
@@ -346,16 +349,18 @@ func newGRPCProxyServer(lg *zap.Logger, client *clientv3.Client) *grpc.Server {
 		client.KV, _, _ = leasing.NewKV(client, grpcProxyLeasing)
 	}
 
+	//etcd client的kv封装
 	kvp, _ := grpcproxy.NewKvProxy(client)
+	//etcd client的watch封装
 	watchp, _ := grpcproxy.NewWatchProxy(client)
 	if grpcProxyResolverPrefix != "" {
 		grpcproxy.Register(client, grpcProxyResolverPrefix, grpcProxyAdvertiseClientURL, grpcProxyResolverTTL)
 	}
-	clusterp, _ := grpcproxy.NewClusterProxy(client, grpcProxyAdvertiseClientURL, grpcProxyResolverPrefix)
-	leasep, _ := grpcproxy.NewLeaseProxy(client)
+	clusterp, _ := grpcproxy.NewClusterProxy(client, grpcProxyAdvertiseClientURL, grpcProxyResolverPrefix) //cluster
+	leasep, _ := grpcproxy.NewLeaseProxy(client)                                                           //lease
 	mainp := grpcproxy.NewMaintenanceProxy(client)
-	authp := grpcproxy.NewAuthProxy(client)
-	electionp := grpcproxy.NewElectionProxy(client)
+	authp := grpcproxy.NewAuthProxy(client)         //auth
+	electionp := grpcproxy.NewElectionProxy(client) //election
 	lockp := grpcproxy.NewLockProxy(client)
 
 	server := grpc.NewServer(
@@ -364,6 +369,7 @@ func newGRPCProxyServer(lg *zap.Logger, client *clientv3.Client) *grpc.Server {
 		grpc.MaxConcurrentStreams(math.MaxUint32),
 	)
 
+	//注册服务
 	pb.RegisterKVServer(server, kvp)
 	pb.RegisterWatchServer(server, watchp)
 	pb.RegisterClusterServer(server, clusterp)

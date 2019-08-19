@@ -31,11 +31,11 @@ var (
 	ErrCompacted      = rpctypes.ErrGRPCCompacted
 )
 
-type Cache interface {
+type Cache interface { //添加查询请求到缓存中
 	Add(req *pb.RangeRequest, resp *pb.RangeResponse)
 	Get(req *pb.RangeRequest) (*pb.RangeResponse, error)
-	Compact(revision int64)
-	Invalidate(key []byte, endkey []byte)
+	Compact(revision int64)               //判断缓存是否失效
+	Invalidate(key []byte, endkey []byte) //缓存长度
 	Size() int
 	Close()
 }
@@ -60,6 +60,7 @@ func NewCache(maxCacheEntries int) Cache {
 func (c *cache) Close() {}
 
 // cache implements Cache
+//cache 继承Cache interface
 type cache struct {
 	mu  sync.RWMutex
 	lru *lru.Cache

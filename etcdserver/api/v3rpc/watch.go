@@ -31,6 +31,7 @@ import (
 	"go.uber.org/zap"
 )
 
+//v3rpc watch Server的具体实现
 type watchServer struct {
 	lg *zap.Logger
 

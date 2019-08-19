@@ -547,7 +547,7 @@ func (e *Etcd) servePeers() (err error) {
 	for _, p := range e.Peers {
 		u := p.Listener.Addr().String()
 
-		//v3 启动grpc服务
+		//遍历Peers v3 启动grpc服务
 		gs := v3rpc.Server(e.Server, peerTLScfg)
 		m := cmux.New(p.Listener)
 		go gs.Serve(m.Match(cmux.HTTP2()))

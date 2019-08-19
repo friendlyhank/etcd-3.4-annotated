@@ -326,6 +326,7 @@ func (op *Op) applyOpts(opts []OpOption) {
 type OpOption func(*Op)
 
 // WithLease attaches a lease ID to a key in 'Put' request.
+//Put 请求 带上租约ID
 func WithLease(leaseID LeaseID) OpOption {
 	return func(op *Op) { op.leaseID = leaseID }
 }
@@ -380,6 +381,7 @@ func getPrefix(key []byte) []byte {
 // WithPrefix enables 'Get', 'Delete', or 'Watch' requests to operate
 // on the keys with matching prefix. For example, 'Get(foo, WithPrefix())'
 // can return 'foo1', 'foo2', and so on.
+//Get,Delete,Watch 请求操作 带**前缀的key
 func WithPrefix() OpOption {
 	return func(op *Op) {
 		if len(op.key) == 0 {
@@ -394,6 +396,7 @@ func WithPrefix() OpOption {
 // For example, 'Get' requests with 'WithRange(end)' returns
 // the keys in the range [key, end).
 // endKey must be lexicographically greater than start key.
+//Get,Delete,Watch 请求操作 [key,end]区间key
 func WithRange(endKey string) OpOption {
 	return func(op *Op) { op.end = []byte(endKey) }
 }

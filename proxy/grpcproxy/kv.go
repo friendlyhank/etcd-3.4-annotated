@@ -30,7 +30,7 @@ type kvProxy struct {
 func NewKvProxy(c *clientv3.Client) (pb.KVServer, <-chan struct{}) {
 	kv := &kvProxy{
 		kv:    c.KV,
-		cache: cache.NewCache(cache.DefaultMaxEntries),
+		cache: cache.NewCache(cache.DefaultMaxEntries), //用于缓存 type Cache interface
 	}
 	donec := make(chan struct{})
 	close(donec)
