@@ -312,7 +312,7 @@ type raft struct {
 	randomizedElectionTimeout int
 	disableProposalForwarding bool
 
-	tick func() //内置定时器调用方法
+	tick func()   //内置定时器调用方法
 	step stepFunc //当前步骤方法
 
 	logger Logger
@@ -522,7 +522,7 @@ func (r *raft) sendHeartbeat(to uint64, ctx []byte) {
 	m := pb.Message{
 		To:      to,
 		Type:    pb.MsgHeartbeat,
-		Commit:  commit,//leader的日志当前提交的索引
+		Commit:  commit, //leader的日志当前提交的索引
 		Context: ctx,
 	}
 
@@ -531,6 +531,8 @@ func (r *raft) sendHeartbeat(to uint64, ctx []byte) {
 
 // bcastAppend sends RPC, with entries to all peers that are not up-to-date
 // according to the progress recorded in r.prs.
+// 发送广播rpc，将raftLog中的数据发给其他节点，但是这里并没有真正发送到对端
+// 只是把消息放到队列中
 func (r *raft) bcastAppend() {
 	r.prs.Visit(func(id uint64, _ *tracker.Progress) {
 		if id == r.id {
@@ -1329,7 +1331,7 @@ func stepFollower(r *raft, m pb.Message) error {
 		}
 		m.To = r.lead
 		r.send(m)
-	case pb.MsgApp://相应日志同步的请求
+	case pb.MsgApp: //相应日志同步的请求
 		r.electionElapsed = 0
 		r.lead = m.From
 		r.handleAppendEntries(m)

@@ -23,10 +23,12 @@ import (
 
 type raftLog struct {
 	// storage contains all stable entries since the last snapshot.
+	// 保存自最后一个snapshot之后所有稳定的entries
 	storage Storage
 
 	// unstable contains all unstable entries and snapshot.
 	// they will be saved into storage.
+	// 未提交的entries，最后会写到Storage，即MemoryStore
 	unstable unstable
 
 	// committed is the highest log position that is known to be in
@@ -36,6 +38,7 @@ type raftLog struct {
 	// applied is the highest log position that the application has
 	// been instructed to apply to its state machine.
 	// Invariant: applied <= committed
+	//// 表示应用 已经把entry应用到状态机中 最后一个提交索引，applied始终小于等于committed
 	applied uint64
 
 	logger Logger

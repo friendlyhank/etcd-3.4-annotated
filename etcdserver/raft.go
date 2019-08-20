@@ -212,6 +212,7 @@ func (r *raftNode) start(rh *raftReadyHandler) {
 					notifyc:  notifyc,
 				}
 
+				//这个地方非常重要，用于通知数据已经应用到节点中，这个地方就是上一篇的输入
 				updateCommittedIndex(&ap, rh)
 
 				select {
@@ -225,6 +226,7 @@ func (r *raftNode) start(rh *raftReadyHandler) {
 				// For more details, check raft thesis 10.2.1
 				if islead {
 					// gofail: var raftBeforeLeaderSend struct{}
+					// 将数据，真正发送到对端
 					r.transport.Send(r.processMessages(rd.Messages))
 				}
 
