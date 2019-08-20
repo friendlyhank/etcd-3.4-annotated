@@ -32,6 +32,9 @@ const minSectorSize = 512
 // frameSizeBytes is frame size in bytes, including record size and padding size.
 const frameSizeBytes = 8
 
+/**
+ *Wal的解码
+ */
 type decoder struct {
 	mu  sync.Mutex
 	brs []*bufio.Reader

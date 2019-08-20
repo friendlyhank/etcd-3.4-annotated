@@ -69,8 +69,13 @@ type Storage interface {
 	Snapshot() (pb.Snapshot, error)
 }
 
+/**
+ *动态存储 -保存在内存中
+ */
+
 // MemoryStorage implements the Storage interface backed by an
 // in-memory array.
+//MemortyStorage 继承 Storage interface
 type MemoryStorage struct {
 	// Protects access to all fields. Most methods of MemoryStorage are
 	// run on the raft goroutine, but Append() is run on an application

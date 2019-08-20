@@ -81,12 +81,12 @@ type WAL struct {
 	state    raftpb.HardState // hardstate recorded at the head of WAL
 
 	start     walpb.Snapshot // snapshot to start reading
-	decoder   *decoder       // decoder to decode records
+	decoder   *decoder       //急嘛 decoder to decode records
 	readClose func() error   // closer for decode reader
 
 	mu      sync.Mutex
 	enti    uint64   // index of the last entry saved to the wal
-	encoder *encoder // encoder to encode records
+	encoder *encoder //编码 encoder to encode records
 
 	locks []*fileutil.LockedFile // the locked files the WAL holds (the name is increasing)
 	fp    *filePipeline

@@ -31,6 +31,9 @@ import (
 // distinguish between torn writes and ordinary data corruption.
 const walPageBytes = 8 * minSectorSize
 
+/**
+ *Wal的编码
+ */
 type encoder struct {
 	mu sync.Mutex
 	bw *ioutil.PageWriter

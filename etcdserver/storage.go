@@ -29,7 +29,7 @@ import (
 )
 
 /*
- *存储
+ *静态存储
  */
 type Storage interface {
 	// Save function saves ents and state to the underlying stable storage.
@@ -42,7 +42,7 @@ type Storage interface {
 }
 
 type storage struct {
-	*wal.WAL  //WAL
+	*wal.WAL          //WAL
 	*snap.Snapshotter //快照
 }
 
