@@ -45,28 +45,38 @@ var ErrSnapshotTemporarilyUnavailable = errors.New("snapshot is temporarily unav
 // application is responsible for cleanup and recovery in this case.
 type Storage interface {
 	// InitialState returns the saved HardState and ConfState information.
+	//返回 Storage 中记录的状态信息，返回的是 HardState 实例和 ConfState 实例
+	//在前面介绍 Raft 协议时捉到，集群 中每个节点都需要保存一些必需的基本信息，在 e tcd 中将其
+	//封装成 HardState ，其中主妥封装了当前任其月号（ Term 字段）、当前节点在该任期中将选票投
+	//给了哪个节，或（ vote 字段）、已提交 Entry 记录的位置（ Commit 字段， l!p最后一条己提交记录的索引位）
+	//II ConfState 中封装了当前集群中所有节点的 ID (Nodes 字段）
 	InitialState() (pb.HardState, pb.ConfState, error)
 	// Entries returns a slice of log entries in the range [lo,hi).
 	// MaxSize limits the total size of the log entries returned, but
 	// Entries returns at least one entry if any.
+	//在 Storage 中记录了当前节点的所有 Entry 记录， Entries 方法返回指定范固的 Entry 记录（［ lo , hi)) ,
+	//第三个参数｛ maxSize ）限定了返回的 Entry 集合的字节数上限
 	Entries(lo, hi, maxSize uint64) ([]pb.Entry, error)
 	// Term returns the term of entry i, which must be in the range
 	// [FirstIndex()-1, LastIndex()]. The term of the entry before
 	// FirstIndex is retained for matching purposes even though the
 	// rest of that entry may not be available.
-	Term(i uint64) (uint64, error)
+	Term(i uint64) (uint64, error) //查询指定 Index 对应 的 Entry 的 Te rm 位
 	// LastIndex returns the index of the last entry in the log.
+	//该方法返回 Storage 中记录的最后一条En tr y 的索引 值 （ Index )
 	LastIndex() (uint64, error)
 	// FirstIndex returns the index of the first log entry that is
 	// possibly available via Entries (older entries have been incorporated
 	// into the latest Snapshot; if storage only contains the dummy entry the
 	// first log entry is not available).
+	//该方法返回 Storage 中记录的 第 一条 Entry 的索号｜值（ Index ），在该 Entry 之前的 所有 Entry 都 已
+	//经被包含进了 最近的一次 Snapshot 中
 	FirstIndex() (uint64, error)
 	// Snapshot returns the most recent snapshot.
 	// If snapshot is temporarily unavailable, it should return ErrSnapshotTemporarilyUnavailable,
 	// so raft state machine could know that Storage needs some time to prepare
 	// snapshot and call Snapshot later.
-	Snapshot() (pb.Snapshot, error)
+	Snapshot() (pb.Snapshot, error) //返回 最近一次生成的 快照数据
 }
 
 /**
@@ -125,8 +135,8 @@ func (ms *MemoryStorage) Entries(lo, hi, maxSize uint64) ([]pb.Entry, error) {
 		return nil, ErrUnavailable
 	}
 
-	ents := ms.ents[lo-offset : hi-offset]
-	return limitSize(ents, maxSize), nil
+	ents := ms.ents[lo-offset : hi-offset] //获取lo~hi之间的Entry,直接抛出异常
+	return limitSize(ents, maxSize), nil   //限制返回Entry切片的总字节大小
 }
 
 // Term implements the Storage interface.
@@ -174,18 +184,21 @@ func (ms *MemoryStorage) Snapshot() (pb.Snapshot, error) {
 
 // ApplySnapshot overwrites the contents of this Storage object with
 // those of the given snapshot.
+//更新快照数据,将Snapshot实例保存到MemoryStorage中
 func (ms *MemoryStorage) ApplySnapshot(snap pb.Snapshot) error {
 	ms.Lock()
 	defer ms.Unlock()
 
 	//handle check for old snapshot being applied
+	//通过快照的元数据比较当前 MemoryStorage 中记录的 Snapshot 与待处理的 Snapshot 数据的新旧程度
 	msIndex := ms.snapshot.Metadata.Index
 	snapIndex := snap.Metadata.Index
 	if msIndex >= snapIndex {
 		return ErrSnapOutOfDate
 	}
 
-	ms.snapshot = snap
+	ms.snapshot = snap //更新 MemoryStorage . snapshot 字段
+	//重豆 MemoryStorage.ents 字段 ， 此时在 en ts 中只有一个空的 Entry 实例
 	ms.ents = []pb.Entry{{Term: snap.Metadata.Term, Index: snap.Metadata.Index}}
 	return nil
 }
@@ -194,6 +207,7 @@ func (ms *MemoryStorage) ApplySnapshot(snap pb.Snapshot) error {
 // can be used to reconstruct the state at that point.
 // If any configuration changes have been made since the last compaction,
 // the result of the last ApplyConfChange must be passed in.
+//ms.ents达到一定数量之后需要创建快照
 func (ms *MemoryStorage) CreateSnapshot(i uint64, cs *pb.ConfState, data []byte) (pb.Snapshot, error) {
 	ms.Lock()
 	defer ms.Unlock()
@@ -211,7 +225,7 @@ func (ms *MemoryStorage) CreateSnapshot(i uint64, cs *pb.ConfState, data []byte)
 	if cs != nil {
 		ms.snapshot.Metadata.ConfState = *cs
 	}
-	ms.snapshot.Data = data
+	ms.snapshot.Data = data //更新具体的快照信息
 	return ms.snapshot, nil
 }
 
@@ -233,6 +247,7 @@ func (ms *MemoryStorage) Compact(compactIndex uint64) error {
 	ents := make([]pb.Entry, 1, 1+uint64(len(ms.ents))-i)
 	ents[0].Index = ms.ents[i].Index
 	ents[0].Term = ms.ents[i].Term
+	//compactlndex 之后的 Ent ry 拷贝到 en ts 中，并更新 MemoryStorage .ent s 字段
 	ents = append(ents, ms.ents[i+1:]...)
 	ms.ents = ents
 	return nil
@@ -264,9 +279,11 @@ func (ms *MemoryStorage) Append(entries []pb.Entry) error {
 	offset := entries[0].Index - ms.ents[0].Index
 	switch {
 	case uint64(len(ms.ents)) > offset:
+		//保留 MemoryStorage . ents 中 first ～ off set 的部分， off set 之后的部分被抛弃
 		ms.ents = append([]pb.Entry{}, ms.ents[:offset]...)
 		ms.ents = append(ms.ents, entries...)
 	case uint64(len(ms.ents)) == offset:
+		//直接将待追加的 日 志记录（ entries ）追加到 MemoryStorage 中
 		ms.ents = append(ms.ents, entries...)
 	default:
 		raftLogger.Panicf("missing log entry [last: %d, append at: %d]",

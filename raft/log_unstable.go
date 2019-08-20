@@ -120,14 +120,18 @@ func (u *unstable) restore(s pb.Snapshot) {
 	u.snapshot = &s
 }
 
+//unstable 追加Entry
 func (u *unstable) truncateAndAppend(ents []pb.Entry) {
 	after := ents[0].Index
 	switch {
 	case after == u.offset+uint64(len(u.entries)):
 		// after is the next index in the u.entries
 		// directly append
+		//若待追加的记录与 e口 tries 中的记录正好连续，则可以直接向 entries 中追加
 		u.entries = append(u.entries, ents...)
 	case after <= u.offset:
+		//after 在 off set ～ last 之间，贝rj after ～ last 之间的 Entry 记录冲突 。 这里会将 offset~after
+		//之间的记录保留，抛弃 after 之后的记录，然后完成追加操作
 		u.logger.Infof("replace the unstable entries from index %d", after)
 		// The log is being truncated to before our current offset
 		// portion, so set the offset and replace the entries

@@ -38,7 +38,7 @@ type raftLog struct {
 	// applied is the highest log position that the application has
 	// been instructed to apply to its state machine.
 	// Invariant: applied <= committed
-	//// 表示应用 已经把entry应用到状态机中 最后一个提交索引，applied始终小于等于committed
+	// 表示应用 已经把entry应用到状态机中 最后一个提交索引，applied始终小于等于committed
 	applied uint64
 
 	logger Logger
@@ -136,17 +136,18 @@ func (l *raftLog) append(ents ...pb.Entry) uint64 {
 // a different term.
 // The first entry MUST have an index equal to the argument 'from'.
 // The index of the given entries MUST be continuously increasing.
+//查找是否与raftLog中已有的Entry发生冲突
 func (l *raftLog) findConflict(ents []pb.Entry) uint64 {
 	for _, ne := range ents {
-		if !l.matchTerm(ne.Index, ne.Term) {
+		if !l.matchTerm(ne.Index, ne.Term) { //查找冲突的Entry记录
 			if ne.Index <= l.lastIndex() {
 				l.logger.Infof("found conflict at index %d [existing term: %d, conflicting term: %d]",
 					ne.Index, l.zeroTermOnErrCompacted(l.term(ne.Index)), ne.Term)
 			}
-			return ne.Index
+			return ne.Index //返回冲突的索引值
 		}
 	}
-	return 0
+	return 0 //如果没有发生冲突Entry,则返回0
 }
 
 func (l *raftLog) unstableEntries() []pb.Entry {
@@ -247,10 +248,12 @@ func (l *raftLog) term(i uint64) (uint64, error) {
 		return 0, nil
 	}
 
+	//尝试从 unstable 中 获取对应的 Entry 记录并返回其 Term 值(unstable也会存储Entry信息)
 	if t, ok := l.unstable.maybeTerm(i); ok {
 		return t, nil
 	}
 
+	//尝试从 storage 中 获取对应的 Entry 记录并返回其 Term f直
 	t, err := l.storage.Term(i)
 	if err == nil {
 		return t, nil
