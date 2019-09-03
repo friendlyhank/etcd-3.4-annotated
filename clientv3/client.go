@@ -73,7 +73,7 @@ type Client struct {
 	Auth        //授权接口
 	Maintenance //
 
-	conn *grpc.ClientConn //grpc client conn
+	conn *grpc.ClientConn //grpc连接 grpc client conn
 
 	cfg           Config //配置文件
 	creds         *credentials.TransportCredentials
@@ -496,6 +496,7 @@ func newClient(cfg *Config) (*Client, error) {
 	if len(cfg.Endpoints) < 1 {
 		return nil, fmt.Errorf("at least one Endpoint must is required in client config")
 	}
+	//TODO FIND 为何只取一个
 	dialEndpoint := cfg.Endpoints[0]
 
 	// Use a provided endpoint target so that for https:// without any tls config given, then

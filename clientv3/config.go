@@ -73,6 +73,7 @@ type Config struct {
 
 	// Context is the default client context; it can be used to cancel grpc dial out and
 	// other operations that do not have an explicit context.
+	//Context 可以用来结束grpc
 	Context context.Context
 
 	// LogConfig configures client-side logger.

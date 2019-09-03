@@ -28,11 +28,14 @@ const (
 
 var noPrefixEnd = []byte{0}
 
+/**
+ *操作附带的方法 kv
+ */
 // Op represents an Operation that kv can execute.
 type Op struct {
-	t   opType
+	t   opType //操作类型
 	key []byte
-	end []byte
+	end []byte //key与end形成的边界值
 
 	// for range
 	limit        int64

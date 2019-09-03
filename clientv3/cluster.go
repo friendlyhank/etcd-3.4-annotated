@@ -32,6 +32,7 @@ type (
 	MemberPromoteResponse pb.MemberPromoteResponse
 )
 
+//集群相关接口信息
 type Cluster interface {
 	// MemberList lists the current cluster membership.
 	MemberList(ctx context.Context) (*MemberListResponse, error)
