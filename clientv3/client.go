@@ -77,7 +77,7 @@ type Client struct {
 
 	cfg           Config //配置文件
 	creds         *credentials.TransportCredentials
-	resolverGroup *endpoint.ResolverGroup
+	resolverGroup *endpoint.ResolverGroup //grpc resolver build用来设置endpoint
 	mu            *sync.RWMutex
 
 	ctx    context.Context
@@ -340,7 +340,7 @@ func (c *Client) dialWithBalancer(ep string, dopts ...grpc.DialOption) (*grpc.Cl
 }
 
 // dial configures and dials any grpc balancer target.
-//客户端dial拨号
+//客户端grpc dial拨号
 func (c *Client) dial(target string, creds *credentials.TransportCredentials, dopts ...grpc.DialOption) (*grpc.ClientConn, error) {
 	opts, err := c.dialSetupOpts(creds, dopts...)
 	if err != nil {
@@ -497,6 +497,7 @@ func newClient(cfg *Config) (*Client, error) {
 		return nil, fmt.Errorf("at least one Endpoint must is required in client config")
 	}
 	//TODO FIND 为何只取一个
+	//答:因为上面设置了Resolver的builder取设置多个Endpoints
 	dialEndpoint := cfg.Endpoints[0]
 
 	// Use a provided endpoint target so that for https:// without any tls config given, then
