@@ -144,6 +144,7 @@ func (c *Client) Close() error {
 func (c *Client) Ctx() context.Context { return c.ctx }
 
 // Endpoints lists the registered endpoints for the client.
+//获取Endpoints
 func (c *Client) Endpoints() []string {
 	// copy the slice; protect original endpoints from being changed
 	c.mu.RLock()
