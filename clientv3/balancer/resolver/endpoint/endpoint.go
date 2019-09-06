@@ -33,7 +33,7 @@ var (
 )
 
 /**
- *客户端endpoint终端类
+ *客户端endpoint终端类 为了设置grpc resolver builder interface
  */
 
 func init() {
