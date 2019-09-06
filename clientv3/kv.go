@@ -70,6 +70,7 @@ type KV interface {
 	Txn(ctx context.Context) Txn
 }
 
+//设置Do方法的Response Do包含Put、Get、Del、Txn
 type OpResponse struct {
 	put *PutResponse
 	get *GetResponse
@@ -97,7 +98,7 @@ func (resp *TxnResponse) OpResponse() OpResponse {
 
 type kv struct {
 	remote   pb.KVClient
-	callOpts []grpc.CallOption
+	callOpts []grpc.CallOption //grpc调用可选参数
 }
 
 //hank-sure

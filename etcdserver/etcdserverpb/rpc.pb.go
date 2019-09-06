@@ -3456,6 +3456,7 @@ type KVClient interface {
 	Compact(ctx context.Context, in *CompactionRequest, opts ...grpc.CallOption) (*CompactionResponse, error)
 }
 
+//kVClient conn
 type kVClient struct {
 	cc *grpc.ClientConn
 }
@@ -3484,7 +3485,7 @@ func (c *kVClient) Put(ctx context.Context, in *PutRequest, opts ...grpc.CallOpt
 
 func (c *kVClient) DeleteRange(ctx context.Context, in *DeleteRangeRequest, opts ...grpc.CallOption) (*DeleteRangeResponse, error) {
 	out := new(DeleteRangeResponse)
-	err := grpc.Invoke(ctx, "/etcdserverpb.KV/DeleteRange", in, out, c.cc, opts...)
+		err := grpc.Invoke(ctx, "/etcdserverpb.KV/DeleteRange", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
 	}

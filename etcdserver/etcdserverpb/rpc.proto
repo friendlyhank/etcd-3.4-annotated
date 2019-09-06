@@ -5,6 +5,10 @@ import "gogoproto/gogo.proto";
 import "etcd/mvcc/mvccpb/kv.proto";
 import "etcd/auth/authpb/auth.proto";
 
+//gRPC服务一般用于集群内部通信，如果需要对外暴露服务一般会提供等价的REST接口。
+//通过REST接口比较方便前端JavaScript和后端交互。开源社区中的grpc-gateway项目就实现了将gRPC服务转为REST服务的能力。
+//protoc -I$GOPATH/src -I$GOPATH/src/github.com/gogo/protobuf/protobuf -I$GOPATH/src/github.com/grpc-ecosystem/grpc-gateway/third_party/googleapis --go_out=plugins=grpc:. hank.com/etcd-3.3.12-study/etcdserver/etcdserverpb/rpc.proto
+//需要引入annotations.proto和descriptor.proto
 // for grpc-gateway
 import "google/api/annotations.proto";
 
@@ -13,7 +17,7 @@ option (gogoproto.unmarshaler_all) = true;
 
 service KV {
   // Range gets the keys in the range from the key-value store.
-  rpc Range(RangeRequest) returns (RangeResponse) {
+    rpc Range(RangeRequest) returns (RangeResponse) {
       option (google.api.http) = {
         post: "/v3/kv/range"
         body: "*"

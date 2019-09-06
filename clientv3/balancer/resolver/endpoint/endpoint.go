@@ -32,6 +32,10 @@ var (
 	bldr *builder
 )
 
+/**
+ *客户端endpoint终端类
+ */
+
 func init() {
 	bldr = &builder{
 		resolverGroups: make(map[string]*ResolverGroup),

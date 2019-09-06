@@ -323,6 +323,7 @@ var (
 type backoffFunc func(attempt uint) time.Duration
 
 // withRetryPolicy sets the retry policy of this call.
+//TODO HANK 研究下这个怎么用
 func withRetryPolicy(rp retryPolicy) retryOption {
 	return retryOption{applyFunc: func(o *options) {
 		o.retryPolicy = rp
