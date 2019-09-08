@@ -57,6 +57,7 @@ func init() {
 			panic(err)
 		}
 	}
+	//grpc balancer register
 	balancer.RegisterBuilder(balancer.Config{
 		Policy: picker.RoundrobinBalanced,
 		Name:   roundRobinBalancerName,
@@ -76,7 +77,7 @@ type Client struct {
 	conn *grpc.ClientConn //grpc连接 grpc client conn
 
 	cfg           Config //配置文件
-	creds         *credentials.TransportCredentials
+	creds         *credentials.TransportCredentials//grpc creds证书相关
 	resolverGroup *endpoint.ResolverGroup //grpc resolver build用来设置endpoint
 	mu            *sync.RWMutex
 
@@ -213,6 +214,7 @@ func (cred authTokenCredential) GetRequestMetadata(ctx context.Context, s ...str
 	}, nil
 }
 
+//processCreds -处理Creds
 func (c *Client) processCreds(scheme string) (creds *credentials.TransportCredentials) {
 	creds = c.creds
 	switch scheme {
@@ -487,6 +489,7 @@ func newClient(cfg *Config) (*Client, error) {
 
 	// Prepare a 'endpoint://<unique-client-id>/' resolver for the client and create a endpoint target to pass
 	// to dial so the client knows to use this resolver.
+	//设置resolverGroup 构造resolver用于后面grcp.dial grcp.WithBalancerName
 	client.resolverGroup, err = endpoint.NewResolverGroup(fmt.Sprintf("client-%s", uuid.New().String()))
 	if err != nil {
 		client.cancel()

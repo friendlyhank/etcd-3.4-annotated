@@ -33,16 +33,18 @@ var (
 )
 
 /**
- *客户端endpoint终端类
+ *客户端endpoint终端类,用于grpc resolver builder
+ *还会实现grpc resolver builder的scheme和Build的接口方法
  */
-
 func init() {
 	bldr = &builder{
 		resolverGroups: make(map[string]*ResolverGroup),
 	}
+	//grpc resolver balancer Register注册
 	resolver.Register(bldr)
 }
 
+//builder 用map设置ResolverGroup组
 type builder struct {
 	mu             sync.RWMutex
 	resolverGroups map[string]*ResolverGroup
@@ -55,6 +57,7 @@ func NewResolverGroup(id string) (*ResolverGroup, error) {
 
 // ResolverGroup keeps all endpoints of resolvers using a common endpoint://<id>/ target
 // up-to-date.
+//ResolverGroup包含多个endpoint和resolvers
 type ResolverGroup struct {
 	mu        sync.RWMutex
 	id        string
@@ -99,6 +102,7 @@ func (e *ResolverGroup) Target(endpoint string) string {
 }
 
 // Target constructs a endpoint resolver target.
+//endpoint://id/host endpoint
 func Target(id, endpoint string) string {
 	return fmt.Sprintf("%s://%s/%s", scheme, id, endpoint)
 }
@@ -112,6 +116,7 @@ func (e *ResolverGroup) Close() {
 	bldr.close(e.id)
 }
 
+//resolver Builder interface
 // Build creates or reuses an etcd resolver for the etcd cluster name identified by the authority part of the target.
 func (b *builder) Build(target resolver.Target, cc resolver.ClientConn, opts resolver.BuildOption) (resolver.Resolver, error) {
 	if len(target.Authority) < 1 {
@@ -166,9 +171,10 @@ func (b *builder) Scheme() string {
 }
 
 // Resolver provides a resolver for a single etcd cluster, identified by name.
+//包含单个EndpointID和grpc conn
 type Resolver struct {
 	endpointID string
-	cc         resolver.ClientConn
+	cc         resolver.ClientConn //grpc resolver ClientConn
 	sync.RWMutex
 }
 

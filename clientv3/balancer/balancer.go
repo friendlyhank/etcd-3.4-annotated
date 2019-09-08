@@ -30,6 +30,10 @@ import (
 	_ "google.golang.org/grpc/resolver/passthrough" // register passthrough resolver
 )
 
+/**
+ *grpc balancer
+ */
+
 // RegisterBuilder creates and registers a builder. Since this function calls balancer.Register, it
 // must be invoked at initialization time.
 func RegisterBuilder(cfg Config) {
