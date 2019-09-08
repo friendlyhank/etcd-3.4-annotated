@@ -34,7 +34,7 @@ var (
 
 /**
  *客户端endpoint终端类,用于grpc resolver builder
- *还会实现grpc resolver builder的scheme和Build的接口方法
+ *客户端endpoint终端类 为了设置grpc resolver builder interface
  */
 func init() {
 	bldr = &builder{
