@@ -177,7 +177,7 @@ type Config struct {
 	BackendBatchLimit int   `json:"backend-batch-limit"`
 	QuotaBackendBytes int64 `json:"quota-backend-bytes"`
 	MaxTxnOps         uint  `json:"max-txn-ops"`
-	MaxRequestBytes   uint  `json:"max-request-bytes"`
+	MaxRequestBytes   uint  `json:"max-request-bytes"` //grpc最大请求书
 
 	LPUrls, LCUrls []url.URL
 	APUrls, ACUrls []url.URL

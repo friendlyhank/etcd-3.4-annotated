@@ -36,6 +36,10 @@ import (
 	"go.uber.org/zap"
 )
 
+/**
+ *transport listener
+ */
+
 // NewListener creates a new listner.
 func NewListener(addr, scheme string, tlsinfo *TLSInfo) (l net.Listener, err error) {
 	if l, err = newListener(addr, scheme); err != nil {

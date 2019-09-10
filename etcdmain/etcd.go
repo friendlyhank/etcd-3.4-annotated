@@ -45,7 +45,7 @@ import (
 
 type dirType string
 
-var plog = capnslog.NewPackageLogger("go.etcd.io/etcd", "etcdmain")
+var plog = capnslog.NewPackageLogger("hank.com/etcd-3.3.12-annotated", "etcdmain")
 
 var (
 	dirMember = dirType("member")
@@ -158,7 +158,7 @@ func startEtcdOrProxyV2() {
 		shouldProxy := cfg.isProxy()
 		if !shouldProxy {
 			//根据配置启动Etcd
-			stopped, errc, err = startEtcd(&cfg.ec)
+				stopped, errc, err = startEtcd(&cfg.ec)
 			if derr, ok := err.(*etcdserver.DiscoveryError); ok && derr.Err == v2discovery.ErrFullCluster {
 				if cfg.shouldFallbackToProxy() {
 					if lg != nil {

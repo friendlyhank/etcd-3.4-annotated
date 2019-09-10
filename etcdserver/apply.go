@@ -44,8 +44,8 @@ type applyResult struct {
 	// Compaction requests.
 	physc <-chan struct{}
 }
-
 // applierV3 is the interface for processing V3 raft messages
+
 type applierV3 interface {
 	Apply(r *pb.InternalRaftRequest) *applyResult
 
