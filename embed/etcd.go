@@ -71,7 +71,7 @@ type Etcd struct {
 	Peers   []*peerListener //集群Listener
 	Clients []net.Listener  //客户端Listener
 	// a map of contexts for the servers that serves client requests.
-	sctxs            map[string]*serveCtx
+	sctxs            map[string]*serveCtx//用map去装Peers或Clients listener
 	metricsListeners []net.Listener
 
 	Server *etcdserver.EtcdServer //Etcd Server的核心配置
@@ -236,6 +236,7 @@ func StartEtcd(inCfg *Config) (e *Etcd, err error) {
 	if err = e.servePeers(); err != nil {
 		return e, err
 	}
+	//生成http.handle 用于处理Client请求
 	if err = e.serveClients(); err != nil {
 		return e, err
 	}
@@ -535,7 +536,7 @@ func configurePeerListeners(cfg *Config) (peers []*peerListener, err error) {
 }
 
 // configure peer handlers after rafthttp.Transport started
-//配置handlers在启动transport之后
+//servePeers - 配置handlers在启动transport之后
 func (e *Etcd) servePeers() (err error) {
 	//e.Server  etcdserver.EtcdServer实现了etcdserver.ServerPeer接口
 	ph := etcdhttp.NewPeerHandler(e.GetLogger(), e.Server)
@@ -599,6 +600,7 @@ func (e *Etcd) servePeers() (err error) {
 	return nil
 }
 
+//
 func configureClientListeners(cfg *Config) (sctxs map[string]*serveCtx, err error) {
 	if err = updateCipherSuites(&cfg.ClientTLSInfo, cfg.CipherSuites); err != nil {
 		return nil, err
@@ -715,6 +717,7 @@ func configureClientListeners(cfg *Config) (sctxs map[string]*serveCtx, err erro
 	return sctxs, nil
 }
 
+//serveClients -生成http.handle 用于处理Client请求
 func (e *Etcd) serveClients() (err error) {
 	if !e.cfg.ClientTLSInfo.Empty() {
 		if e.cfg.logger != nil {

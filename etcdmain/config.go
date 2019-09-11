@@ -263,6 +263,7 @@ func newConfig() *config {
 	return cfg
 }
 
+//配置文件解析
 func (cfg *config) parse(arguments []string) error {
 	perr := cfg.cf.flagSet.Parse(arguments)
 	switch perr {
