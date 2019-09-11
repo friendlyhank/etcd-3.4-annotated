@@ -23,8 +23,13 @@ import (
 	"hank.com/etcd-3.3.12-annotated/pkg/types"
 )
 
+/**
+ *implements "url.URL" slice as flag.Value interface 用于flag set
+ */
+
 // UniqueURLs contains unique URLs
 // with non-URL exceptions.
+//实现Flag Value interface
 type UniqueURLs struct {
 	Values  map[string]struct{}
 	uss     []url.URL
@@ -82,6 +87,7 @@ func NewUniqueURLsWithExceptions(s string, exceptions ...string) *UniqueURLs {
 }
 
 // UniqueURLsFromFlag returns a slice from urls got from the flag.
+//从flag里读取slice url
 func UniqueURLsFromFlag(fs *flag.FlagSet, urlsFlagName string) []url.URL {
 	return (*fs.Lookup(urlsFlagName).Value.(*UniqueURLs)).uss
 }

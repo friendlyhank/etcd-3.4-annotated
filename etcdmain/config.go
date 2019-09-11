@@ -312,6 +312,7 @@ func (cfg *config) parse(arguments []string) error {
 	return err
 }
 
+//解析请求参数
 func (cfg *config) configFromCmdLine() error {
 	err := flags.SetFlagsFromEnv("ETCD", cfg.cf.flagSet)
 	if err != nil {
