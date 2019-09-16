@@ -119,7 +119,7 @@ type baseBalancer struct {
 	scToSt   map[balancer.SubConn]connectivity.State
 
 	currentConn  balancer.ClientConn
-	currentState connectivity.State
+	currentState connectivity.State //连接状态
 	csEvltr      *connectivityStateEvaluator
 
 	picker.Picker
@@ -127,6 +127,7 @@ type baseBalancer struct {
 
 // HandleResolvedAddrs implements "grpc/balancer.Balancer" interface.
 // gRPC sends initial or updated resolved addresses from "Build".
+//balancer 地址句柄 HandleResolvedAddrs实现接口grpc/balancer.Balancer
 func (bb *baseBalancer) HandleResolvedAddrs(addrs []resolver.Address, err error) {
 	if err != nil {
 		bb.lg.Warn("HandleResolvedAddrs called with error", zap.String("balancer-id", bb.id), zap.Error(err))
@@ -175,6 +176,7 @@ func (bb *baseBalancer) HandleResolvedAddrs(addrs []resolver.Address, err error)
 }
 
 // HandleSubConnStateChange implements "grpc/balancer.Balancer" interface.
+//balancer 连接状态句柄 HandleSubConnStateChange实现接口grpc/balancer.Balancer
 func (bb *baseBalancer) HandleSubConnStateChange(sc balancer.SubConn, s connectivity.State) {
 	bb.mu.Lock()
 	defer bb.mu.Unlock()
@@ -270,6 +272,7 @@ func (bb *baseBalancer) regeneratePicker() {
 // Close implements "grpc/balancer.Balancer" interface.
 // Close is a nop because base balancer doesn't have internal state to clean up,
 // and it doesn't need to call RemoveSubConn for the SubConns.
+//Close实现接口grpc/balancer.Balancer
 func (bb *baseBalancer) Close() {
 	// TODO
 }

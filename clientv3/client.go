@@ -627,6 +627,7 @@ func isUnavailableErr(ctx context.Context, err error) bool {
 	return ev.Code() == codes.Unavailable
 }
 
+//grpc 错误处理
 func toErr(ctx context.Context, err error) error {
 	if err == nil {
 		return nil
