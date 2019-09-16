@@ -76,7 +76,7 @@ func (b *builder) Build(cc balancer.ClientConn, opt balancer.BuildOptions) balan
 	}
 
 	// TODO: support multiple connections
-	bb.mu.Lock()
+		bb.mu.Lock()
 	bb.currentConn = cc
 	bb.mu.Unlock()
 
@@ -116,11 +116,11 @@ type baseBalancer struct {
 
 	addrToSc map[resolver.Address]balancer.SubConn
 	scToAddr map[balancer.SubConn]resolver.Address
-	scToSt   map[balancer.SubConn]connectivity.State
+	scToSt   map[balancer.SubConn]connectivity.State //连接状态
 
 	currentConn  balancer.ClientConn
 	currentState connectivity.State //连接状态
-	csEvltr      *connectivityStateEvaluator
+	csEvltr      *connectivityStateEvaluator//grpc balancer连接状态统计
 
 	picker.Picker
 }

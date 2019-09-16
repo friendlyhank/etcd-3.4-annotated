@@ -16,6 +16,10 @@ package balancer
 
 import "google.golang.org/grpc/connectivity"
 
+/**
+ *grpc连接状态统计信息
+ */
+
 // connectivityStateEvaluator gets updated by addrConns when their
 // states transition, based on which it evaluates the state of
 // ClientConn.
@@ -36,6 +40,7 @@ type connectivityStateEvaluator struct {
 func (cse *connectivityStateEvaluator) recordTransition(oldState, newState connectivity.State) connectivity.State {
 	// Update counters.
 	for idx, state := range []connectivity.State{oldState, newState} {
+		//oldState为-1,newState+1
 		updateVal := 2*uint64(idx) - 1 // -1 for oldState and +1 for new.
 		switch state {
 		case connectivity.Ready:
