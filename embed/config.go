@@ -196,7 +196,7 @@ type Config struct {
 	DNSClusterServiceName string `json:"discovery-srv-name"`
 	Dproxy                string `json:"discovery-proxy"`//服务发现使用的HTTP代理
 	Durl                  string `json:"discovery"` //最初创建一个集群的服务发现URL
-	InitialCluster        string `json:"initial-cluster"` //初始启动集群配置
+	InitialCluster        string `json:"initial-cluster"` //初始启动集群配置(多个url)
 	InitialClusterToken   string `json:"initial-cluster-token"` //集群初始化 token
 	StrictReconfigCheck   bool   `json:"strict-reconfig-check"`//拒绝所有会引起quorum丢失的重配置
 	EnableV2              bool   `json:"enable-v2"`//接收V2的API请求
@@ -833,6 +833,7 @@ func (cfg *Config) UpdateDefaultClusterFromName(defaultInitialCluster string) (s
 }
 
 // checkBindURLs returns an error if any URL uses a domain name.
+//校验Url
 func checkBindURLs(urls []url.URL) error {
 	for _, url := range urls {
 		if url.Scheme == "unix" || url.Scheme == "unixs" {
