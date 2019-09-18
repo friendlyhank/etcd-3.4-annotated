@@ -199,7 +199,7 @@ type Config struct {
 	InitialCluster        string `json:"initial-cluster"` //初始启动集群配置(多个url)
 	InitialClusterToken   string `json:"initial-cluster-token"` //集群初始化 token
 	StrictReconfigCheck   bool   `json:"strict-reconfig-check"`//拒绝所有会引起quorum丢失的重配置
-	EnableV2              bool   `json:"enable-v2"`//接收V2的API请求
+	EnableV2              bool   `json:"enable-v2"`//是否允许接收V2的API请求
 
 	// AutoCompactionMode is either 'periodic' or 'revision'.
 	AutoCompactionMode string `json:"auto-compaction-mode"`
