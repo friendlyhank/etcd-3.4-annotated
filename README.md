@@ -2,10 +2,24 @@
 
 ## Getting Started
 
-### Setting up a node
+### Building
+
+etcd is installed like any other Go binary. The steps below will put everything into a directory called etcd.
+
+```
+mkdir etcd
+cd etcd
+export GOPATH=`pwd`
+go get github.com/coreos/etcd
+go install github.com/coreos/etcd
+```
+
+### Running a single node
+
+These examples will use a single node cluster to show you the basics of the etcd REST API. Lets start etcd:
 
 ```sh
-./etcd
+./bin/etcd
 ```
 
 This will bring up a node, which will be listening on internal port 7001 (for server communication) and external port 4001 (for client communication)
@@ -44,18 +58,18 @@ Notice we use a file system like structure to represent the key-value pairs. So 
 
 etcd is a distributed reliable key-value store for the most critical data of a distributed system, with a focus on being:
 
+Get the value that we just set in `/message` by issuing a GET:
+
 ```sh
 curl http://127.0.0.1:4001/v1/keys/message
 ```
-
-You should receive the response as
 
 ```json
 {"action":"GET","key":"/message","value":"Hello world","index":3}
 ```
 #### Changing the value of a key
 
-etcd is used [in production by many companies](./ADOPTERS.md), and the development team stands behind it in critical deployment scenarios, where etcd is frequently teamed with applications such as [Kubernetes][k8s], [locksmith][locksmith], [vulcand][vulcand], [Doorman][doorman], and many others. Reliability is further ensured by [**rigorous testing**](https://github.com/etcd-io/etcd/tree/master/functional).
+Change the value of `/message` from `Hello world` to `Hello etcd` with another POST to the key:
 
 See [etcdctl][etcdctl] for a simple command line client.
 
@@ -66,13 +80,15 @@ See [etcdctl][etcdctl] for a simple command line client.
 [vulcand]: https://github.com/vulcand/vulcand
 [etcdctl]: https://github.com/etcd-io/etcd/tree/master/etcdctl
 
-There is a new field in the response: prevValue. It is the value of the key before the change happened.
+Notice that the `prevValue` is set to `Hello world`.
 
 etcd contributors and maintainers have monthly (every four weeks) meetings at 11:00 AM (USA Pacific) on Thursday.
 
-An initial agenda will be posted to the [shared Google docs][shared-meeting-notes] a day before each meeting, and everyone is welcome to suggest additional topics or other agendas.
+Remove the `/message` key with a DELETE:
 
-You should see the response as
+```sh
+curl http://127.0.0.1:4001/v1/keys/message -X DELETE
+```
 
 ```json
 {"action":"DELETE","key":"/message","prevValue":"Hello etcd","index":5}
@@ -80,47 +96,36 @@ You should see the response as
 
 #### Using time to live key
 
-Time:
-- [Jan 10th, 2019 11:00 AM video](https://www.youtube.com/watch?v=0Cphtbd1OSc&feature=youtu.be)
-- [Feb 7th, 2019 11:00 AM video](https://youtu.be/U80b--oAlYM)
-- [Mar 7th, 2019 11:00 AM video](https://youtu.be/w9TI5B7D1zg)
-- [Apr 4th, 2019 11:00 AM video](https://youtu.be/oqQR2XH1L_A)
-- [May 2nd, 2019 11:00 AM video](https://youtu.be/wFwQePuDWVw)
-- [May 30th, 2019 11:00 AM video](https://youtu.be/2t1R5NATYG4)
-- [Jul 11th, 2019 11:00 AM video](https://youtu.be/k_FZEipWD6Y)
-- [Jul 25, 2019 11:00 AM video](https://youtu.be/VSUJTACO93I)
-- [Aug 22, 2019 11:00 AM video](https://youtu.be/6IBQ-VxQmuM) 
-- [Sep 19, 2019 11:00 AM video](https://youtu.be/SqfxU9DhBOc)
-- Nov 14, 2019 11:00 AM
-- Dec 12, 2019 11:00 AM
+Keys in etcd can be set to expire after a specified number of seconds. That is done by setting a TTL (time to live) on the key when you POST:
 
-Join Hangouts Meet: [meet.google.com/umg-nrxn-qvs](https://meet.google.com/umg-nrxn-qvs)
+```sh
+curl http://127.0.0.1:4001/v1/keys/foo -d value=bar -d ttl=5
+```
 
 ```json
 {"action":"SET","key":"/foo","value":"bar","newKey":true,"expiration":"2013-07-11T20:31:12.156146039-07:00","ttl":4,"index":6}
 ```
 
-There are the last two new fields in response.
+Note the last two new fields in response:
 
-Expiration field is the time that this key will expire and be deleted.
+1. The expiration is the time that this key will expire and be deleted.
 
+2. The ttl is the time to live of the key.
 
-## Getting started
+Now you can try to get the key by sending:
 
 ```sh
 curl http://127.0.0.1:4001/v1/keys/foo
 ```
-You can expect the ttl is counting down and after 5 seconds you should see this,
+
+If the TTL has passed then you will 
 
 The easiest way to get etcd is to use one of the pre-built release binaries which are available for OSX, Linux, Windows, and Docker on the [release page][github-release].
 
-which indicates the key has expired and was deleted.
 
 For those wanting to try the very latest version, [build the latest version of etcd][dl-build] from the `master` branch. This first needs [*Go*](https://golang.org/) installed (version 1.13+ is required). All development occurs on `master`, including new features and bug fixes. Bug fixes are first targeted at `master` and subsequently ported to release branches, as described in the [branch management][branch-management] guide.
 
-[github-release]: https://github.com/etcd-io/etcd/releases
-[branch-management]: ./Documentation/branch_management.md
-[dl-build]: ./Documentation/dl_build.md#build-the-latest-version
+We can watch a path prefix and get notifications if any key change under that prefix.
 
 In one terminal, we send a watch request:
 
@@ -143,34 +148,37 @@ mv /tmp/etcd-download-test/etcd /usr/local/bin/
 etcd
 ```
 
-If etcd is [built from the master branch][dl-build], run it as below:
+However, the watch command can do more than this. Using the the index we can watch for commands that has happened in the past. This is useful for ensuring you don't miss events between watch commands.
 
-```bash
-./bin/etcd
+Let's try to watch for the set command of index 6 again:
+
+```sh
+curl http://127.0.0.1:4001/v1/watch/foo -d index=7
 ```
 
-This will bring up etcd listening on port 2379 for client communication and on port 2380 for server-to-server communication.
+The watch command returns immediately with the same response as previous.
 
-Next, let's set a single key, and then retrieve it:
+#### Atomic Test and Set
 
-What it does is to test whether the given previous value is equal to the value of the key, if equal etcd will change the value of the key to the given value.
+Etcd servers will process all the command in sequence atomically. Thus it can be used as a centralized coordination service in a cluster.
 
-Here is a simple example.
-Let us create a key-value pair first: `testAndSet=one`.
+`TestAndSet` is the most basic operation to build distributed lock service.
+
+The basic logic is to test whether the given previous value is equal to the value of the key, if equal etcd will change the value of the key to the given value.
+
+Here is a simple example. Let's create a key-value pair first: `testAndSet=one`.
 
 ```sh
 curl http://127.0.0.1:4001/v1/keys/testAndSet -d value=one
 ```
 
-Let us try a invaild `TestAndSet` command.
+Let's try an invaild `TestAndSet` command.
 
 ```sh
 curl http://127.0.0.1:4001/v1/testAndSet/testAndSet -d prevValue=two -d value=three
 ```
 
 etcd is now running and serving client requests. For more, please check out:
-
-The response should be
 
 ```html
 Test one==two fails
@@ -190,7 +198,7 @@ The response should be
 {"action":"SET","key":"/testAndSet","prevValue":"one","value":"two","index":10}
 ```
 
-The [official etcd ports][iana-ports] are 2379 for client requests, and 2380 for peer communication.
+We successfully changed the value from “one” to “two”, since we give the correct previous value.
 
 [iana-ports]: http://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.txt
 
@@ -220,11 +228,9 @@ which meas `foo=barbar` is a key-value pair under `/foo` and `foo_dir` is a dire
 
 ### Setting up a cluster of three machines
 
-Next we can explore the power of etcd cluster. We use go-raft as the underlay distributed protocol which provide consistency and persistence of all the machines in the cluster. The will allow if the minor machine dies, the cluster will still be able to performance correctly. Also if most of the machines dead and restart,  we will recover from the previous state of the cluster.
+Next let's explore the use of etcd clustering. We use go-raft as the underlying distributed protocol which provides consistency and persistence of the data across all of the etcd instances.
 
-Now it's time to dig into the full etcd API and other guides.
-
-The first one will be
+Let start by creating 3 new etcd instances.
 
 [fulldoc]: ./Documentation/docs.md
 [api]: ./Documentation/dev-guide/api_reference_v3.md
@@ -236,52 +242,41 @@ The first one will be
 
 ## Contact
 
-- Mailing list: [etcd-dev](https://groups.google.com/forum/?hl=en#!forum/etcd-dev)
-- IRC: #[etcd](irc://irc.freenode.org:6667/#etcd) on freenode.org
-- Planning/Roadmap: [milestones](https://github.com/etcd-io/etcd/milestones), [roadmap](./ROADMAP.md)
-- Bugs: [issues](https://github.com/etcd-io/etcd/issues)
-
-Let the second one join it.
+Let the join two more nodes to this cluster using the -C argument:
 
 ```sh
 ./etcd -c 4002 -s 7002 -C 127.0.0.1:7001 -d nod/node2
-```
-
-And the third one:
-
-```sh
 ./etcd -c 4003 -s 7003 -C 127.0.0.1:7001 -d nod/node3
 ```
 
-## Reporting bugs
+Now we can do normal SET and GET operations on keys as we explored earlier.
 
 See [reporting bugs](Documentation/reporting_bugs.md) for details about reporting any issues.
 
 ## Reporting a security vulnerability
 
-See [security disclosure and release process](security/README.md) for details on how to report a security vulnerability and how the etcd team manages it.
+#### Killing Nodes in the Cluster
 
-## Issue and PR management
-
-See [issue triage guidelines](Documentation/triage/issues.md) for details on how issues are managed.
+Let's kill the leader of the cluster and get the value from the other machine:
 
 See [PR management](Documentation/triage/PRs.md) for guidelines on how pull requests are managed.
 
-## etcd Emeritus Maintainers
+You should be able to see this:
 
 These emeritus maintainers dedicated a part of their career to etcd and reviewed code, triaged bugs, and pushed the project forward over a substantial period of time. Their contribution is greatly appreciated.
 
 * Fanmin Shi 
 * Anthony Romano 
 
-### License
+#### Testing Persistence
 
-Try
+OK. Next let us kill all the nodes to test persistence. And restart all the nodes use the same command as before.
+
+Your request for the `foo` key will return the correct value:
 
 ```sh
 curl http://127.0.0.1:4002/v1/keys/foo
 ```
-You should able to see
 
 ```json
 {"action":"GET","key":"/foo","value":"bar","index":5}
