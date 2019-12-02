@@ -18,13 +18,13 @@ import (
 	"fmt"
 	"log"
 
-	pb "hank.com/etcd-3.3.12-annotated/raft/raftpb"
+	pb "go.etcd.io/etcd/raft/raftpb"
 )
 
 type raftLog struct {
 	// storage contains all stable entries since the last snapshot.
-	// 保存自最后一个snapshot之后所有稳定的entries
-	storage Storage
+// 保存自最后一个snapshot之后所有稳定的entries	
+storage Storage
 
 	// unstable contains all unstable entries and snapshot.
 	// they will be saved into storage.
@@ -96,19 +96,19 @@ func (l *raftLog) maybeAppend(index, logTerm, committed uint64, ents ...pb.Entry
 	if l.matchTerm(index, logTerm) {
 		//最新的日志索引
 		lastnewi = index + uint64(len(ents))
-		//获取冲突的日志索引，有些情况下leader发过来的日志不能直接追加，索引需要找到最新匹配的位置，从该位置之后的日志全部被leader覆盖
-		ci := l.findConflict(ents)
+//获取冲突的日志索引，有些情况下leader发过来的日志不能直接追加，索引需要找到最新匹配的位置，从该位置之后的日志全部被leader覆盖		
+ci := l.findConflict(ents)
 		switch {
 		case ci == 0:
 		case ci <= l.committed:
 			l.logger.Panicf("entry %d conflict with committed entry [committed(%d)]", ci, l.committed)
 		default:
 			offset := index + 1
-			//取出从冲突的位置开始的日志，覆盖自己的日志，即出现冲突时以leader的日志为准
+		//取出从冲突的位置开始的日志，覆盖自己的日志，即出现冲突时以leader的日志为准
 			l.append(ents[ci-offset:]...)
 		}
-		//如果leader的已提交的日志索引大于leader复制给当前follower的最新日志的索引，说明follower落后了，对于这次复制来的日志全都直接提交，否则提交leader已经提交的日志索引的日志
-		l.commitTo(min(committed, lastnewi))
+//如果leader的已提交的日志索引大于leader复制给当前follower的最新日志的索引，说明follower落后了，对于这次复制来的日志全都直接提交，否则提交leader已经提交的日志索引的日志		
+l.commitTo(min(committed, lastnewi))
 		return lastnewi, true
 	}
 	return 0, false
@@ -139,12 +139,12 @@ func (l *raftLog) append(ents ...pb.Entry) uint64 {
 //查找是否与raftLog中已有的Entry发生冲突
 func (l *raftLog) findConflict(ents []pb.Entry) uint64 {
 	for _, ne := range ents {
-		if !l.matchTerm(ne.Index, ne.Term) { //查找冲突的Entry记录
+		if !l.matchTerm(ne.Index, ne.Term) {
 			if ne.Index <= l.lastIndex() {
 				l.logger.Infof("found conflict at index %d [existing term: %d, conflicting term: %d]",
 					ne.Index, l.zeroTermOnErrCompacted(l.term(ne.Index)), ne.Term)
 			}
-			return ne.Index //返回冲突的索引值
+			return ne.Index//返回冲突的索引值
 		}
 	}
 	return 0 //如果没有发生冲突Entry,则返回0
@@ -247,12 +247,10 @@ func (l *raftLog) term(i uint64) (uint64, error) {
 		// TODO: return an error instead?
 		return 0, nil
 	}
-
 	//尝试从 unstable 中 获取对应的 Entry 记录并返回其 Term 值(unstable也会存储Entry信息)
 	if t, ok := l.unstable.maybeTerm(i); ok {
 		return t, nil
 	}
-
 	//尝试从 storage 中 获取对应的 Entry 记录并返回其 Term f直
 	t, err := l.storage.Term(i)
 	if err == nil {

@@ -20,7 +20,11 @@ import (
 	"testing"
 	"time"
 
+<<<<<<< HEAD
 	"hank.com/etcd-3.3.12-annotated/mvcc/backend"
+=======
+	"go.etcd.io/etcd/mvcc/backend"
+>>>>>>> upstream/master
 	"go.uber.org/zap"
 )
 
@@ -201,6 +205,10 @@ func benchmarkLessorFindExpired(benchSize int, b *testing.B) {
 			le.mu.Lock()
 			ls := le.findExpiredLeases(findExpiredLimit)
 			if len(ls) == 0 {
+<<<<<<< HEAD
+=======
+				le.mu.Unlock()
+>>>>>>> upstream/master
 				break
 			}
 			le.mu.Unlock()

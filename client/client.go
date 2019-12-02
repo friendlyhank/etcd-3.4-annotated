@@ -29,7 +29,7 @@ import (
 	"sync"
 	"time"
 
-	"hank.com/etcd-3.3.12-annotated/version"
+	"go.etcd.io/etcd/version"
 )
 
 var (

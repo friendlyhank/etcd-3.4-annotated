@@ -22,7 +22,7 @@ import (
 	"reflect"
 	"testing"
 
-	"hank.com/etcd-3.3.12-annotated/wal/walpb"
+	"go.etcd.io/etcd/wal/walpb"
 )
 
 var (

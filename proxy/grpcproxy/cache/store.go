@@ -21,9 +21,9 @@ import (
 	"sync"
 
 	"github.com/golang/groupcache/lru"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v3rpc/rpctypes"
-	pb "hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
-	"hank.com/etcd-3.3.12-annotated/pkg/adt"
+	"go.etcd.io/etcd/etcdserver/api/v3rpc/rpctypes"
+	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
+	"go.etcd.io/etcd/pkg/adt"
 )
 
 var (
@@ -31,11 +31,11 @@ var (
 	ErrCompacted      = rpctypes.ErrGRPCCompacted
 )
 
-type Cache interface { //添加查询请求到缓存中
+type Cache interface {
 	Add(req *pb.RangeRequest, resp *pb.RangeResponse)
 	Get(req *pb.RangeRequest) (*pb.RangeResponse, error)
-	Compact(revision int64)               //判断缓存是否失效
-	Invalidate(key []byte, endkey []byte) //缓存长度
+	Compact(revision int64)
+	Invalidate(key []byte, endkey []byte)
 	Size() int
 	Close()
 }
@@ -53,6 +53,7 @@ func keyFunc(req *pb.RangeRequest) string {
 func NewCache(maxCacheEntries int) Cache {
 	return &cache{
 		lru:          lru.New(maxCacheEntries),
+		cachedRanges: adt.NewIntervalTree(),
 		compactedRev: -1,
 	}
 }
@@ -60,7 +61,6 @@ func NewCache(maxCacheEntries int) Cache {
 func (c *cache) Close() {}
 
 // cache implements Cache
-//cache 继承Cache interface
 type cache struct {
 	mu  sync.RWMutex
 	lru *lru.Cache

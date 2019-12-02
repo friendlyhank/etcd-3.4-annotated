@@ -22,11 +22,11 @@ import (
 	"strings"
 	"time"
 
-	"hank.com/etcd-3.3.12-annotated/clientv3"
-	"hank.com/etcd-3.3.12-annotated/clientv3/concurrency"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v2error"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v2store"
-	"hank.com/etcd-3.3.12-annotated/mvcc/mvccpb"
+	"go.etcd.io/etcd/clientv3"
+	"go.etcd.io/etcd/clientv3/concurrency"
+	"go.etcd.io/etcd/etcdserver/api/v2error"
+	"go.etcd.io/etcd/etcdserver/api/v2store"
+	"go.etcd.io/etcd/mvcc/mvccpb"
 )
 
 // store implements the Store interface for V2 using

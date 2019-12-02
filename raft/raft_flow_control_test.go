@@ -17,7 +17,7 @@ package raft
 import (
 	"testing"
 
-	pb "hank.com/etcd-3.3.12-annotated/raft/raftpb"
+	pb "go.etcd.io/etcd/raft/raftpb"
 )
 
 // TestMsgAppFlowControlFull ensures:

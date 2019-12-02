@@ -18,7 +18,7 @@ import (
 	"reflect"
 	"testing"
 
-	"hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
+	"go.etcd.io/etcd/etcdserver/etcdserverpb"
 )
 
 func TestCompactOp(t *testing.T) {

@@ -20,9 +20,9 @@ import (
 	"sync"
 	"time"
 
-	v3 "hank.com/etcd-3.3.12-annotated/clientv3"
-	v3pb "hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
-	"hank.com/etcd-3.3.12-annotated/mvcc/mvccpb"
+	v3 "go.etcd.io/etcd/clientv3"
+	v3pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
+	"go.etcd.io/etcd/mvcc/mvccpb"
 )
 
 const revokeBackoff = 2 * time.Second

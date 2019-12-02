@@ -19,14 +19,14 @@ import (
 	"crypto/sha256"
 	"io"
 
-	"hank.com/etcd-3.3.12-annotated/auth"
-	"hank.com/etcd-3.3.12-annotated/etcdserver"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v3rpc/rpctypes"
-	pb "hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
-	"hank.com/etcd-3.3.12-annotated/mvcc"
-	"hank.com/etcd-3.3.12-annotated/mvcc/backend"
-	"hank.com/etcd-3.3.12-annotated/raft"
-	"hank.com/etcd-3.3.12-annotated/version"
+	"go.etcd.io/etcd/auth"
+	"go.etcd.io/etcd/etcdserver"
+	"go.etcd.io/etcd/etcdserver/api/v3rpc/rpctypes"
+	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
+	"go.etcd.io/etcd/mvcc"
+	"go.etcd.io/etcd/mvcc/backend"
+	"go.etcd.io/etcd/raft"
+	"go.etcd.io/etcd/version"
 
 	"go.uber.org/zap"
 )

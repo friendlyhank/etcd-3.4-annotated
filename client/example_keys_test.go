@@ -20,7 +20,7 @@ import (
 	"log"
 	"sort"
 
-	"hank.com/etcd-3.3.12-annotated/client"
+	"go.etcd.io/etcd/client"
 )
 
 func ExampleKeysAPI_directory() {

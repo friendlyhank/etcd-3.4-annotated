@@ -23,18 +23,18 @@ import (
 	"sync"
 	"time"
 
+	"go.etcd.io/etcd/etcdserver/api/membership"
+	"go.etcd.io/etcd/etcdserver/api/rafthttp"
+	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
+	"go.etcd.io/etcd/pkg/contention"
+	"go.etcd.io/etcd/pkg/logutil"
+	"go.etcd.io/etcd/pkg/pbutil"
+	"go.etcd.io/etcd/pkg/types"
+	"go.etcd.io/etcd/raft"
+	"go.etcd.io/etcd/raft/raftpb"
+	"go.etcd.io/etcd/wal"
+	"go.etcd.io/etcd/wal/walpb"
 	"go.uber.org/zap"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/membership"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/rafthttp"
-	pb "hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
-	"hank.com/etcd-3.3.12-annotated/pkg/contention"
-	"hank.com/etcd-3.3.12-annotated/pkg/logutil"
-	"hank.com/etcd-3.3.12-annotated/pkg/pbutil"
-	"hank.com/etcd-3.3.12-annotated/pkg/types"
-	"hank.com/etcd-3.3.12-annotated/raft"
-	"hank.com/etcd-3.3.12-annotated/raft/raftpb"
-	"hank.com/etcd-3.3.12-annotated/wal"
-	"hank.com/etcd-3.3.12-annotated/wal/walpb"
 )
 
 const (
@@ -58,13 +58,6 @@ var (
 )
 
 func init() {
-	lcfg := logutil.DefaultZapLoggerConfig
-	lg, err := logutil.NewRaftLogger(&lcfg)
-	if err != nil {
-		log.Fatalf("cannot create raft logger %v", err)
-	}
-	raft.SetLogger(lg)
-
 	expvar.Publish("raft.status", expvar.Func(func() interface{} {
 		raftStatusMu.Lock()
 		defer raftStatusMu.Unlock()
@@ -125,6 +118,18 @@ type raftNodeConfig struct {
 
 //newRaftNode节点
 func newRaftNode(cfg raftNodeConfig) *raftNode {
+	var lg raft.Logger
+	if cfg.lg != nil {
+		lg = logutil.NewRaftLoggerZap(cfg.lg)
+	} else {
+		lcfg := logutil.DefaultZapLoggerConfig
+		var err error
+		lg, err = logutil.NewRaftLogger(&lcfg)
+		if err != nil {
+			log.Fatalf("cannot create raft logger %v", err)
+		}
+	}
+	raft.SetLogger(lg)
 	r := &raftNode{
 		lg:             cfg.lg,
 		tickMu:         new(sync.Mutex),
@@ -141,7 +146,7 @@ func newRaftNode(cfg raftNodeConfig) *raftNode {
 	if r.heartbeat == 0 {
 		r.ticker = &time.Ticker{}
 	} else {
-		r.ticker = time.NewTicker(r.heartbeat) //调用内置定时器
+		r.ticker = time.NewTicker(r.heartbeat)//调用内置定时器
 	}
 	return r
 }
@@ -165,8 +170,8 @@ func (r *raftNode) start(rh *raftReadyHandler) {
 
 		for {
 			select {
-			case <-r.ticker.C: //raftNode里内置定时器
-				r.tick() //定时器
+			case <-r.ticker.C://raftNode里内置定时器
+				r.tick()//定时器
 			case rd := <-r.Ready():
 				if rd.SoftState != nil {
 					newLeader := rd.SoftState.Lead != raft.None && rh.getLead() != rd.SoftState.Lead
@@ -431,7 +436,6 @@ func startNode(cfg ServerConfig, cl *membership.RaftCluster, ids []types.ID) (id
 			ClusterID: uint64(cl.ID()),
 		},
 	)
-
 	//创建WAL信息
 	if w, err = wal.Create(cfg.Logger, cfg.WALDir(), metadata); err != nil {
 		if cfg.Logger != nil {
@@ -461,10 +465,10 @@ func startNode(cfg ServerConfig, cl *membership.RaftCluster, ids []types.ID) (id
 			zap.String("cluster-id", cl.ID().String()),
 		)
 	} else {
-		//控制台会打印出这个集群节点信息
+		//控制台会打印出这个集群节点信息	
 		plog.Infof("starting member %s in cluster %s", id, cl.ID())
 	}
-	//动态内存存储
+	//动态内存存储	
 	s = raft.NewMemoryStorage()
 	c := &raft.Config{
 		ID:              uint64(id),

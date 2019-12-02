@@ -17,8 +17,8 @@ package auth
 import (
 	"testing"
 
-	"hank.com/etcd-3.3.12-annotated/auth/authpb"
-	"hank.com/etcd-3.3.12-annotated/pkg/adt"
+	"go.etcd.io/etcd/auth/authpb"
+	"go.etcd.io/etcd/pkg/adt"
 
 	"go.uber.org/zap"
 )
@@ -48,7 +48,7 @@ func TestRangePermission(t *testing.T) {
 	}
 
 	for i, tt := range tests {
-		readPerms := &adt.IntervalTree{}
+		readPerms := adt.NewIntervalTree()
 		for _, p := range tt.perms {
 			readPerms.Insert(p, struct{}{})
 		}
@@ -89,7 +89,7 @@ func TestKeyPermission(t *testing.T) {
 	}
 
 	for i, tt := range tests {
-		readPerms := &adt.IntervalTree{}
+		readPerms := adt.NewIntervalTree()
 		for _, p := range tt.perms {
 			readPerms.Insert(p, struct{}{})
 		}

@@ -27,7 +27,6 @@ func (c JointConfig) String() string {
 
 // IDs returns a newly initialized map representing the set of voters present
 // in the joint configuration.
-//IDS返回的是最新可参与投票 Node ID
 func (c JointConfig) IDs() map[uint64]struct{} {
 	m := map[uint64]struct{}{}
 	for _, cc := range c {

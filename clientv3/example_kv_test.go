@@ -19,8 +19,8 @@ import (
 	"fmt"
 	"log"
 
-	"hank.com/etcd-3.3.12-annotated/clientv3"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v3rpc/rpctypes"
+	"go.etcd.io/etcd/clientv3"
+	"go.etcd.io/etcd/etcdserver/api/v3rpc/rpctypes"
 )
 
 func ExampleKV_put() {
@@ -249,7 +249,6 @@ func ExampleKV_txn() {
 	}
 
 	gresp, err := kvc.Get(context.TODO(), "key")
-	cancel()
 	if err != nil {
 		log.Fatal(err)
 	}

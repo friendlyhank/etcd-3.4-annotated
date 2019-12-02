@@ -19,10 +19,6 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-/**
- *EtcdError grpc 服务的错误
- */
-
 // server-side error
 var (
 	ErrGRPCEmptyKey      = status.New(codes.InvalidArgument, "etcdserver: key is not provided").Err()

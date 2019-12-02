@@ -18,7 +18,7 @@ import (
 	"net/url"
 	"testing"
 
-	"hank.com/etcd-3.3.12-annotated/pkg/testutil"
+	"go.etcd.io/etcd/pkg/testutil"
 )
 
 // TestURLPickerPickTwice tests that pick returns a possible url,

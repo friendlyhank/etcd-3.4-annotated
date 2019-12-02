@@ -21,11 +21,11 @@ import (
 	"reflect"
 	"testing"
 
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v2store"
-	"hank.com/etcd-3.3.12-annotated/pkg/mock/mockstore"
-	"hank.com/etcd-3.3.12-annotated/pkg/testutil"
-	"hank.com/etcd-3.3.12-annotated/pkg/types"
-	"hank.com/etcd-3.3.12-annotated/raft/raftpb"
+	"go.etcd.io/etcd/etcdserver/api/v2store"
+	"go.etcd.io/etcd/pkg/mock/mockstore"
+	"go.etcd.io/etcd/pkg/testutil"
+	"go.etcd.io/etcd/pkg/types"
+	"go.etcd.io/etcd/raft/raftpb"
 
 	"go.uber.org/zap"
 )

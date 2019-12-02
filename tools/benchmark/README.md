@@ -5,7 +5,7 @@
 ## Download and install
 To get `benchmark` from the `master` branch via `go get`:
 ```sh
-$ go get hank.com/etcd-3.3.12-annotated/tools/benchmark
+$ go get go.etcd.io/etcd/tools/benchmark
 # GOPATH should be set
 $ ls $GOPATH/bin
 benchmark

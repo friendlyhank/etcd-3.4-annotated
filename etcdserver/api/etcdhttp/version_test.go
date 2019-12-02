@@ -20,7 +20,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"hank.com/etcd-3.3.12-annotated/version"
+	"go.etcd.io/etcd/version"
 )
 
 func TestServeVersion(t *testing.T) {

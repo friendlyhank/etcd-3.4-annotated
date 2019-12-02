@@ -16,7 +16,9 @@
 package endpoint
 
 import (
+	"context"
 	"fmt"
+	"net"
 	"net/url"
 	"strings"
 	"sync"
@@ -102,7 +104,6 @@ func (e *ResolverGroup) Target(endpoint string) string {
 }
 
 // Target constructs a endpoint resolver target.
-//endpoint://id/host endpoint
 func Target(id, endpoint string) string {
 	return fmt.Sprintf("%s://%s/%s", scheme, id, endpoint)
 }
@@ -116,7 +117,6 @@ func (e *ResolverGroup) Close() {
 	bldr.close(e.id)
 }
 
-//resolver Builder interface
 // Build creates or reuses an etcd resolver for the etcd cluster name identified by the authority part of the target.
 func (b *builder) Build(target resolver.Target, cc resolver.ClientConn, opts resolver.BuildOption) (resolver.Resolver, error) {
 	if len(target.Authority) < 1 {
@@ -174,7 +174,7 @@ func (b *builder) Scheme() string {
 //包含单个EndpointID和grpc conn
 type Resolver struct {
 	endpointID string
-	cc         resolver.ClientConn //grpc resolver ClientConn
+	cc         resolver.ClientConn//grpc resolver ClientConn
 	sync.RWMutex
 }
 
@@ -239,13 +239,18 @@ func ParseTarget(target string) (string, string, error) {
 	return parts[0], parts[1], nil
 }
 
-// ParseHostPort splits a "<host>:<port>" string into the host and port parts.
-// The port part is optional.
-func ParseHostPort(hostPort string) (host string, port string) {
-	parts := strings.SplitN(hostPort, ":", 2)
-	host = parts[0]
-	if len(parts) > 1 {
-		port = parts[1]
+// Dialer dials a endpoint using net.Dialer.
+// Context cancelation and timeout are supported.
+func Dialer(ctx context.Context, dialEp string) (net.Conn, error) {
+	proto, host, _ := ParseEndpoint(dialEp)
+	select {
+	case <-ctx.Done():
+		return nil, ctx.Err()
+	default:
 	}
-	return host, port
+	dialer := &net.Dialer{}
+	if deadline, ok := ctx.Deadline(); ok {
+		dialer.Deadline = deadline
+	}
+	return dialer.DialContext(ctx, proto, host)
 }

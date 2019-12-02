@@ -25,12 +25,12 @@ import (
 	"sync"
 	"time"
 
-	stats "hank.com/etcd-3.3.12-annotated/etcdserver/api/v2stats"
-	"hank.com/etcd-3.3.12-annotated/pkg/httputil"
-	"hank.com/etcd-3.3.12-annotated/pkg/transport"
-	"hank.com/etcd-3.3.12-annotated/pkg/types"
-	"hank.com/etcd-3.3.12-annotated/raft/raftpb"
-	"hank.com/etcd-3.3.12-annotated/version"
+	stats "go.etcd.io/etcd/etcdserver/api/v2stats"
+	"go.etcd.io/etcd/pkg/httputil"
+	"go.etcd.io/etcd/pkg/transport"
+	"go.etcd.io/etcd/pkg/types"
+	"go.etcd.io/etcd/raft/raftpb"
+	"go.etcd.io/etcd/version"
 
 	"github.com/coreos/go-semver/semver"
 	"go.uber.org/zap"
@@ -57,6 +57,11 @@ var (
 		"3.1.0": {streamTypeMsgAppV2, streamTypeMessage},
 		"3.2.0": {streamTypeMsgAppV2, streamTypeMessage},
 		"3.3.0": {streamTypeMsgAppV2, streamTypeMessage},
+<<<<<<< HEAD
+=======
+		"3.4.0": {streamTypeMsgAppV2, streamTypeMessage},
+		"3.5.0": {streamTypeMsgAppV2, streamTypeMessage},
+>>>>>>> upstream/master
 	}
 )
 
@@ -200,13 +205,13 @@ func (cw *streamWriter) run() {
 			}
 			heartbeatc, msgc = nil, nil
 
-		case m := <-msgc: //要发送的消息在这里接收
+		case m := <-msgc://要发送的消息在这里接收
 			err := enc.encode(&m) //格式化消息
 			if err == nil {
 				unflushed += m.Size()
 
 				if len(msgc) == 0 || batched > streamBufSize/2 {
-					flusher.Flush() //刷新缓冲区,发送到对端
+					flusher.Flush()//刷新缓冲区,发送到对端
 					sentBytes.WithLabelValues(cw.peerID.String()).Add(float64(unflushed))
 					unflushed = 0
 					batched = 0
@@ -214,11 +219,11 @@ func (cw *streamWriter) run() {
 					batched++
 				}
 
-				continue //发送完成之后返回上层 并没有结束对话
+				continue//发送完成之后返回上层 并没有结束对话
 			}
 
 			cw.status.deactivate(failureType{source: t.String(), action: "write"}, err.Error())
-			cw.close() //本次发送结束,即http会话结束
+			cw.close()//本次发送结束,即http会话结束
 			if cw.lg != nil {
 				cw.lg.Warn(
 					"lost TCP streaming connection with remote peer",
@@ -415,7 +420,6 @@ func (cr *streamReader) run() {
 	}
 
 	for {
-		//dial
 		rc, err := cr.dial(t)
 		if err != nil {
 			if err != errUnsupportedStreamType {
@@ -550,7 +554,11 @@ func (cr *streamReader) decodeLoop(rc io.ReadCloser, t streamType) error {
 		}
 
 		select {
+<<<<<<< HEAD
 		case recvc <- m: /* 将消息写到channel中 channel另外一段是rafthttp/peer.go startPeer*/
+=======
+		case recvc <- m:
+>>>>>>> upstream/master
 		default:
 			if cr.status.isActive() {
 				if cr.lg != nil {

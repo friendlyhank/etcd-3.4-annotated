@@ -19,10 +19,10 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"hank.com/etcd-3.3.12-annotated/lease/leasepb"
-	"hank.com/etcd-3.3.12-annotated/mvcc"
-	"hank.com/etcd-3.3.12-annotated/mvcc/backend"
-	"hank.com/etcd-3.3.12-annotated/mvcc/mvccpb"
+	"go.etcd.io/etcd/lease/leasepb"
+	"go.etcd.io/etcd/mvcc"
+	"go.etcd.io/etcd/mvcc/backend"
+	"go.etcd.io/etcd/mvcc/mvccpb"
 
 	bolt "go.etcd.io/bbolt"
 )

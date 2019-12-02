@@ -29,17 +29,17 @@ import (
 	"path/filepath"
 	"time"
 
-	"hank.com/etcd-3.3.12-annotated/clientv3"
-	"hank.com/etcd-3.3.12-annotated/clientv3/leasing"
-	"hank.com/etcd-3.3.12-annotated/clientv3/namespace"
-	"hank.com/etcd-3.3.12-annotated/clientv3/ordering"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v3election/v3electionpb"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v3lock/v3lockpb"
-	pb "hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
-	"hank.com/etcd-3.3.12-annotated/pkg/debugutil"
-	"hank.com/etcd-3.3.12-annotated/pkg/logutil"
-	"hank.com/etcd-3.3.12-annotated/pkg/transport"
-	"hank.com/etcd-3.3.12-annotated/proxy/grpcproxy"
+	"go.etcd.io/etcd/clientv3"
+	"go.etcd.io/etcd/clientv3/leasing"
+	"go.etcd.io/etcd/clientv3/namespace"
+	"go.etcd.io/etcd/clientv3/ordering"
+	"go.etcd.io/etcd/etcdserver/api/v3election/v3electionpb"
+	"go.etcd.io/etcd/etcdserver/api/v3lock/v3lockpb"
+	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
+	"go.etcd.io/etcd/pkg/debugutil"
+	"go.etcd.io/etcd/pkg/logutil"
+	"go.etcd.io/etcd/pkg/transport"
+	"go.etcd.io/etcd/proxy/grpcproxy"
 
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/soheilhy/cmux"
@@ -199,7 +199,6 @@ func startGRPCProxy(cmd *cobra.Command, args []string) {
 	errc := make(chan error)
 	//gRPC proxy服务
 	go func() { errc <- newGRPCProxyServer(lg, client).Serve(grpcl) }()
-
 	go func() { errc <- srvhttp.Serve(httpl) }()
 	go func() { errc <- m.Serve() }()
 	if len(grpcProxyMetricsListenAddr) > 0 {
@@ -349,18 +348,18 @@ func newGRPCProxyServer(lg *zap.Logger, client *clientv3.Client) *grpc.Server {
 		client.KV, _, _ = leasing.NewKV(client, grpcProxyLeasing)
 	}
 
-	//etcd client的kv封装
-	kvp, _ := grpcproxy.NewKvProxy(client)
-	//etcd client的watch封装
-	watchp, _ := grpcproxy.NewWatchProxy(client)
+//etcd client的kv封装	
+kvp, _ := grpcproxy.NewKvProxy(client)
+	//etcd client的watch封装	
+watchp, _ := grpcproxy.NewWatchProxy(client)
 	if grpcProxyResolverPrefix != "" {
 		grpcproxy.Register(client, grpcProxyResolverPrefix, grpcProxyAdvertiseClientURL, grpcProxyResolverTTL)
 	}
-	clusterp, _ := grpcproxy.NewClusterProxy(client, grpcProxyAdvertiseClientURL, grpcProxyResolverPrefix) //cluster
-	leasep, _ := grpcproxy.NewLeaseProxy(client)                                                           //lease
+	clusterp, _ := grpcproxy.NewClusterProxy(client, grpcProxyAdvertiseClientURL, grpcProxyResolverPrefix)
+	leasep, _ := grpcproxy.NewLeaseProxy(client)
 	mainp := grpcproxy.NewMaintenanceProxy(client)
-	authp := grpcproxy.NewAuthProxy(client)         //auth
-	electionp := grpcproxy.NewElectionProxy(client) //election
+	authp := grpcproxy.NewAuthProxy(client)
+	electionp := grpcproxy.NewElectionProxy(client)
 	lockp := grpcproxy.NewLockProxy(client)
 
 	server := grpc.NewServer(

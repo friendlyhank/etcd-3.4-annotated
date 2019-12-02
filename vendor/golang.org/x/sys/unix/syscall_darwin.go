@@ -77,11 +77,18 @@ func nametomib(name string) (mib []_C_int, err error) {
 	return buf[0 : n/siz], nil
 }
 
-//sys   ptrace(request int, pid int, addr uintptr, data uintptr) (err error)
-func PtraceAttach(pid int) (err error) { return ptrace(PT_ATTACH, pid, 0, 0) }
-func PtraceDetach(pid int) (err error) { return ptrace(PT_DETACH, pid, 0, 0) }
+func direntIno(buf []byte) (uint64, bool) {
+	return readInt(buf, unsafe.Offsetof(Dirent{}.Ino), unsafe.Sizeof(Dirent{}.Ino))
+}
 
-const (
+func direntReclen(buf []byte) (uint64, bool) {
+	return readInt(buf, unsafe.Offsetof(Dirent{}.Reclen), unsafe.Sizeof(Dirent{}.Reclen))
+}
+
+func direntNamlen(buf []byte) (uint64, bool) {
+	return readInt(buf, unsafe.Offsetof(Dirent{}.Namlen), unsafe.Sizeof(Dirent{}.Namlen))
+}
+
 	attrBitMapCount = 5
 	attrCmnFullpath = 0x08000000
 )
@@ -144,13 +151,27 @@ func getAttrList(path string, attrList attrList, attrBuf []byte, options uint) (
 
 //sys getattrlist(path *byte, list unsafe.Pointer, buf unsafe.Pointer, size uintptr, options int) (err error)
 
-//sysnb pipe() (r int, w int, err error)
-
-func Pipe(p []int) (err error) {
-	if len(p) != 2 {
-		return EINVAL
+func SysctlClockinfo(name string) (*Clockinfo, error) {
+	mib, err := sysctlmib(name)
+	if err != nil {
+		return nil, err
+func SysctlClockinfo(name string) (*Clockinfo, error) {
+	mib, err := sysctlmib(name)
+	if err != nil {
+		return nil, err
 	}
-	p[0], p[1], err = pipe()
+
+	n := uintptr(SizeofClockinfo)
+	var ci Clockinfo
+	if err := sysctl(mib, (*byte)(unsafe.Pointer(&ci)), &n, nil, 0); err != nil {
+		return nil, err
+	}
+	if n != SizeofClockinfo {
+		return nil, EIO
+	}
+	return &ci, nil
+}
+
 	return
 }
 

@@ -22,7 +22,7 @@ import (
 	"strings"
 	"time"
 
-	"hank.com/etcd-3.3.12-annotated/pkg/transport"
+	"go.etcd.io/etcd/pkg/transport"
 
 	"go.uber.org/zap"
 )

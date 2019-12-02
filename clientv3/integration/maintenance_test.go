@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"io"
 	"io/ioutil"
+	"math"
 	"path/filepath"
 	"testing"
 	"time"
@@ -27,13 +28,13 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 
-	"hank.com/etcd-3.3.12-annotated/clientv3"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v3rpc/rpctypes"
-	"hank.com/etcd-3.3.12-annotated/integration"
-	"hank.com/etcd-3.3.12-annotated/lease"
-	"hank.com/etcd-3.3.12-annotated/mvcc"
-	"hank.com/etcd-3.3.12-annotated/mvcc/backend"
-	"hank.com/etcd-3.3.12-annotated/pkg/testutil"
+	"go.etcd.io/etcd/clientv3"
+	"go.etcd.io/etcd/etcdserver/api/v3rpc/rpctypes"
+	"go.etcd.io/etcd/integration"
+	"go.etcd.io/etcd/lease"
+	"go.etcd.io/etcd/mvcc"
+	"go.etcd.io/etcd/mvcc/backend"
+	"go.etcd.io/etcd/pkg/testutil"
 )
 
 func TestMaintenanceHashKV(t *testing.T) {
@@ -149,7 +150,7 @@ func TestMaintenanceSnapshotErrorInflight(t *testing.T) {
 	clus.Members[0].Stop(t)
 	dpath := filepath.Join(clus.Members[0].DataDir, "member", "snap", "db")
 	b := backend.NewDefaultBackend(dpath)
-	s := mvcc.NewStore(zap.NewExample(), b, &lease.FakeLessor{}, nil)
+	s := mvcc.NewStore(zap.NewExample(), b, &lease.FakeLessor{}, nil, mvcc.StoreConfig{CompactionBatchLimit: math.MaxInt32})
 	rev := 100000
 	for i := 2; i <= rev; i++ {
 		s.Put([]byte(fmt.Sprintf("%10d", i)), bytes.Repeat([]byte("a"), 1024), lease.NoLease)

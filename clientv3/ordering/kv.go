@@ -18,7 +18,7 @@ import (
 	"context"
 	"sync"
 
-	"hank.com/etcd-3.3.12-annotated/clientv3"
+	"go.etcd.io/etcd/clientv3"
 )
 
 // kvOrdering ensures that serialized requests do not return

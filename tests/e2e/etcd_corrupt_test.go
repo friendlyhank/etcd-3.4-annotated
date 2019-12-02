@@ -23,8 +23,8 @@ import (
 	"testing"
 	"time"
 
-	"hank.com/etcd-3.3.12-annotated/clientv3"
-	"hank.com/etcd-3.3.12-annotated/mvcc/mvccpb"
+	"go.etcd.io/etcd/clientv3"
+	"go.etcd.io/etcd/mvcc/mvccpb"
 
 	bolt "go.etcd.io/bbolt"
 )

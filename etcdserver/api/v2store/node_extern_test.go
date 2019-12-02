@@ -20,7 +20,7 @@ import (
 	"time"
 	"unsafe"
 
-	"hank.com/etcd-3.3.12-annotated/pkg/testutil"
+	"go.etcd.io/etcd/pkg/testutil"
 )
 
 func TestNodeExternClone(t *testing.T) {

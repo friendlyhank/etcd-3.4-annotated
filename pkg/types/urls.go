@@ -18,14 +18,10 @@ import (
 	"errors"
 	"fmt"
 	"net"
-		"net/url"
+	"net/url"
 	"sort"
 	"strings"
 )
-
-/*
- *url处理类
- */
 
 type URLs []url.URL
 

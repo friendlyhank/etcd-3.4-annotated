@@ -19,8 +19,8 @@ import (
 	"os"
 	"path/filepath"
 
-	"hank.com/etcd-3.3.12-annotated/pkg/fileutil"
-	"hank.com/etcd-3.3.12-annotated/wal/walpb"
+	"go.etcd.io/etcd/pkg/fileutil"
+	"go.etcd.io/etcd/wal/walpb"
 
 	"go.uber.org/zap"
 )

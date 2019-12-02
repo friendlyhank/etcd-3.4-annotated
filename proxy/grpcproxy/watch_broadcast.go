@@ -18,8 +18,8 @@ import (
 	"context"
 	"sync"
 
-	"hank.com/etcd-3.3.12-annotated/clientv3"
-	pb "hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
+	"go.etcd.io/etcd/clientv3"
+	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
 )
 
 // watchBroadcast broadcasts a server watcher to many client watchers.

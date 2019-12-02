@@ -19,10 +19,10 @@ import (
 	"os"
 	"strings"
 
-	v3 "hank.com/etcd-3.3.12-annotated/clientv3"
-	"hank.com/etcd-3.3.12-annotated/clientv3/snapshot"
-	pb "hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
-	"hank.com/etcd-3.3.12-annotated/pkg/types"
+	v3 "go.etcd.io/etcd/clientv3"
+	"go.etcd.io/etcd/clientv3/snapshot"
+	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
+	"go.etcd.io/etcd/pkg/types"
 )
 
 type simplePrinter struct {
@@ -150,7 +150,7 @@ func (s *simplePrinter) MemberList(resp v3.MemberListResponse) {
 func (s *simplePrinter) EndpointHealth(hs []epHealth) {
 	for _, h := range hs {
 		if h.Error == "" {
-			fmt.Fprintf(os.Stderr, "%s is healthy: successfully committed proposal: took = %v\n", h.Ep, h.Took)
+			fmt.Printf("%s is healthy: successfully committed proposal: took = %v\n", h.Ep, h.Took)
 		} else {
 			fmt.Fprintf(os.Stderr, "%s is unhealthy: failed to commit proposal: %v\n", h.Ep, h.Error)
 		}

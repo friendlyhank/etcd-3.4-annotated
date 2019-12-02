@@ -23,7 +23,7 @@ import (
 	"time"
 
 	"github.com/prometheus/client_golang/prometheus"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/etcdhttp"
+	"go.etcd.io/etcd/etcdserver/api/etcdhttp"
 )
 
 var (

@@ -21,10 +21,10 @@ import (
 	"io"
 	"sync"
 
-	"hank.com/etcd-3.3.12-annotated/pkg/crc"
-	"hank.com/etcd-3.3.12-annotated/pkg/pbutil"
-	"hank.com/etcd-3.3.12-annotated/raft/raftpb"
-	"hank.com/etcd-3.3.12-annotated/wal/walpb"
+	"go.etcd.io/etcd/pkg/crc"
+	"go.etcd.io/etcd/pkg/pbutil"
+	"go.etcd.io/etcd/raft/raftpb"
+	"go.etcd.io/etcd/wal/walpb"
 )
 
 const minSectorSize = 512
@@ -32,9 +32,6 @@ const minSectorSize = 512
 // frameSizeBytes is frame size in bytes, including record size and padding size.
 const frameSizeBytes = 8
 
-/**
- *Wal的解码
- */
 type decoder struct {
 	mu  sync.Mutex
 	brs []*bufio.Reader

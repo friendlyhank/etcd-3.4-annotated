@@ -20,9 +20,9 @@ import (
 	"testing"
 	"time"
 
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v3rpc/rpctypes"
-	pb "hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
-	"hank.com/etcd-3.3.12-annotated/pkg/testutil"
+	"go.etcd.io/etcd/etcdserver/api/v3rpc/rpctypes"
+	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
+	"go.etcd.io/etcd/pkg/testutil"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -85,8 +85,8 @@ func TestV3KVInflightRangeRequests(t *testing.T) {
 			if err != nil {
 				errCode := status.Convert(err).Code()
 				errDesc := rpctypes.ErrorDesc(err)
-				if err != nil && !(errDesc == context.Canceled.Error() || errCode == codes.Unavailable) {
-					t.Errorf("inflight request should be canceled with '%v' or code Unavailable, got '%v' with code '%s'", context.Canceled.Error(), errDesc, errCode)
+				if err != nil && !(errDesc == context.Canceled.Error() || errCode == codes.Canceled || errCode == codes.Unavailable) {
+					t.Errorf("inflight request should be canceled with '%v' or code Canceled or Unavailable, got '%v' with code '%s'", context.Canceled.Error(), errDesc, errCode)
 				}
 			}
 		}()

@@ -22,9 +22,9 @@ import (
 	"reflect"
 	"testing"
 
-	"hank.com/etcd-3.3.12-annotated/raft/quorum"
-	pb "hank.com/etcd-3.3.12-annotated/raft/raftpb"
-	"hank.com/etcd-3.3.12-annotated/raft/tracker"
+	"go.etcd.io/etcd/raft/quorum"
+	pb "go.etcd.io/etcd/raft/raftpb"
+	"go.etcd.io/etcd/raft/tracker"
 )
 
 // rawNodeAdapter is essentially a lint that makes sure that RawNode implements

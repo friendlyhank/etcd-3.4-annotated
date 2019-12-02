@@ -12,9 +12,9 @@ import (
 
 	_ "github.com/gogo/protobuf/gogoproto"
 
-	mvccpb "hank.com/etcd-3.3.12-annotated/mvcc/mvccpb"
+	mvccpb "go.etcd.io/etcd/mvcc/mvccpb"
 
-	authpb "hank.com/etcd-3.3.12-annotated/auth/authpb"
+	authpb "go.etcd.io/etcd/auth/authpb"
 
 	context "golang.org/x/net/context"
 
@@ -223,7 +223,6 @@ type ResponseHeader struct {
 	// For watch progress responses, the header.revision indicates progress. All future events
 	// recieved in this stream are guaranteed to have a higher revision number than the
 	// header.revision number.
-	//etcd的Revision计数器
 	Revision int64 `protobuf:"varint,3,opt,name=revision,proto3" json:"revision,omitempty"`
 	// raft_term is the raft term when the request was applied.
 	RaftTerm uint64 `protobuf:"varint,4,opt,name=raft_term,json=raftTerm,proto3" json:"raft_term,omitempty"`
@@ -3433,7 +3432,6 @@ var _ grpc.ClientConn
 const _ = grpc.SupportPackageIsVersion4
 
 // Client API for KV service
-//客户端的KV 服务API
 type KVClient interface {
 	// Range gets the keys in the range from the key-value store.
 	Range(ctx context.Context, in *RangeRequest, opts ...grpc.CallOption) (*RangeResponse, error)
@@ -3456,7 +3454,6 @@ type KVClient interface {
 	Compact(ctx context.Context, in *CompactionRequest, opts ...grpc.CallOption) (*CompactionResponse, error)
 }
 
-//kVClient conn
 type kVClient struct {
 	cc *grpc.ClientConn
 }
@@ -3485,7 +3482,7 @@ func (c *kVClient) Put(ctx context.Context, in *PutRequest, opts ...grpc.CallOpt
 
 func (c *kVClient) DeleteRange(ctx context.Context, in *DeleteRangeRequest, opts ...grpc.CallOption) (*DeleteRangeResponse, error) {
 	out := new(DeleteRangeResponse)
-		err := grpc.Invoke(ctx, "/etcdserverpb.KV/DeleteRange", in, out, c.cc, opts...)
+	err := grpc.Invoke(ctx, "/etcdserverpb.KV/DeleteRange", in, out, c.cc, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -3511,7 +3508,6 @@ func (c *kVClient) Compact(ctx context.Context, in *CompactionRequest, opts ...g
 }
 
 // Server API for KV service
-////服务端的KV 服务API
 type KVServer interface {
 	// Range gets the keys in the range from the key-value store.
 	Range(context.Context, *RangeRequest) (*RangeResponse, error)
@@ -3534,7 +3530,6 @@ type KVServer interface {
 	Compact(context.Context, *CompactionRequest) (*CompactionResponse, error)
 }
 
-//注册KV服务
 func RegisterKVServer(s *grpc.Server, srv KVServer) {
 	s.RegisterService(&_KV_serviceDesc, srv)
 }
@@ -3724,7 +3719,7 @@ func RegisterWatchServer(s *grpc.Server, srv WatchServer) {
 }
 
 func _Watch_Watch_Handler(srv interface{}, stream grpc.ServerStream) error {
-	return srv.(WatchServer).Watch(&watchWatchServer{stream}) //具体实现对应 (ws *watchServer) Watch(stream pb.Watch_WatchServer)
+	return srv.(WatchServer).Watch(&watchWatchServer{stream})
 }
 
 type Watch_WatchServer interface {

@@ -20,7 +20,6 @@ import (
 	"sort"
 )
 
-
 // ReadDirOp represents an read-directory operation.
 type ReadDirOp struct {
 	ext string
@@ -31,12 +30,10 @@ type ReadDirOption func(*ReadDirOp)
 
 // WithExt filters file names by their extensions.
 // (e.g. WithExt(".wal") to list only WAL files)
-//查询文件指定扩展名的方法
 func WithExt(ext string) ReadDirOption {
 	return func(op *ReadDirOp) { op.ext = ext }
 }
 
-//遍历每个操作方法方法，并执行对应方法
 func (op *ReadDirOp) applyOpts(opts []ReadDirOption) {
 	for _, opt := range opts {
 		opt(op)

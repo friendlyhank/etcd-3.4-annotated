@@ -23,8 +23,8 @@ import (
 	"sync"
 	"time"
 
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v2error"
-	"hank.com/etcd-3.3.12-annotated/pkg/types"
+	"go.etcd.io/etcd/etcdserver/api/v2error"
+	"go.etcd.io/etcd/pkg/types"
 
 	"github.com/jonboulle/clockwork"
 )
@@ -39,8 +39,8 @@ func init() {
 }
 
 type Store interface {
-	Version() int	//记录版本
-	Index() uint64  //唯一id
+	Version() int//记录版本
+	Index() uint64//唯一id
 
 	Get(nodePath string, recursive, sorted bool) (*Event, error)//获取
 	Set(nodePath string, dir bool, value string, expireOpts TTLOptionSet) (*Event, error)//设置
@@ -52,23 +52,23 @@ type Store interface {
 	Delete(nodePath string, dir, recursive bool) (*Event, error)//删除
 	CompareAndDelete(nodePath string, prevValue string, prevIndex uint64) (*Event, error)//比较删除
 
-	Watch(prefix string, recursive, stream bool, sinceIndex uint64) (Watcher, error)//watch
+	Watch(prefix string, recursive, stream bool, sinceIndex uint64) (Watcher, error)
 
-	Save() ([]byte, error)//保存
-	Recovery(state []byte) error//恢复
+	Save() ([]byte, error)
+	Recovery(state []byte) error
 
-	Clone() Store//备份
-	SaveNoCopy() ([]byte, error)//保存
+	Clone() Store
+	SaveNoCopy() ([]byte, error)
 
-	JsonStats() []byte//统计
-	DeleteExpiredKeys(cutoff time.Time)//删除失效的key
+	JsonStats() []byte
+	DeleteExpiredKeys(cutoff time.Time)
 
-	HasTTLKeys() bool//是否有TTL的key
+	HasTTLKeys() bool
 }
 
 type TTLOptionSet struct {
-	ExpireTime time.Time	//key的有效期
-	Refresh    bool	//刷新
+	ExpireTime time.Time
+	Refresh    bool
 }
 
 type store struct {
@@ -77,8 +77,8 @@ type store struct {
 	CurrentIndex   uint64//对应存储内容的index
 	Stats          *Stats
 	CurrentVersion int//最新数据的版本
-	ttlKeyHeap     *ttlKeyHeap  // 用于数据恢复的(需手动操作)need to recovery manually
-	worldLock      sync.RWMutex //停止当前存储的world锁 stop the world lock
+	ttlKeyHeap     *ttlKeyHeap  // need to recovery manually// 用于数据恢复的(需手动操作)need to recovery manually
+	worldLock      sync.RWMutex // stop the world lock // 用于数据恢复的(需手动操作)need to recovery manually
 	clock          clockwork.Clock
 	readonlySet    types.Set//只读操作
 }

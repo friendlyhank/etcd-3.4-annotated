@@ -22,11 +22,11 @@ import (
 	"strconv"
 	"testing"
 
-	"hank.com/etcd-3.3.12-annotated/auth/authpb"
-	epb "hank.com/etcd-3.3.12-annotated/etcdserver/api/v3election/v3electionpb"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v3rpc/rpctypes"
-	pb "hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
-	"hank.com/etcd-3.3.12-annotated/pkg/testutil"
+	"go.etcd.io/etcd/auth/authpb"
+	epb "go.etcd.io/etcd/etcdserver/api/v3election/v3electionpb"
+	"go.etcd.io/etcd/etcdserver/api/v3rpc/rpctypes"
+	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
+	"go.etcd.io/etcd/pkg/testutil"
 
 	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 )
@@ -350,7 +350,7 @@ func testV3CurlProclaimMissiongLeaderKey(cx ctlCtx) {
 	if err = cURLPost(cx.epc, cURLReq{
 		endpoint: path.Join(cx.apiPrefix, "/election/proclaim"),
 		value:    string(pdata),
-		expected: `{"error":"\"leader\" field must be provided","code":2}`,
+		expected: `{"error":"\"leader\" field must be provided","message":"\"leader\" field must be provided","code":2}`,
 	}); err != nil {
 		cx.t.Fatalf("failed post proclaim request (%s) (%v)", cx.apiPrefix, err)
 	}
@@ -366,7 +366,7 @@ func testV3CurlResignMissiongLeaderKey(cx ctlCtx) {
 	if err := cURLPost(cx.epc, cURLReq{
 		endpoint: path.Join(cx.apiPrefix, "/election/resign"),
 		value:    `{}`,
-		expected: `{"error":"\"leader\" field must be provided","code":2}`,
+		expected: `{"error":"\"leader\" field must be provided","message":"\"leader\" field must be provided","code":2}`,
 	}); err != nil {
 		cx.t.Fatalf("failed post resign request (%s) (%v)", cx.apiPrefix, err)
 	}

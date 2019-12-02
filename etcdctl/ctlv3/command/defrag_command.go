@@ -21,7 +21,7 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
-	"hank.com/etcd-3.3.12-annotated/mvcc/backend"
+	"go.etcd.io/etcd/mvcc/backend"
 )
 
 var (

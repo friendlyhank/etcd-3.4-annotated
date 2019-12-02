@@ -21,9 +21,9 @@ import (
 	"os"
 	"sync"
 
-	"hank.com/etcd-3.3.12-annotated/pkg/crc"
-	"hank.com/etcd-3.3.12-annotated/pkg/ioutil"
-	"hank.com/etcd-3.3.12-annotated/wal/walpb"
+	"go.etcd.io/etcd/pkg/crc"
+	"go.etcd.io/etcd/pkg/ioutil"
+	"go.etcd.io/etcd/wal/walpb"
 )
 
 // walPageBytes is the alignment for flushing records to the backing Writer.
@@ -31,9 +31,6 @@ import (
 // distinguish between torn writes and ordinary data corruption.
 const walPageBytes = 8 * minSectorSize
 
-/**
- *Wal的编码
- */
 type encoder struct {
 	mu sync.Mutex
 	bw *ioutil.PageWriter

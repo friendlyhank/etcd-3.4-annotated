@@ -19,9 +19,9 @@ import (
 	"reflect"
 	"testing"
 
-	stats "hank.com/etcd-3.3.12-annotated/etcdserver/api/v2stats"
-	"hank.com/etcd-3.3.12-annotated/pkg/types"
-	"hank.com/etcd-3.3.12-annotated/raft/raftpb"
+	stats "go.etcd.io/etcd/etcdserver/api/v2stats"
+	"go.etcd.io/etcd/pkg/types"
+	"go.etcd.io/etcd/raft/raftpb"
 )
 
 func TestMsgAppV2(t *testing.T) {

@@ -18,8 +18,13 @@ import (
 	"context"
 	"time"
 
+<<<<<<< HEAD
 	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v2store"
 	pb "hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
+=======
+	"go.etcd.io/etcd/etcdserver/api/v2store"
+	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
+>>>>>>> upstream/master
 )
 
 type RequestV2 pb.Request
@@ -94,7 +99,7 @@ func (a *reqV2HandlerEtcdServer) QGet(ctx context.Context, r *RequestV2) (Respon
 }
 
 func (a *reqV2HandlerEtcdServer) processRaftRequest(ctx context.Context, r *RequestV2) (Response, error) {
-	data, err := ((*pb.Request)(r)).Marshal() //格式化数据,格式化成grpc格式
+	data, err := ((*pb.Request)(r)).Marshal()//格式化数据,格式化成grpc格式
 	if err != nil {
 		return Response{}, err
 	}
@@ -102,12 +107,12 @@ func (a *reqV2HandlerEtcdServer) processRaftRequest(ctx context.Context, r *Requ
 	ch := a.s.w.Register(r.ID)
 
 	start := time.Now()
-	a.s.r.Propose(ctx, data) //处理请求,进入到raft状态机
+	a.s.r.Propose(ctx, data)//处理请求,进入到raft状态机
 	proposalsPending.Inc()
 	defer proposalsPending.Dec()
 
 	select {
-	case x := <-ch: //等待相应,强制转成Response,然后调用内部接口发给客户端
+	case x := <-ch://等待相应,强制转成Response,然后调用内部接口发给客户端
 		resp := x.(Response)
 		return resp, resp.Err
 	case <-ctx.Done():

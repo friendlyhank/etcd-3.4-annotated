@@ -21,7 +21,7 @@ import (
 	"net"
 	"sync"
 
-	"hank.com/etcd-3.3.12-annotated/pkg/transport"
+	"go.etcd.io/etcd/pkg/transport"
 )
 
 // bridge creates a unix socket bridge to another unix socket, making it possible

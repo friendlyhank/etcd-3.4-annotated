@@ -23,9 +23,9 @@ import (
 	"testing"
 	"time"
 
-	"hank.com/etcd-3.3.12-annotated/integration"
-	"hank.com/etcd-3.3.12-annotated/pkg/testutil"
-	"hank.com/etcd-3.3.12-annotated/pkg/transport"
+	"go.etcd.io/etcd/integration"
+	"go.etcd.io/etcd/pkg/testutil"
+	"go.etcd.io/etcd/pkg/transport"
 )
 
 var exampleEndpoints []string

@@ -18,7 +18,7 @@ import (
 	"sync"
 	"time"
 
-	"hank.com/etcd-3.3.12-annotated/pkg/transport"
+	"go.etcd.io/etcd/pkg/transport"
 
 	"github.com/spf13/cobra"
 	"gopkg.in/cheggaaa/pb.v1"

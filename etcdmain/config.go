@@ -21,15 +21,13 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"net/url"
 	"os"
 	"runtime"
-	"strings"
 
-	"hank.com/etcd-3.3.12-annotated/embed"
-	"hank.com/etcd-3.3.12-annotated/pkg/flags"
-	"hank.com/etcd-3.3.12-annotated/pkg/types"
-	"hank.com/etcd-3.3.12-annotated/version"
+	"go.etcd.io/etcd/embed"
+	"go.etcd.io/etcd/pkg/flags"
+	"go.etcd.io/etcd/pkg/logutil"
+	"go.etcd.io/etcd/version"
 
 	"go.uber.org/zap"
 	"sigs.k8s.io/yaml"
@@ -71,14 +69,14 @@ type configProxy struct {
 	ProxyReadTimeoutMs     uint `json:"proxy-read-timeout"`//读后端的超时时间
 	Fallback               string
 	Proxy                  string
-	ProxyJSON              string `json:"proxy"`//设置proxy模式与否:off、readonly、on
+	ProxyJSON              string `json:"proxy"`
 	FallbackJSON           string `json:"discovery-fallback"`
 }
 
 // config holds the config for a command line invocation of etcd
 type config struct {
-	ec           embed.Config  //etcd的配置
-	cp           configProxy  //代理配置
+	ec           embed.Config//etcd的配置
+	cp           configProxy//代理配置
 	cf           configFlags
 	configFile   string
 	printVersion bool
@@ -154,6 +152,7 @@ func newConfig() *config {
 	fs.UintVar(&cfg.ec.ElectionMs, "election-timeout", cfg.ec.ElectionMs, "Time (in milliseconds) for an election to timeout.")
 	fs.BoolVar(&cfg.ec.InitialElectionTickAdvance, "initial-election-tick-advance", cfg.ec.InitialElectionTickAdvance, "Whether to fast-forward initial election ticks on boot for faster election.")
 	fs.Int64Var(&cfg.ec.QuotaBackendBytes, "quota-backend-bytes", cfg.ec.QuotaBackendBytes, "Raise alarms when backend size exceeds the given quota. 0 means use the default quota.")
+	fs.StringVar(&cfg.ec.BackendFreelistType, "backend-bbolt-freelist-type", cfg.ec.BackendFreelistType, "BackendFreelistType specifies the type of freelist that boltdb backend uses(array and map are supported types)")
 	fs.DurationVar(&cfg.ec.BackendBatchInterval, "backend-batch-interval", cfg.ec.BackendBatchInterval, "BackendBatchInterval is the maximum time before commit the backend transaction.")
 	fs.IntVar(&cfg.ec.BackendBatchLimit, "backend-batch-limit", cfg.ec.BackendBatchLimit, "BackendBatchLimit is the maximum operations before commit the backend transaction.")
 	fs.UintVar(&cfg.ec.MaxTxnOps, "max-txn-ops", cfg.ec.MaxTxnOps, "Maximum number of operations permitted in a transaction.")
@@ -212,6 +211,7 @@ func newConfig() *config {
 	fs.StringVar(&cfg.ec.PeerTLSInfo.AllowedCN, "peer-cert-allowed-cn", "", "Allowed CN for inter peer authentication.")
 	fs.StringVar(&cfg.ec.PeerTLSInfo.AllowedHostname, "peer-cert-allowed-hostname", "", "Allowed TLS hostname for inter peer authentication.")
 	fs.Var(flags.NewStringsValue(""), "cipher-suites", "Comma-separated list of supported TLS cipher suites between client/server and peers (empty will be auto-populated by Go).")
+	fs.BoolVar(&cfg.ec.PeerTLSInfo.SkipClientSANVerify, "experimental-peer-skip-client-san-verification", false, "Skip verification of SAN field in client certificate for peer connections.")
 
 	fs.Var(
 		flags.NewUniqueURLsWithExceptions("*", "*"),
@@ -221,11 +221,12 @@ func newConfig() *config {
 	fs.Var(flags.NewUniqueStringsValue("*"), "host-whitelist", "Comma-separated acceptable hostnames from HTTP client requests, if server is not secure (empty means allow all).")
 
 	// logging
-	fs.StringVar(&cfg.ec.Logger, "logger", "capnslog", "Specify 'zap' for structured logging or 'capnslog'.")
-	fs.Var(flags.NewUniqueStringsValue(embed.DefaultLogOutput), "log-output", "DEPRECATED: use '--log-outputs'.")
+	fs.StringVar(&cfg.ec.Logger, "logger", "capnslog", "Specify 'zap' for structured logging or 'capnslog'. WARN: 'capnslog' is being deprecated in v3.5.")
+	fs.Var(flags.NewUniqueStringsValue(embed.DefaultLogOutput), "log-output", "[TO BE DEPRECATED IN v3.5] use '--log-outputs'.")
 	fs.Var(flags.NewUniqueStringsValue(embed.DefaultLogOutput), "log-outputs", "Specify 'stdout' or 'stderr' to skip journald logging even when running under systemd, or list of comma separated output targets.")
-	fs.BoolVar(&cfg.ec.Debug, "debug", false, "Enable debug-level logging for etcd.")
-	fs.StringVar(&cfg.ec.LogPkgLevels, "log-package-levels", "", "(To be deprecated) Specify a particular log level for each etcd package (eg: 'etcdmain=CRITICAL,etcdserver=DEBUG').")
+	fs.BoolVar(&cfg.ec.Debug, "debug", false, "[TO BE DEPRECATED IN v3.5] Enable debug-level logging for etcd. Use '--log-level=debug' instead.")
+	fs.StringVar(&cfg.ec.LogLevel, "log-level", logutil.DefaultLogLevel, "Configures log level. Only supports debug, info, warn, error, panic, or fatal. Default 'info'.")
+	fs.StringVar(&cfg.ec.LogPkgLevels, "log-package-levels", "", "[TO BE DEPRECATED IN v3.5] Specify a particular log level for each etcd package (eg: 'etcdmain=CRITICAL,etcdserver=DEBUG').")
 
 	// version
 	fs.BoolVar(&cfg.printVersion, "version", false, "Print the version and exit.")
@@ -237,7 +238,7 @@ func newConfig() *config {
 	fs.BoolVar(&cfg.ec.EnablePprof, "enable-pprof", false, "Enable runtime profiling data via HTTP server. Address is at client URL + \"/debug/pprof/\"")
 
 	// additional metrics
-	fs.StringVar(&cfg.ec.Metrics, "metrics", cfg.ec.Metrics, "Set level of detail for exported metrics, specify 'extensive' to include histogram metrics")
+	fs.StringVar(&cfg.ec.Metrics, "metrics", cfg.ec.Metrics, "Set level of detail for exported metrics, specify 'extensive' to include server side grpc histogram metrics")
 
 	// auth
 	fs.StringVar(&cfg.ec.AuthToken, "auth-token", cfg.ec.AuthToken, "Specify auth token specific options.")
@@ -250,8 +251,8 @@ func newConfig() *config {
 	fs.BoolVar(&cfg.ec.ExperimentalInitialCorruptCheck, "experimental-initial-corrupt-check", cfg.ec.ExperimentalInitialCorruptCheck, "Enable to check data corruption before serving any client/peer traffic.")
 	fs.DurationVar(&cfg.ec.ExperimentalCorruptCheckTime, "experimental-corrupt-check-time", cfg.ec.ExperimentalCorruptCheckTime, "Duration of time between cluster corruption check passes.")
 	fs.StringVar(&cfg.ec.ExperimentalEnableV2V3, "experimental-enable-v2v3", cfg.ec.ExperimentalEnableV2V3, "v3 prefix for serving emulated v2 state.")
-	fs.StringVar(&cfg.ec.ExperimentalBackendFreelistType, "experimental-backend-bbolt-freelist-type", cfg.ec.ExperimentalBackendFreelistType, "ExperimentalBackendFreelistType specifies the type of freelist that boltdb backend uses(array and map are supported types)")
 	fs.BoolVar(&cfg.ec.ExperimentalEnableLeaseCheckpoint, "experimental-enable-lease-checkpoint", false, "Enable to persist lease remaining TTL to prevent indefinite auto-renewal of long lived leases.")
+	fs.IntVar(&cfg.ec.ExperimentalCompactionBatchLimit, "experimental-compaction-batch-limit", cfg.ec.ExperimentalCompactionBatchLimit, "Sets the maximum revisions deleted in each compaction batch.")
 
 	// unsafe
 	fs.BoolVar(&cfg.ec.ForceNewCluster, "force-new-cluster", false, "Force to create a new one member cluster.")
@@ -265,8 +266,8 @@ func newConfig() *config {
 
 //配置文件解析
 func (cfg *config) parse(arguments []string) error {
-	//解析请求参数
-	perr := cfg.cf.flagSet.Parse(arguments)
+//解析请求参数	
+perr := cfg.cf.flagSet.Parse(arguments)
 	switch perr {
 	case nil:
 	case flag.ErrHelp:
@@ -315,6 +316,13 @@ func (cfg *config) parse(arguments []string) error {
 
 //解析请求参数
 func (cfg *config) configFromCmdLine() error {
+	verKey := "ETCD_VERSION"
+	if verVal := os.Getenv(verKey); verVal != "" {
+		// unset to avoid any possible side-effect.
+		os.Unsetenv(verKey)
+		plog.Warningf("cannot set special environment variable %s=%s", verKey, verVal)
+	}
+
 	err := flags.SetFlagsFromEnv("ETCD", cfg.cf.flagSet)
 	if err != nil {
 		return err
@@ -367,14 +375,6 @@ func (cfg *config) configFromFile(path string) error {
 	}
 	if yerr := yaml.Unmarshal(b, &cfg.cp); yerr != nil {
 		return yerr
-	}
-
-	if cfg.ec.ListenMetricsUrlsJSON != "" {
-		us, err := types.NewURLs(strings.Split(cfg.ec.ListenMetricsUrlsJSON, ","))
-		if err != nil {
-			log.Fatalf("unexpected error setting up listen-metrics-urls: %v", err)
-		}
-		cfg.ec.ListenMetricsUrls = []url.URL(us)
 	}
 
 	if cfg.cp.FallbackJSON != "" {

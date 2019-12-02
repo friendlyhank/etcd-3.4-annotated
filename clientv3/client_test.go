@@ -21,8 +21,8 @@ import (
 	"testing"
 	"time"
 
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v3rpc/rpctypes"
-	"hank.com/etcd-3.3.12-annotated/pkg/testutil"
+	"go.etcd.io/etcd/etcdserver/api/v3rpc/rpctypes"
+	"go.etcd.io/etcd/pkg/testutil"
 
 	"google.golang.org/grpc"
 )
@@ -154,5 +154,15 @@ func TestIsHaltErr(t *testing.T) {
 	cancel()
 	if !isHaltErr(ctx, nil) {
 		t.Errorf("cancel on context should be Halted")
+	}
+}
+
+func TestCloseCtxClient(t *testing.T) {
+	ctx := context.Background()
+	c := NewCtxClient(ctx)
+	err := c.Close()
+	// Close returns ctx.toErr, a nil error means an open Done channel
+	if err == nil {
+		t.Errorf("failed to Close the client. %v", err)
 	}
 }

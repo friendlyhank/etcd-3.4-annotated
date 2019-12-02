@@ -17,13 +17,13 @@ package etcdserver
 import (
 	"io"
 
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/snap"
-	pb "hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
-	"hank.com/etcd-3.3.12-annotated/pkg/pbutil"
-	"hank.com/etcd-3.3.12-annotated/pkg/types"
-	"hank.com/etcd-3.3.12-annotated/raft/raftpb"
-	"hank.com/etcd-3.3.12-annotated/wal"
-	"hank.com/etcd-3.3.12-annotated/wal/walpb"
+	"go.etcd.io/etcd/etcdserver/api/snap"
+	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
+	"go.etcd.io/etcd/pkg/pbutil"
+	"go.etcd.io/etcd/pkg/types"
+	"go.etcd.io/etcd/raft/raftpb"
+	"go.etcd.io/etcd/wal"
+	"go.etcd.io/etcd/wal/walpb"
 
 	"go.uber.org/zap"
 )
@@ -42,8 +42,8 @@ type Storage interface {
 }
 
 type storage struct {
-	*wal.WAL          //WAL
-	*snap.Snapshotter //快照
+	*wal.WAL//WAL
+	*snap.Snapshotter//快照
 }
 
 func NewStorage(w *wal.WAL, s *snap.Snapshotter) Storage {

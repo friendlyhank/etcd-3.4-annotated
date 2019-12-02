@@ -18,7 +18,7 @@ import (
 	"testing"
 	"time"
 
-	"hank.com/etcd-3.3.12-annotated/pkg/testutil"
+	"go.etcd.io/etcd/pkg/testutil"
 )
 
 func TestTxnPanics(t *testing.T) {

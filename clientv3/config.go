@@ -22,7 +22,6 @@ import (
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 )
-
 //clientv3客户端配置信息
 type Config struct {
 	// Endpoints is a list of URLs.
@@ -37,7 +36,6 @@ type Config struct {
 
 	// DialKeepAliveTime is the time after which client pings the server to see if
 	// transport is alive.
-	//grpc keepAlive
 	DialKeepAliveTime time.Duration `json:"dial-keep-alive-time"`
 
 	// DialKeepAliveTimeout is the time that the client waits for a response for the
@@ -48,7 +46,7 @@ type Config struct {
 	// If 0, it defaults to 2.0 MiB (2 * 1024 * 1024).
 	// Make sure that "MaxCallSendMsgSize" < server-side default send/recv limit.
 	// ("--max-request-bytes" flag to etcd or "embed.Config.MaxRequestBytes").
-	MaxCallSendMsgSize int //grpc最大请求msg
+	MaxCallSendMsgSize int//grpc最大请求msg
 
 	// MaxCallRecvMsgSize is the client-side response receive limit.
 	// If 0, it defaults to "math.MaxInt32", because range response can
@@ -70,12 +68,13 @@ type Config struct {
 	RejectOldCluster bool `json:"reject-old-cluster"`
 
 	// DialOptions is a list of dial options for the grpc client (e.g., for interceptors).
+	// For example, pass "grpc.WithBlock()" to block until the underlying connection is up.
+	// Without this, Dial returns immediately and connecting the server happens in background.
 	DialOptions []grpc.DialOption
 
 	// Context is the default client context; it can be used to cancel grpc dial out and
 	// other operations that do not have an explicit context.
-	//Context 可以用来结束grpc
-	Context context.Context
+	Context context.Context//Context 可以用来结束grpc
 
 	// LogConfig configures client-side logger.
 	// If nil, use the default logger.
@@ -84,4 +83,6 @@ type Config struct {
 
 	// PermitWithoutStream when set will allow client to send keepalive pings to server without any active streams(RPCs).
 	PermitWithoutStream bool `json:"permit-without-stream"`
+
+	// TODO: support custom balancer picker
 }

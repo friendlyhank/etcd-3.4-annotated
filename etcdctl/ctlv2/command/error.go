@@ -20,7 +20,7 @@ import (
 	"os"
 
 	"github.com/urfave/cli"
-	"hank.com/etcd-3.3.12-annotated/client"
+	"go.etcd.io/etcd/client"
 )
 
 const (

@@ -18,7 +18,7 @@ import (
 	"errors"
 	"sync"
 
-	pb "hank.com/etcd-3.3.12-annotated/raft/raftpb"
+	pb "go.etcd.io/etcd/raft/raftpb"
 )
 
 // ErrCompacted is returned by Storage.Entries/Compact when a requested
@@ -44,6 +44,8 @@ var ErrSnapshotTemporarilyUnavailable = errors.New("snapshot is temporarily unav
 // become inoperable and refuse to participate in elections; the
 // application is responsible for cleanup and recovery in this case.
 type Storage interface {
+	// TODO(tbg): split this into two interfaces, LogStorage and StateStorage.
+
 	// InitialState returns the saved HardState and ConfState information.
 	//返回 Storage 中记录的状态信息，返回的是 HardState 实例和 ConfState 实例
 	//在前面介绍 Raft 协议时捉到，集群 中每个节点都需要保存一些必需的基本信息，在 e tcd 中将其

@@ -14,7 +14,7 @@
 
 package raft
 
-import pb "hank.com/etcd-3.3.12-annotated/raft/raftpb"
+import pb "go.etcd.io/etcd/raft/raftpb"
 
 // unstable.entries[i] has raft log position i+unstable.offset.
 // Note that unstable.offset may be less than the highest log
@@ -55,10 +55,14 @@ func (u *unstable) maybeLastIndex() (uint64, bool) {
 // is any.
 func (u *unstable) maybeTerm(i uint64) (uint64, bool) {
 	if i < u.offset {
+<<<<<<< HEAD
 		if u.snapshot == nil {
 			return 0, false
 		}
 		if u.snapshot.Metadata.Index == i {
+=======
+		if u.snapshot != nil && u.snapshot.Metadata.Index == i {
+>>>>>>> upstream/master
 			return u.snapshot.Metadata.Term, true
 		}
 		return 0, false
@@ -71,6 +75,10 @@ func (u *unstable) maybeTerm(i uint64) (uint64, bool) {
 	if i > last {
 		return 0, false
 	}
+<<<<<<< HEAD
+=======
+
+>>>>>>> upstream/master
 	return u.entries[i-u.offset].Term, true
 }
 
@@ -120,18 +128,26 @@ func (u *unstable) restore(s pb.Snapshot) {
 	u.snapshot = &s
 }
 
+<<<<<<< HEAD
 //unstable 追加Entry
+=======
+>>>>>>> upstream/master
 func (u *unstable) truncateAndAppend(ents []pb.Entry) {
 	after := ents[0].Index
 	switch {
 	case after == u.offset+uint64(len(u.entries)):
 		// after is the next index in the u.entries
 		// directly append
+<<<<<<< HEAD
 		//若待追加的记录与 e口 tries 中的记录正好连续，则可以直接向 entries 中追加
 		u.entries = append(u.entries, ents...)
 	case after <= u.offset:
 		//after 在 off set ～ last 之间，贝rj after ～ last 之间的 Entry 记录冲突 。 这里会将 offset~after
 		//之间的记录保留，抛弃 after 之后的记录，然后完成追加操作
+=======
+		u.entries = append(u.entries, ents...)
+	case after <= u.offset:
+>>>>>>> upstream/master
 		u.logger.Infof("replace the unstable entries from index %d", after)
 		// The log is being truncated to before our current offset
 		// portion, so set the offset and replace the entries

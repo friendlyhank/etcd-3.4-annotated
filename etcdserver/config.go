@@ -22,9 +22,9 @@ import (
 	"strings"
 	"time"
 
-	"hank.com/etcd-3.3.12-annotated/pkg/netutil"
-	"hank.com/etcd-3.3.12-annotated/pkg/transport"
-	"hank.com/etcd-3.3.12-annotated/pkg/types"
+	"go.etcd.io/etcd/pkg/netutil"
+	"go.etcd.io/etcd/pkg/transport"
+	"go.etcd.io/etcd/pkg/types"
 
 	bolt "go.etcd.io/bbolt"
 	"go.uber.org/zap"
@@ -33,7 +33,7 @@ import (
 
 // ServerConfig holds the configuration of etcd as taken from the command line or discovery.
 type ServerConfig struct {
-	Name           string //etcdserver名称,对应flag "name"
+	Name           string//etcdserver名称,对应flag "name"
 	DiscoveryURL   string//etcd 用于发现服务,无需知道具体etcd节点ip即可访问etcd服务,对应flag "discovery"
 	DiscoveryProxy string//供服务发现的代理地址,对应flag "discovery-proxy"
 	// 由ip+port组成，默认DefaultListenClientURLs = "http://localhost:2379";
@@ -61,7 +61,7 @@ type ServerConfig struct {
 	// 默认是5，这是v2的参数，v3内只有一个db文件，
 	// DefaultMaxSnapshots = 5，对应flag "max-snapshots"
 	MaxSnapFiles uint
-	// 默认是5，DefaultMaxWALs      = 5，表示最大存储wal文件的个数，
+// 默认是5，DefaultMaxWALs      = 5，表示最大存储wal文件的个数，
 	// 对应flag "max-wals"，保留的文件可以作为etcd-dump-logs工具进行debug使用。
 	MaxWALFiles  uint
 
@@ -79,9 +79,8 @@ type ServerConfig struct {
 	// 确定是否为新建集群，对应flag "initial-cluster-state",
 	// 由方法func (cfg Config) IsNewCluster() bool { return cfg.ClusterState == ClusterStateFlagNew }确定；
 	NewCluster          bool
-	// member间通信使用的证书信息，若peerURL为https时使用，对应flag "peer-ca-file","peer-cert-file", "peer-key-file"
 	PeerTLSInfo         transport.TLSInfo
-
+	// member间通信使用的证书信息，若peerURL为https时使用，对应flag "peer-ca-file","peer-cert-file", "peer-key-file"
 	CORS map[string]struct{}
 
 	// HostWhitelist lists acceptable hostnames from client requests.
@@ -135,6 +134,7 @@ type ServerConfig struct {
 	AutoCompactionMode      string
 	// etcd后端数据文件的大小，默认为2GB，最大为8GB, v3的参数，
 	// 对应flag  "quota-backend-bytes" ，具体定义：etcd\etcdserver\quota.go
+	CompactionBatchLimit    int
 	QuotaBackendBytes       int64
 	MaxTxnOps               uint
 
@@ -156,7 +156,7 @@ type ServerConfig struct {
 	CorruptCheckTime    time.Duration
 
 	// PreVote is true to enable Raft Pre-Vote.
-	PreVote bool	//是否开启预候选人选举
+	PreVote bool//是否开启预候选人选举
 
 	// Logger logs server-side operations.
 	// If not nil, it disables "capnslog" and uses the given logger.
@@ -175,7 +175,7 @@ type ServerConfig struct {
 	// 在生产环境内，一般用于含v2数据的集群恢复，
 	// 效果为以现有数据或者空数据新建一个单节点的etcd集群，
 	// 如果存在数据，则会清楚数据内的元数据信息，并重建只包含该etcd的元数据信息。
-	 ForceNewCluster bool
+	ForceNewCluster bool
 
 	// EnableLeaseCheckpoint enables primary lessor to persist lease remainingTTL to prevent indefinite auto-renewal of long lived leases.
 	EnableLeaseCheckpoint bool
@@ -282,7 +282,7 @@ func (c *ServerConfig) advertiseMatchesCluster() error {
 
 func (c *ServerConfig) MemberDir() string { return filepath.Join(c.DataDir, "member") }
 
-func (c *ServerConfig)  WALDir() string {
+func (c *ServerConfig) WALDir() string {
 	if c.DedicatedWALDir != "" {
 		return c.DedicatedWALDir
 	}

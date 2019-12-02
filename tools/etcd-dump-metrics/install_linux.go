@@ -23,7 +23,7 @@ import (
 	"os/exec"
 	"path/filepath"
 
-	"hank.com/etcd-3.3.12-annotated/pkg/fileutil"
+	"go.etcd.io/etcd/pkg/fileutil"
 )
 
 const downloadURL = `https://storage.googleapis.com/etcd/%s/etcd-%s-linux-amd64.tar.gz`

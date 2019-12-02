@@ -21,7 +21,7 @@ import (
 	"strings"
 	"testing"
 
-	"hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
+	"go.etcd.io/etcd/etcdserver/etcdserverpb"
 )
 
 func TestCtlV3MemberList(t *testing.T)          { testCtl(t, memberListTest) }

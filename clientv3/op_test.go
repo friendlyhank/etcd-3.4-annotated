@@ -18,7 +18,7 @@ import (
 	"reflect"
 	"testing"
 
-	pb "hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
+	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
 )
 
 // TestOpWithSort tests if WithSort(ASCEND, KEY) and WithLimit are specified,

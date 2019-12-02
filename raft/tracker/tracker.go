@@ -19,7 +19,8 @@ import (
 	"sort"
 	"strings"
 
-	"hank.com/etcd-3.3.12-annotated/raft/quorum"
+	"go.etcd.io/etcd/raft/quorum"
+	pb "go.etcd.io/etcd/raft/raftpb"
 )
 
 // Config reflects the configuration tracked in a ProgressTracker.
@@ -141,6 +142,17 @@ func MakeProgressTracker(maxInflight int) ProgressTracker {
 	return p
 }
 
+// ConfState returns a ConfState representing the active configuration.
+func (p *ProgressTracker) ConfState() pb.ConfState {
+	return pb.ConfState{
+		Voters:         p.Voters[0].Slice(),
+		VotersOutgoing: p.Voters[1].Slice(),
+		Learners:       quorum.MajorityConfig(p.Learners).Slice(),
+		LearnersNext:   quorum.MajorityConfig(p.LearnersNext).Slice(),
+		AutoLeave:      p.AutoLeave,
+	}
+}
+
 // IsSingleton returns true if (and only if) there is only one voting member
 // (i.e. the leader) in the current configuration.
 func (p *ProgressTracker) IsSingleton() bool {
@@ -166,10 +178,35 @@ func (p *ProgressTracker) Committed() uint64 {
 	return uint64(p.Voters.CommittedIndex(matchAckIndexer(p.Progress)))
 }
 
-// Visit invokes the supplied closure for all tracked progresses.
+func insertionSort(sl []uint64) {
+	a, b := 0, len(sl)
+	for i := a + 1; i < b; i++ {
+		for j := i; j > a && sl[j] < sl[j-1]; j-- {
+			sl[j], sl[j-1] = sl[j-1], sl[j]
+		}
+	}
+}
+
+// Visit invokes the supplied closure for all tracked progresses in stable order.
 func (p *ProgressTracker) Visit(f func(id uint64, pr *Progress)) {
-	for id, pr := range p.Progress {
-		f(id, pr)
+	n := len(p.Progress)
+	// We need to sort the IDs and don't want to allocate since this is hot code.
+	// The optimization here mirrors that in `(MajorityConfig).CommittedIndex`,
+	// see there for details.
+	var sl [7]uint64
+	ids := sl[:]
+	if len(sl) >= n {
+		ids = sl[:n]
+	} else {
+		ids = make([]uint64, n)
+	}
+	for id := range p.Progress {
+		n--
+		ids[n] = id
+	}
+	insertionSort(ids)
+	for _, id := range ids {
+		f(id, p.Progress[id])
 	}
 }
 
@@ -212,14 +249,12 @@ func (p *ProgressTracker) LearnerNodes() []uint64 {
 }
 
 // ResetVotes prepares for a new round of vote counting via recordVote.
-//重置投票
 func (p *ProgressTracker) ResetVotes() {
 	p.Votes = map[uint64]bool{}
 }
 
 // RecordVote records that the node with the given id voted for this Raft
 // instance if v == true (and declined it otherwise).
-//记录投票
 func (p *ProgressTracker) RecordVote(id uint64, v bool) {
 	_, ok := p.Votes[id]
 	if !ok {
@@ -229,7 +264,6 @@ func (p *ProgressTracker) RecordVote(id uint64, v bool) {
 
 // TallyVotes returns the number of granted and rejected Votes, and whether the
 // election outcome is known.
-//得出投票结果
 func (p *ProgressTracker) TallyVotes() (granted int, rejected int, _ quorum.VoteResult) {
 	// Make sure to populate granted/rejected correctly even if the Votes slice
 	// contains members no longer part of the configuration. This doesn't really

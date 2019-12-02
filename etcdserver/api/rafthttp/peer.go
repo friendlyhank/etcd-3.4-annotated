@@ -19,11 +19,11 @@ import (
 	"sync"
 	"time"
 
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/snap"
-	stats "hank.com/etcd-3.3.12-annotated/etcdserver/api/v2stats"
-	"hank.com/etcd-3.3.12-annotated/pkg/types"
-	"hank.com/etcd-3.3.12-annotated/raft"
-	"hank.com/etcd-3.3.12-annotated/raft/raftpb"
+	"go.etcd.io/etcd/etcdserver/api/snap"
+	stats "go.etcd.io/etcd/etcdserver/api/v2stats"
+	"go.etcd.io/etcd/pkg/types"
+	"go.etcd.io/etcd/raft"
+	"go.etcd.io/etcd/raft/raftpb"
 
 	"go.uber.org/zap"
 	"golang.org/x/time/rate"
@@ -152,7 +152,6 @@ func startPeer(t *Transport, urls types.URLs, peerID types.ID, fs *stats.Followe
 		raft:          r,
 		errorc:        errorc,
 	}
-
 	//启动pipeline start
 	pipeline.start()
 
@@ -163,8 +162,8 @@ func startPeer(t *Transport, urls types.URLs, peerID types.ID, fs *stats.Followe
 		r:              r,
 		status:         status,
 		picker:         picker,
-		msgAppV2Writer: startStreamWriter(t.Logger, t.ID, peerID, status, fs, r), //peer writer
-		writer:         startStreamWriter(t.Logger, t.ID, peerID, status, fs, r), //peer writer 启动writer
+		msgAppV2Writer: startStreamWriter(t.Logger, t.ID, peerID, status, fs, r),
+		writer:         startStreamWriter(t.Logger, t.ID, peerID, status, fs, r),
 		pipeline:       pipeline,
 		snapSender:     newSnapshotSender(t, picker, peerID, status),
 		recvc:          make(chan raftpb.Message, recvBufSize),
@@ -178,7 +177,6 @@ func startPeer(t *Transport, urls types.URLs, peerID types.ID, fs *stats.Followe
 		for {
 			select {
 			case mm := <-p.recvc:
-				//etcdserver (s *EtcdServer) Process
 				if err := r.Process(ctx, mm); err != nil {
 					if t.Logger != nil {
 						t.Logger.Warn("failed to process Raft message", zap.Error(err))
@@ -231,8 +229,8 @@ func startPeer(t *Transport, urls types.URLs, peerID types.ID, fs *stats.Followe
 		rl:     rate.NewLimiter(t.DialRetryFrequency, 1),
 	}
 
-	p.msgAppV2Reader.start() //启动Reader
-	p.msgAppReader.start()   //启动Reader
+	p.msgAppV2Reader.start()//启动Reader
+	p.msgAppReader.start()//启动Reader
 
 	return p
 }

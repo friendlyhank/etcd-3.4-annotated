@@ -21,9 +21,9 @@ import (
 	"sync"
 	"time"
 
-	v3rpc "hank.com/etcd-3.3.12-annotated/etcdserver/api/v3rpc/rpctypes"
-	pb "hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
-	mvccpb "hank.com/etcd-3.3.12-annotated/mvcc/mvccpb"
+	v3rpc "go.etcd.io/etcd/etcdserver/api/v3rpc/rpctypes"
+	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
+	mvccpb "go.etcd.io/etcd/mvcc/mvccpb"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -79,7 +79,7 @@ type Watcher interface {
 }
 
 type WatchResponse struct {
-	//响应头
+		//响应头
 	Header pb.ResponseHeader
 	Events []*Event
 
@@ -190,7 +190,7 @@ type watchStreamRequest interface {
 type watchRequest struct {
 	ctx context.Context
 	key string
-	end string //key和end组成了范围
+	end string//key和end组成了范围
 	rev int64
 
 	// send created notification event if this field is true

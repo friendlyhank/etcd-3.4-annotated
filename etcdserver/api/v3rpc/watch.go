@@ -21,17 +21,16 @@ import (
 	"sync"
 	"time"
 
-	"hank.com/etcd-3.3.12-annotated/auth"
-	"hank.com/etcd-3.3.12-annotated/etcdserver"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v3rpc/rpctypes"
-	pb "hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
-	"hank.com/etcd-3.3.12-annotated/mvcc"
-	"hank.com/etcd-3.3.12-annotated/mvcc/mvccpb"
+	"go.etcd.io/etcd/auth"
+	"go.etcd.io/etcd/etcdserver"
+	"go.etcd.io/etcd/etcdserver/api/v3rpc/rpctypes"
+	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
+	"go.etcd.io/etcd/mvcc"
+	"go.etcd.io/etcd/mvcc/mvccpb"
 
 	"go.uber.org/zap"
 )
 
-//v3rpc watch Server的具体实现
 type watchServer struct {
 	lg *zap.Logger
 
@@ -180,7 +179,7 @@ func (ws *watchServer) Watch(stream pb.Watch_WatchServer) (err error) {
 				}
 			} else {
 				if sws.lg != nil {
-					sws.lg.Warn("failed to receive watch request from gRPC stream", zap.Error(err))
+					sws.lg.Warn("failed to receive watch request from gRPC stream", zap.Error(rerr))
 				} else {
 					plog.Warningf("failed to receive watch request from gRPC stream (%q)", rerr.Error())
 				}

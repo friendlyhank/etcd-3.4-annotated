@@ -14,7 +14,7 @@
 
 package clientv3
 
-import pb "hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
+import pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
 
 type opType int
 
@@ -28,14 +28,14 @@ const (
 
 var noPrefixEnd = []byte{0}
 
+// Op represents an Operation that kv can execute.
 /**
  *操作附带的方法 kv
  */
-// Op represents an Operation that kv can execute.
 type Op struct {
-	t   opType //操作类型
+	t   opType//操作类型
 	key []byte
-	end []byte //key与end形成的边界值
+	end []byte//key与end形成的边界值
 
 	// for range
 	limit        int64
@@ -329,7 +329,10 @@ func (op *Op) applyOpts(opts []OpOption) {
 type OpOption func(*Op)
 
 // WithLease attaches a lease ID to a key in 'Put' request.
+<<<<<<< HEAD
 //Put 请求 带上租约ID
+=======
+>>>>>>> upstream/master
 func WithLease(leaseID LeaseID) OpOption {
 	return func(op *Op) { op.leaseID = leaseID }
 }
@@ -384,7 +387,10 @@ func getPrefix(key []byte) []byte {
 // WithPrefix enables 'Get', 'Delete', or 'Watch' requests to operate
 // on the keys with matching prefix. For example, 'Get(foo, WithPrefix())'
 // can return 'foo1', 'foo2', and so on.
+<<<<<<< HEAD
 //Get,Delete,Watch 请求操作 带**前缀的key
+=======
+>>>>>>> upstream/master
 func WithPrefix() OpOption {
 	return func(op *Op) {
 		if len(op.key) == 0 {
@@ -399,7 +405,10 @@ func WithPrefix() OpOption {
 // For example, 'Get' requests with 'WithRange(end)' returns
 // the keys in the range [key, end).
 // endKey must be lexicographically greater than start key.
+<<<<<<< HEAD
 //Get,Delete,Watch 请求操作 [key,end]区间key
+=======
+>>>>>>> upstream/master
 func WithRange(endKey string) OpOption {
 	return func(op *Op) { op.end = []byte(endKey) }
 }

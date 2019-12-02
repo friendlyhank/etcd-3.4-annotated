@@ -20,10 +20,10 @@ import (
 	"strings"
 	"time"
 
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/etcdhttp"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v2auth"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v2http/httptypes"
-	"hank.com/etcd-3.3.12-annotated/pkg/logutil"
+	"go.etcd.io/etcd/etcdserver/api/etcdhttp"
+	"go.etcd.io/etcd/etcdserver/api/v2auth"
+	"go.etcd.io/etcd/etcdserver/api/v2http/httptypes"
+	"go.etcd.io/etcd/pkg/logutil"
 
 	"github.com/coreos/pkg/capnslog"
 	"go.uber.org/zap"

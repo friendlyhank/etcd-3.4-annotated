@@ -24,8 +24,8 @@ import (
 	"strings"
 	"time"
 
-	v3 "hank.com/etcd-3.3.12-annotated/clientv3"
-	"hank.com/etcd-3.3.12-annotated/pkg/report"
+	v3 "go.etcd.io/etcd/clientv3"
+	"go.etcd.io/etcd/pkg/report"
 
 	"github.com/dustin/go-humanize"
 	"github.com/spf13/cobra"
@@ -183,7 +183,7 @@ func hashKV(cmd *cobra.Command, clients []*v3.Client) {
 		panic(err)
 	}
 
-	rs := "HaskKV Summary:\n"
+	rs := "HashKV Summary:\n"
 	rs += fmt.Sprintf("\tHashKV: %d\n", rh.Hash)
 	rs += fmt.Sprintf("\tEndpoint: %s\n", host)
 	rs += fmt.Sprintf("\tTime taken to get hashkv: %v\n", time.Since(st))

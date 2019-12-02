@@ -21,7 +21,7 @@ import (
 
 	"go.uber.org/zap"
 
-	"hank.com/etcd-3.3.12-annotated/raft/raftpb"
+	"go.etcd.io/etcd/raft/raftpb"
 )
 
 func BenchmarkWrite100EntryWithoutBatch(b *testing.B) { benchmarkWriteEntry(b, 100, 0) }

@@ -19,14 +19,20 @@ import (
 	"fmt"
 	"os"
 
+<<<<<<< HEAD
 	"hank.com/etcd-3.3.12-annotated/etcdctl/ctlv2"
 	"hank.com/etcd-3.3.12-annotated/etcdctl/ctlv3"
+=======
+	"go.etcd.io/etcd/etcdctl/ctlv2"
+	"go.etcd.io/etcd/etcdctl/ctlv3"
+>>>>>>> upstream/master
 )
 
 const (
 	apiEnv = "ETCDCTL_API"
 )
 
+<<<<<<< HEAD
 //客户端入口
 func main() {
 	apiv := os.Getenv(apiEnv)
@@ -34,6 +40,12 @@ func main() {
 	// unset apiEnv to avoid side-effect for future env and flag parsing.
 	os.Unsetenv(apiEnv)
 	//根据配置去读取V3还是V2
+=======
+func main() {
+	apiv := os.Getenv(apiEnv)
+	// unset apiEnv to avoid side-effect for future env and flag parsing.
+	os.Unsetenv(apiEnv)
+>>>>>>> upstream/master
 	if len(apiv) == 0 || apiv == "3" {
 		ctlv3.Start()
 		return

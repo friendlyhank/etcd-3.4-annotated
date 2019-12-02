@@ -22,9 +22,9 @@ import (
 	"testing"
 	"time"
 
-	"hank.com/etcd-3.3.12-annotated/integration"
-	"hank.com/etcd-3.3.12-annotated/pkg/testutil"
-	"hank.com/etcd-3.3.12-annotated/pkg/types"
+	"go.etcd.io/etcd/integration"
+	"go.etcd.io/etcd/pkg/testutil"
+	"go.etcd.io/etcd/pkg/types"
 )
 
 func TestMemberList(t *testing.T) {
@@ -276,8 +276,7 @@ func TestMemberPromote(t *testing.T) {
 		select {
 		case <-time.After(500 * time.Millisecond):
 		case <-timeout:
-			t.Errorf("failed all attempts to promote learner member, last error: %v", err)
-			break
+			t.Fatalf("failed all attempts to promote learner member, last error: %v", err)
 		}
 
 		_, err = capi.MemberPromote(context.Background(), learnerID)

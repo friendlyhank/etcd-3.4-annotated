@@ -17,8 +17,8 @@ package clientv3
 import (
 	"context"
 
-	pb "hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
-	"hank.com/etcd-3.3.12-annotated/pkg/types"
+	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
+	"go.etcd.io/etcd/pkg/types"
 
 	"google.golang.org/grpc"
 )
@@ -31,7 +31,6 @@ type (
 	MemberUpdateResponse  pb.MemberUpdateResponse
 	MemberPromoteResponse pb.MemberPromoteResponse
 )
-
 //集群相关接口信息
 type Cluster interface {
 	// MemberList lists the current cluster membership.

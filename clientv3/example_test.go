@@ -20,8 +20,8 @@ import (
 	"os"
 	"time"
 
-	"hank.com/etcd-3.3.12-annotated/clientv3"
-	"hank.com/etcd-3.3.12-annotated/pkg/transport"
+	"go.etcd.io/etcd/clientv3"
+	"go.etcd.io/etcd/pkg/transport"
 
 	"google.golang.org/grpc/grpclog"
 )

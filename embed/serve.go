@@ -23,6 +23,7 @@ import (
 	"net/http"
 	"strings"
 
+<<<<<<< HEAD
 	"hank.com/etcd-3.3.12-annotated/etcdserver"
 	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v3client"
 	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v3election"
@@ -36,6 +37,22 @@ import (
 	"hank.com/etcd-3.3.12-annotated/pkg/debugutil"
 	"hank.com/etcd-3.3.12-annotated/pkg/httputil"
 	"hank.com/etcd-3.3.12-annotated/pkg/transport"
+=======
+	"go.etcd.io/etcd/clientv3/credentials"
+	"go.etcd.io/etcd/etcdserver"
+	"go.etcd.io/etcd/etcdserver/api/v3client"
+	"go.etcd.io/etcd/etcdserver/api/v3election"
+	"go.etcd.io/etcd/etcdserver/api/v3election/v3electionpb"
+	v3electiongw "go.etcd.io/etcd/etcdserver/api/v3election/v3electionpb/gw"
+	"go.etcd.io/etcd/etcdserver/api/v3lock"
+	"go.etcd.io/etcd/etcdserver/api/v3lock/v3lockpb"
+	v3lockgw "go.etcd.io/etcd/etcdserver/api/v3lock/v3lockpb/gw"
+	"go.etcd.io/etcd/etcdserver/api/v3rpc"
+	etcdservergw "go.etcd.io/etcd/etcdserver/etcdserverpb/gw"
+	"go.etcd.io/etcd/pkg/debugutil"
+	"go.etcd.io/etcd/pkg/httputil"
+	"go.etcd.io/etcd/pkg/transport"
+>>>>>>> upstream/master
 
 	gw "github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/soheilhy/cmux"
@@ -43,10 +60,15 @@ import (
 	"go.uber.org/zap"
 	"golang.org/x/net/trace"
 	"google.golang.org/grpc"
+<<<<<<< HEAD
 	"google.golang.org/grpc/credentials"
 )
 
 //服务客户端的请求
+=======
+)
+
+>>>>>>> upstream/master
 type serveCtx struct {
 	lg       *zap.Logger
 	l        net.Listener
@@ -164,8 +186,13 @@ func (sctx *serveCtx) serve(
 			dtls := tlscfg.Clone()
 			// trust local server
 			dtls.InsecureSkipVerify = true
+<<<<<<< HEAD
 			creds := credentials.NewTLS(dtls)
 			opts := []grpc.DialOption{grpc.WithTransportCredentials(creds)}
+=======
+			bundle := credentials.NewBundle(credentials.Config{TLSConfig: dtls})
+			opts := []grpc.DialOption{grpc.WithTransportCredentials(bundle.TransportCredentials())}
+>>>>>>> upstream/master
 			gwmux, err = sctx.registerGateway(opts)
 			if err != nil {
 				return err
@@ -190,7 +217,11 @@ func (sctx *serveCtx) serve(
 		sctx.serversC <- &servers{secure: true, grpc: gs, http: srv}
 		if sctx.lg != nil {
 			sctx.lg.Info(
+<<<<<<< HEAD
 				"serving client traffic insecurely",
+=======
+				"serving client traffic securely",
+>>>>>>> upstream/master
 				zap.String("address", sctx.l.Addr().String()),
 			)
 		} else {

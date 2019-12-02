@@ -19,7 +19,7 @@ import (
 	"net/url"
 	"strings"
 
-	"hank.com/etcd-3.3.12-annotated/pkg/types"
+	"go.etcd.io/etcd/pkg/types"
 )
 
 // URLsValue wraps "types.URLs".

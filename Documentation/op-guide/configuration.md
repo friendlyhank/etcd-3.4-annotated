@@ -89,6 +89,11 @@ To start etcd automatically using custom settings at startup in Linux, using a [
 + default: 0
 + env variable: ETCD_BACKEND_BATCH_LIMIT
 
+### --backend-bbolt-freelist-type
++ The freelist type that etcd backend(bboltdb) uses (array and map are supported types).
++ default: map
++ env variable: ETCD_BACKEND_BBOLT_FREELIST_TYPE
+
 ### --backend-batch-interval
 + BackendBatchInterval is the maximum time before commit the backend transaction.
 + default: 0
@@ -199,7 +204,7 @@ To start etcd automatically using custom settings at startup in Linux, using a [
 
 ### --enable-v2
 + Accept etcd V2 client requests
-+ default: true
++ default: false
 + env variable: ETCD_ENABLE_V2
 
 ## Proxy flags
@@ -342,7 +347,8 @@ The security flags help to [build a secure etcd cluster][security].
 
 ### --logger
 
-**Available from v3.4**
+**Available from v3.4.**
+**WARNING: `--logger=capnslog` to be deprecated in v3.5.**
 
 + Specify 'zap' for structured logging or 'capnslog'.
 + default: capnslog
@@ -354,12 +360,27 @@ The security flags help to [build a secure etcd cluster][security].
 + env variable: ETCD_LOG_OUTPUTS
 + 'default' use 'stderr' config for v3.4 during zap logger migraion
 
+### --log-level
+
+**Available from v3.4.**
+
++ Configures log level. Only supports debug, info, warn, error, panic, or fatal.
++ default: info
++ env variable: ETCD_LOG_LEVEL
++ 'default' use 'info'.
+
 ### --debug
+
+**WARNING: to be deprecated in v3.5.**
+
 + Drop the default log level to DEBUG for all subpackages.
 + default: false (INFO for all packages)
 + env variable: ETCD_DEBUG
 
 ### --log-package-levels
+
+**WARNING: to be deprecated in v3.5.**
+
 + Set individual etcd subpackages to specific log levels. An example being `etcdserver=WARNING,security=DEBUG`
 + default: "" (INFO for all packages)
 + env variable: ETCD_LOG_PACKAGE_LEVELS
@@ -395,7 +416,7 @@ Follow the instructions when using these flags.
 + env variable: ETCD_ENABLE_PPROF
 
 ### --metrics
-+ Set level of detail for exported metrics, specify 'extensive' to include histogram metrics.
++ Set level of detail for exported metrics, specify 'extensive' to include server side grpc histogram metrics.
 + default: basic
 + env variable: ETCD_METRICS
 
@@ -420,15 +441,15 @@ Follow the instructions when using these flags.
 
 ## Experimental flags
 
-### --experimental-backend-bbolt-freelist-type
-+ The freelist type that etcd backend(bboltdb) uses (array and map are supported types).
-+ default: array
-+ env variable: ETCD_EXPERIMENTAL_BACKEND_BBOLT_FREELIST_TYPE
-
 ### --experimental-corrupt-check-time
 + Duration of time between cluster corruption check passes
 + default: 0s
 + env variable: ETCD_EXPERIMENTAL_CORRUPT_CHECK_TIME
+
+### --experimental-compaction-batch-limit
++ Sets the maximum revisions deleted in each compaction batch.
++ default: 1000
++ env variable: ETCD_EXPERIMENTAL_COMPACTION_BATCH_LIMIT
 
 [build-cluster]: clustering.md#static
 [reconfig]: runtime-configuration.md
@@ -441,3 +462,12 @@ Follow the instructions when using these flags.
 [tuning]: ../tuning.md#time-parameters
 [sample-config-file]: ../../etcd.conf.yml.sample
 [recovery]: recovery.md#disaster-recovery
+
+### --experimental-peer-skip-client-san-verification
++ Skip verification of SAN field in client certificate for peer connections. This can be helpful e.g. if
+cluster members run in different networks behind a NAT.
+
+  In this case make sure to use peer certificates based on
+a private certificate authority using `--peer-cert-file`, `--peer-key-file`, `--peer-trusted-ca-file`
++ default: false
++ env variable: ETCD_EXPERIMENTAL_PEER_SKIP_CLIENT_SAN_VERIFICATION

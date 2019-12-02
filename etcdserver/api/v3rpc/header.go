@@ -15,8 +15,8 @@
 package v3rpc
 
 import (
-	"hank.com/etcd-3.3.12-annotated/etcdserver"
-	pb "hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
+	"go.etcd.io/etcd/etcdserver"
+	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
 )
 
 type header struct {

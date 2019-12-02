@@ -20,7 +20,7 @@ import (
 	"os"
 	"strings"
 
-	"hank.com/etcd-3.3.12-annotated/etcdctl/ctlv3/command"
+	"go.etcd.io/etcd/etcdctl/ctlv3/command"
 )
 
 func Start() {

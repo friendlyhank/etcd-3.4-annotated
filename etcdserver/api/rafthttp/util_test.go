@@ -22,8 +22,8 @@ import (
 	"reflect"
 	"testing"
 
-	"hank.com/etcd-3.3.12-annotated/raft/raftpb"
-	"hank.com/etcd-3.3.12-annotated/version"
+	"go.etcd.io/etcd/raft/raftpb"
+	"go.etcd.io/etcd/version"
 
 	"github.com/coreos/go-semver/semver"
 )

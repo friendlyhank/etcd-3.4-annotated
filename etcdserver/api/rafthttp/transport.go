@@ -20,13 +20,13 @@ import (
 	"sync"
 	"time"
 
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/snap"
-	stats "hank.com/etcd-3.3.12-annotated/etcdserver/api/v2stats"
-	"hank.com/etcd-3.3.12-annotated/pkg/logutil"
-	"hank.com/etcd-3.3.12-annotated/pkg/transport"
-	"hank.com/etcd-3.3.12-annotated/pkg/types"
-	"hank.com/etcd-3.3.12-annotated/raft"
-	"hank.com/etcd-3.3.12-annotated/raft/raftpb"
+	"go.etcd.io/etcd/etcdserver/api/snap"
+	stats "go.etcd.io/etcd/etcdserver/api/v2stats"
+	"go.etcd.io/etcd/pkg/logutil"
+	"go.etcd.io/etcd/pkg/transport"
+	"go.etcd.io/etcd/pkg/types"
+	"go.etcd.io/etcd/raft"
+	"go.etcd.io/etcd/raft/raftpb"
 
 	"github.com/coreos/pkg/capnslog"
 	"github.com/xiang90/probing"
@@ -323,7 +323,6 @@ func (t *Transport) AddPeer(id types.ID, us []string) {
 		}
 	}
 	fs := t.LeaderStats.Follower(id.String())
-
 	t.peers[id] = startPeer(t, urls, id, fs)
 	addPeerToProber(t.Logger, t.pipelineProber, id.String(), us, RoundTripperNameSnapshot, rttSec)
 	addPeerToProber(t.Logger, t.streamProber, id.String(), us, RoundTripperNameRaftMessage, rttSec)

@@ -18,8 +18,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v2http/httptypes"
+	"go.etcd.io/etcd/etcdserver/api"
+	"go.etcd.io/etcd/etcdserver/api/v2http/httptypes"
 )
 
 func authCapabilityHandler(fn func(http.ResponseWriter, *http.Request)) http.HandlerFunc {

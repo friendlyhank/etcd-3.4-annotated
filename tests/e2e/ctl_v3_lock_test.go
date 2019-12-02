@@ -20,7 +20,7 @@ import (
 	"testing"
 	"time"
 
-	"hank.com/etcd-3.3.12-annotated/pkg/expect"
+	"go.etcd.io/etcd/pkg/expect"
 )
 
 func TestCtlV3Lock(t *testing.T) {

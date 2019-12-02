@@ -15,8 +15,8 @@
 package api
 
 import (
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/membership"
-	"hank.com/etcd-3.3.12-annotated/pkg/types"
+	"go.etcd.io/etcd/etcdserver/api/membership"
+	"go.etcd.io/etcd/pkg/types"
 
 	"github.com/coreos/go-semver/semver"
 )

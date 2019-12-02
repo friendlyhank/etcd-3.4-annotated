@@ -18,7 +18,7 @@ package main
 import (
 	"flag"
 
-	"hank.com/etcd-3.3.12-annotated/functional/tester"
+	"go.etcd.io/etcd/functional/tester"
 
 	"go.uber.org/zap"
 )

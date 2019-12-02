@@ -25,9 +25,9 @@ import (
 	"testing"
 	"time"
 
-	"hank.com/etcd-3.3.12-annotated/clientv3/snapshot"
-	"hank.com/etcd-3.3.12-annotated/pkg/expect"
-	"hank.com/etcd-3.3.12-annotated/pkg/testutil"
+	"go.etcd.io/etcd/clientv3/snapshot"
+	"go.etcd.io/etcd/pkg/expect"
+	"go.etcd.io/etcd/pkg/testutil"
 )
 
 func TestCtlV3Snapshot(t *testing.T) { testCtl(t, snapshotTest) }

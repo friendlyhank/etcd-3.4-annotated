@@ -29,33 +29,34 @@ import (
 	"sync/atomic"
 	"time"
 
-	"hank.com/etcd-3.3.12-annotated/auth"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/membership"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/rafthttp"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/snap"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v2discovery"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v2http/httptypes"
-	stats "hank.com/etcd-3.3.12-annotated/etcdserver/api/v2stats"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v2store"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v3alarm"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v3compactor"
-	pb "hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
-	"hank.com/etcd-3.3.12-annotated/lease"
-	"hank.com/etcd-3.3.12-annotated/lease/leasehttp"
-	"hank.com/etcd-3.3.12-annotated/mvcc"
-	"hank.com/etcd-3.3.12-annotated/mvcc/backend"
-	"hank.com/etcd-3.3.12-annotated/pkg/fileutil"
-	"hank.com/etcd-3.3.12-annotated/pkg/idutil"
-	"hank.com/etcd-3.3.12-annotated/pkg/pbutil"
-	"hank.com/etcd-3.3.12-annotated/pkg/runtime"
-	"hank.com/etcd-3.3.12-annotated/pkg/schedule"
-	"hank.com/etcd-3.3.12-annotated/pkg/types"
-	"hank.com/etcd-3.3.12-annotated/pkg/wait"
-	"hank.com/etcd-3.3.12-annotated/raft"
-	"hank.com/etcd-3.3.12-annotated/raft/raftpb"
-	"hank.com/etcd-3.3.12-annotated/version"
-	"hank.com/etcd-3.3.12-annotated/wal"
+	"go.etcd.io/etcd/auth"
+	"go.etcd.io/etcd/etcdserver/api"
+	"go.etcd.io/etcd/etcdserver/api/membership"
+	"go.etcd.io/etcd/etcdserver/api/rafthttp"
+	"go.etcd.io/etcd/etcdserver/api/snap"
+	"go.etcd.io/etcd/etcdserver/api/v2discovery"
+	"go.etcd.io/etcd/etcdserver/api/v2http/httptypes"
+	stats "go.etcd.io/etcd/etcdserver/api/v2stats"
+	"go.etcd.io/etcd/etcdserver/api/v2store"
+	"go.etcd.io/etcd/etcdserver/api/v3alarm"
+	"go.etcd.io/etcd/etcdserver/api/v3compactor"
+	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
+	"go.etcd.io/etcd/lease"
+	"go.etcd.io/etcd/lease/leasehttp"
+	"go.etcd.io/etcd/mvcc"
+	"go.etcd.io/etcd/mvcc/backend"
+	"go.etcd.io/etcd/pkg/fileutil"
+	"go.etcd.io/etcd/pkg/idutil"
+	"go.etcd.io/etcd/pkg/pbutil"
+	"go.etcd.io/etcd/pkg/runtime"
+	"go.etcd.io/etcd/pkg/schedule"
+	"go.etcd.io/etcd/pkg/traceutil"
+	"go.etcd.io/etcd/pkg/types"
+	"go.etcd.io/etcd/pkg/wait"
+	"go.etcd.io/etcd/raft"
+	"go.etcd.io/etcd/raft/raftpb"
+	"go.etcd.io/etcd/version"
+	"go.etcd.io/etcd/wal"
 
 	"github.com/coreos/go-semver/semver"
 	"github.com/coreos/pkg/capnslog"
@@ -346,7 +347,7 @@ func NewServer(cfg ServerConfig) (srv *EtcdServer, err error) {
 	)
 
 	switch {
-	//没有WAL并且不是新的节点
+		//没有WAL并且不是新的节点
 	case !haveWAL && !cfg.NewCluster:
 		if err = cfg.VerifyJoinExisting(); err != nil {
 			return nil, err
@@ -372,7 +373,7 @@ func NewServer(cfg ServerConfig) (srv *EtcdServer, err error) {
 		cl.SetBackend(be)
 		id, n, s, w = startNode(cfg, cl, nil)
 		cl.SetID(id, existingCluster.ID())
-	//没有WAL并且是新的节点
+		//没有WAL并且是新的节点
 	case !haveWAL && cfg.NewCluster:
 		if err = cfg.VerifyBootstrap(); err != nil {
 			return nil, err
@@ -410,7 +411,7 @@ func NewServer(cfg ServerConfig) (srv *EtcdServer, err error) {
 		//hank-import 启动节点
 		id, n, s, w = startNode(cfg, cl, cl.MemberIDs())
 		cl.SetID(id, cl.ID())
-	//有WAL
+		//有WAL
 	case haveWAL:
 		if err = fileutil.IsDirWriteable(cfg.MemberDir()); err != nil {
 			return nil, fmt.Errorf("cannot write to member directory: %v", err)
@@ -546,7 +547,7 @@ func NewServer(cfg ServerConfig) (srv *EtcdServer, err error) {
 			CheckpointInterval:         cfg.LeaseCheckpointInterval,
 			ExpiredLeasesRetryInterval: srv.Cfg.ReqTimeout(),
 		})
-	srv.kv = mvcc.New(srv.getLogger(), srv.be, srv.lessor, &srv.consistIndex)
+	srv.kv = mvcc.New(srv.getLogger(), srv.be, srv.lessor, &srv.consistIndex, mvcc.StoreConfig{CompactionBatchLimit: cfg.CompactionBatchLimit})
 	if beExist {
 		kvindex := srv.kv.ConsistentIndex()
 		// TODO: remove kvindex != 0 checking when we do not expect users to upgrade
@@ -623,7 +624,6 @@ func NewServer(cfg ServerConfig) (srv *EtcdServer, err error) {
 		LeaderStats: lstats,
 		ErrorC:      srv.errorc,
 	}
-
 	//hank-import hank-return
 	if err = tr.Start(); err != nil {
 		return nil, err
@@ -797,7 +797,7 @@ func (s *EtcdServer) start() {
 			//控制台启动EtcdServer打印
 			plog.Infof("starting server... [version: %v, cluster version: %v]", version.Version, version.Cluster(s.ClusterVersion().String()))
 		}
-		membership.ClusterVersionMetrics.With(prometheus.Labels{"cluster_version": s.ClusterVersion().String()}).Set(1)
+		membership.ClusterVersionMetrics.With(prometheus.Labels{"cluster_version": version.Cluster(s.ClusterVersion().String())}).Set(1)
 	} else {
 		if lg != nil {
 			lg.Info(
@@ -819,12 +819,13 @@ func (s *EtcdServer) start() {
 
 func (s *EtcdServer) purgeFile() {
 	var dberrc, serrc, werrc <-chan error
+	var dbdonec, sdonec, wdonec <-chan struct{}
 	if s.Cfg.MaxSnapFiles > 0 {
-		dberrc = fileutil.PurgeFile(s.getLogger(), s.Cfg.SnapDir(), "snap.db", s.Cfg.MaxSnapFiles, purgeFileInterval, s.done)
-		serrc = fileutil.PurgeFile(s.getLogger(), s.Cfg.SnapDir(), "snap", s.Cfg.MaxSnapFiles, purgeFileInterval, s.done)
+		dbdonec, dberrc = fileutil.PurgeFileWithDoneNotify(s.getLogger(), s.Cfg.SnapDir(), "snap.db", s.Cfg.MaxSnapFiles, purgeFileInterval, s.stopping)
+		sdonec, serrc = fileutil.PurgeFileWithDoneNotify(s.getLogger(), s.Cfg.SnapDir(), "snap", s.Cfg.MaxSnapFiles, purgeFileInterval, s.stopping)
 	}
 	if s.Cfg.MaxWALFiles > 0 {
-		werrc = fileutil.PurgeFile(s.getLogger(), s.Cfg.WALDir(), "wal", s.Cfg.MaxWALFiles, purgeFileInterval, s.done)
+		wdonec, werrc = fileutil.PurgeFileWithDoneNotify(s.getLogger(), s.Cfg.WALDir(), "wal", s.Cfg.MaxWALFiles, purgeFileInterval, s.stopping)
 	}
 
 	lg := s.getLogger()
@@ -848,6 +849,15 @@ func (s *EtcdServer) purgeFile() {
 			plog.Fatalf("failed to purge wal file %v", e)
 		}
 	case <-s.stopping:
+		if dbdonec != nil {
+			<-dbdonec
+		}
+		if sdonec != nil {
+			<-sdonec
+		}
+		if wdonec != nil {
+			<-wdonec
+		}
 		return
 	}
 }
@@ -862,7 +872,6 @@ type ServerPeer interface {
 	LeaseHandler() http.Handler
 }
 
-//LeaseHandler handle
 func (s *EtcdServer) LeaseHandler() http.Handler {
 	if s.lessor == nil {
 		return nil
@@ -870,7 +879,6 @@ func (s *EtcdServer) LeaseHandler() http.Handler {
 	return leasehttp.NewHandler(s.lessor, s.ApplyWait)
 }
 
-//RaftHandler handler
 func (s *EtcdServer) RaftHandler() http.Handler { return s.r.transport.Handler() }
 
 // Process takes a raft message and applies it to the server's raft state
@@ -996,7 +1004,6 @@ func (s *EtcdServer) run() {
 			}
 		},
 	}
-
 	//raftNode启动 hank-import hank-return
 	s.r.start(rh)
 
@@ -1131,6 +1138,7 @@ func (s *EtcdServer) applySnapshot(ep *etcdProgress, apply *apply) {
 	if raft.IsEmptySnap(apply.snapshot) {
 		return
 	}
+	applySnapshotInProgress.Inc()
 
 	lg := s.getLogger()
 	if lg != nil {
@@ -1156,6 +1164,7 @@ func (s *EtcdServer) applySnapshot(ep *etcdProgress, apply *apply) {
 		} else {
 			plog.Infof("finished applying incoming snapshot at index %d", ep.snapi)
 		}
+		applySnapshotInProgress.Dec()
 	}()
 
 	if apply.snapshot.Metadata.Index <= ep.appliedi {
@@ -1194,7 +1203,7 @@ func (s *EtcdServer) applySnapshot(ep *etcdProgress, apply *apply) {
 			plog.Info("recovering lessor...")
 		}
 
-		s.lessor.Recover(newbe, func() lease.TxnDelete { return s.kv.Write() })
+		s.lessor.Recover(newbe, func() lease.TxnDelete { return s.kv.Write(traceutil.TODO()) })
 
 		if lg != nil {
 			lg.Info("restored lease store")
@@ -1998,6 +2007,12 @@ func (s *EtcdServer) sync(timeout time.Duration) {
 // static clientURLs of the server.
 // The function keeps attempting to register until it succeeds,
 // or its server is stopped.
+//
+// Use v2 store to encode member attributes, and apply through Raft
+// but does not go through v2 API endpoint, which means even with v2
+// client handler disabled (e.g. --enable-v2=false), cluster can still
+// process publish requests through rafthttp
+// TODO: Deprecate v2 store
 func (s *EtcdServer) publish(timeout time.Duration) {
 	b, err := json.Marshal(s.attributes)
 	if err != nil {

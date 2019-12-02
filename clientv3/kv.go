@@ -17,7 +17,7 @@ package clientv3
 import (
 	"context"
 
-	pb "hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
+	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
 
 	"google.golang.org/grpc"
 )
@@ -98,7 +98,7 @@ func (resp *TxnResponse) OpResponse() OpResponse {
 
 type kv struct {
 	remote   pb.KVClient
-	callOpts []grpc.CallOption //grpc调用可选参数
+	callOpts []grpc.CallOption//grpc调用可选参数
 }
 
 //hank-sure

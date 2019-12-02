@@ -18,8 +18,8 @@ import (
 	"context"
 	"errors"
 
-	v3 "hank.com/etcd-3.3.12-annotated/clientv3"
-	spb "hank.com/etcd-3.3.12-annotated/mvcc/mvccpb"
+	v3 "go.etcd.io/etcd/clientv3"
+	spb "go.etcd.io/etcd/mvcc/mvccpb"
 )
 
 var (

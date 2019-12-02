@@ -25,11 +25,11 @@ import (
 	"sync"
 	"time"
 
-	"hank.com/etcd-3.3.12-annotated/pkg/fileutil"
-	"hank.com/etcd-3.3.12-annotated/pkg/pbutil"
-	"hank.com/etcd-3.3.12-annotated/raft"
-	"hank.com/etcd-3.3.12-annotated/raft/raftpb"
-	"hank.com/etcd-3.3.12-annotated/wal/walpb"
+	"go.etcd.io/etcd/pkg/fileutil"
+	"go.etcd.io/etcd/pkg/pbutil"
+	"go.etcd.io/etcd/raft"
+	"go.etcd.io/etcd/raft/raftpb"
+	"go.etcd.io/etcd/wal/walpb"
 
 	"github.com/coreos/pkg/capnslog"
 	"go.uber.org/zap"
@@ -81,12 +81,12 @@ type WAL struct {
 	state    raftpb.HardState // hardstate recorded at the head of WAL
 
 	start     walpb.Snapshot // snapshot to start reading
-	decoder   *decoder       //急嘛 decoder to decode records
+	decoder   *decoder       // decoder to decode records
 	readClose func() error   // closer for decode reader
 
 	mu      sync.Mutex
 	enti    uint64   // index of the last entry saved to the wal
-	encoder *encoder //编码 encoder to encode records
+	encoder *encoder // encoder to encode records
 
 	locks []*fileutil.LockedFile // the locked files the WAL holds (the name is increasing)
 	fp    *filePipeline
@@ -559,6 +559,11 @@ func Verify(lg *zap.Logger, walDir string, snap walpb.Snapshot) error {
 	if err != nil {
 		return err
 	}
+	defer func() {
+		if closer != nil {
+			closer()
+		}
+	}()
 
 	// create a new decoder from the readers on the WAL files
 	decoder := newDecoder(rs...)
@@ -594,10 +599,6 @@ func Verify(lg *zap.Logger, walDir string, snap walpb.Snapshot) error {
 		default:
 			return fmt.Errorf("unexpected block type %d", rec.Type)
 		}
-	}
-
-	if closer != nil {
-		closer()
 	}
 
 	// We do not have to read out all the WAL entries

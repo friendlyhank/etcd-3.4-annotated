@@ -17,7 +17,7 @@ package v2store
 import (
 	"testing"
 
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v2error"
+	"go.etcd.io/etcd/etcdserver/api/v2error"
 )
 
 // TestEventQueue tests a queue with capacity = 100

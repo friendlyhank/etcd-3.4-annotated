@@ -19,7 +19,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"hank.com/etcd-3.3.12-annotated/pkg/transport"
+	"go.etcd.io/etcd/pkg/transport"
 )
 
 // copyTLSFiles clones certs files to dst directory.

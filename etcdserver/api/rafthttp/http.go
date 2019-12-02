@@ -24,11 +24,11 @@ import (
 	"strings"
 	"time"
 
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/snap"
-	pioutil "hank.com/etcd-3.3.12-annotated/pkg/ioutil"
-	"hank.com/etcd-3.3.12-annotated/pkg/types"
-	"hank.com/etcd-3.3.12-annotated/raft/raftpb"
-	"hank.com/etcd-3.3.12-annotated/version"
+	"go.etcd.io/etcd/etcdserver/api/snap"
+	pioutil "go.etcd.io/etcd/pkg/ioutil"
+	"go.etcd.io/etcd/pkg/types"
+	"go.etcd.io/etcd/raft/raftpb"
+	"go.etcd.io/etcd/version"
 
 	humanize "github.com/dustin/go-humanize"
 	"go.uber.org/zap"
@@ -258,6 +258,11 @@ func (h *snapshotHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	snapshotReceiveInflights.WithLabelValues(from).Inc()
+	defer func() {
+		snapshotReceiveInflights.WithLabelValues(from).Dec()
+	}()
+
 	if h.lg != nil {
 		h.lg.Info(
 			"receiving database snapshot",
@@ -469,12 +474,12 @@ func (h *streamHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	//hank-return hank-problem http的flush用法是啥
+//hank-return hank-problem http的flush用法是啥
 	w.(http.Flusher).Flush()
 
 	c := newCloseNotifier()
 	conn := &outgoingConn{
-		t:       t, //连接类型
+		t:       t,//连接类型
 		Writer:  w,
 		Flusher: w.(http.Flusher),
 		Closer:  c,
@@ -482,7 +487,7 @@ func (h *streamHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		peerID:  h.id,
 	}
 	p.attachOutgoingConn(conn)
-	<-c.closeNotify() //等待close channel,若一直没有数据可读则阻塞
+	<-c.closeNotify()//等待close channel,若一直没有数据可读则阻塞
 }
 
 // checkClusterCompatibilityFromHeader checks the cluster compatibility of

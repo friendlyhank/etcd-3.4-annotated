@@ -25,7 +25,7 @@ import (
 	"text/tabwriter"
 	"text/template"
 
-	"hank.com/etcd-3.3.12-annotated/version"
+	"go.etcd.io/etcd/version"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"

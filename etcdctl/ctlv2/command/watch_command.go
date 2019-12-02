@@ -21,7 +21,7 @@ import (
 	"os"
 	"os/signal"
 
-	"hank.com/etcd-3.3.12-annotated/client"
+	"go.etcd.io/etcd/client"
 
 	"github.com/urfave/cli"
 )

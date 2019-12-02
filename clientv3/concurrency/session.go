@@ -18,7 +18,7 @@ import (
 	"context"
 	"time"
 
-	v3 "hank.com/etcd-3.3.12-annotated/clientv3"
+	v3 "go.etcd.io/etcd/clientv3"
 )
 
 const defaultSessionTTL = 60

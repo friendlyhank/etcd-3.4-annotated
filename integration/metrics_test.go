@@ -22,10 +22,10 @@ import (
 	"testing"
 	"time"
 
-	"hank.com/etcd-3.3.12-annotated/etcdserver"
-	pb "hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
-	"hank.com/etcd-3.3.12-annotated/pkg/testutil"
-	"hank.com/etcd-3.3.12-annotated/pkg/transport"
+	"go.etcd.io/etcd/etcdserver"
+	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
+	"go.etcd.io/etcd/pkg/testutil"
+	"go.etcd.io/etcd/pkg/transport"
 )
 
 // TestMetricDbSizeBoot checks that the db size metric is set on boot.
@@ -206,11 +206,11 @@ func TestMetricsHealth(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	hv, err := clus.Members[0].Metric("etcd_server_health_failure")
+	hv, err := clus.Members[0].Metric("etcd_server_health_failures")
 	if err != nil {
 		t.Fatal(err)
 	}
 	if hv != "0" {
-		t.Fatalf("expected '0' from etcd_server_health_failure, got %q", hv)
+		t.Fatalf("expected '0' from etcd_server_health_failures, got %q", hv)
 	}
 }

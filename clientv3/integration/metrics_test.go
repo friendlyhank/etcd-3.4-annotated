@@ -25,10 +25,10 @@ import (
 	"testing"
 	"time"
 
-	"hank.com/etcd-3.3.12-annotated/clientv3"
-	"hank.com/etcd-3.3.12-annotated/integration"
-	"hank.com/etcd-3.3.12-annotated/pkg/testutil"
-	"hank.com/etcd-3.3.12-annotated/pkg/transport"
+	"go.etcd.io/etcd/clientv3"
+	"go.etcd.io/etcd/integration"
+	"go.etcd.io/etcd/pkg/testutil"
+	"go.etcd.io/etcd/pkg/transport"
 
 	grpcprom "github.com/grpc-ecosystem/go-grpc-prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
@@ -41,12 +41,13 @@ func TestV3ClientMetrics(t *testing.T) {
 	var (
 		addr = "localhost:27989"
 		ln   net.Listener
-		err  error
 	)
 
 	// listen for all Prometheus metrics
 	donec := make(chan struct{})
 	go func() {
+		var err error
+
 		defer close(donec)
 
 		srv := &http.Server{Handler: promhttp.Handler()}
@@ -87,7 +88,7 @@ func TestV3ClientMetrics(t *testing.T) {
 
 	pBefore := sumCountersForMetricAndLabels(t, url, "grpc_client_started_total", "Put", "unary")
 
-	_, err = cli.Put(context.Background(), "foo", "bar")
+	_, err := cli.Put(context.Background(), "foo", "bar")
 	if err != nil {
 		t.Errorf("Error putting value in key store")
 	}

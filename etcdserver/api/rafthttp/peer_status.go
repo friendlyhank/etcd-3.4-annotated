@@ -20,7 +20,7 @@ import (
 	"sync"
 	"time"
 
-	"hank.com/etcd-3.3.12-annotated/pkg/types"
+	"go.etcd.io/etcd/pkg/types"
 
 	"go.uber.org/zap"
 )

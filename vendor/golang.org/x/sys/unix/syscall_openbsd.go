@@ -43,9 +43,35 @@ func nametomib(name string) (mib []_C_int, err error) {
 	return nil, EINVAL
 }
 
-func SysctlUvmexp(name string) (*Uvmexp, error) {
+func direntIno(buf []byte) (uint64, bool) {
+	return readInt(buf, unsafe.Offsetof(Dirent{}.Fileno), unsafe.Sizeof(Dirent{}.Fileno))
+}
+
+func direntReclen(buf []byte) (uint64, bool) {
+	return readInt(buf, unsafe.Offsetof(Dirent{}.Reclen), unsafe.Sizeof(Dirent{}.Reclen))
+}
+
+func direntNamlen(buf []byte) (uint64, bool) {
+	return readInt(buf, unsafe.Offsetof(Dirent{}.Namlen), unsafe.Sizeof(Dirent{}.Namlen))
+}
+
+func SysctlClockinfo(name string) (*Clockinfo, error) {
 	mib, err := sysctlmib(name)
 	if err != nil {
+		return nil, err
+	}
+
+	n := uintptr(SizeofClockinfo)
+	var ci Clockinfo
+	if err := sysctl(mib, (*byte)(unsafe.Pointer(&ci)), &n, nil, 0); err != nil {
+		return nil, err
+	}
+	if n != SizeofClockinfo {
+		return nil, EIO
+	}
+	return &ci, nil
+}
+
 		return nil, err
 	}
 
@@ -72,18 +98,33 @@ func Pipe(p []int) (err error) {
 	return
 }
 
-//sys getdents(fd int, buf []byte) (n int, err error)
+//sys Getdents(fd int, buf []byte) (n int, err error)
 func Getdirentries(fd int, buf []byte, basep *uintptr) (n int, err error) {
-	return getdents(fd, buf)
-}
+	n, err = Getdents(fd, buf)
+//sys Getdents(fd int, buf []byte) (n int, err error)
+func Getdirentries(fd int, buf []byte, basep *uintptr) (n int, err error) {
+	n, err = Getdents(fd, buf)
+	if err != nil || basep == nil {
+		return
+	}
 
-const ImplementsGetwd = true
-
-//sys	Getcwd(buf []byte) (n int, err error) = SYS___GETCWD
-
-func Getwd() (string, error) {
-	var buf [PathMax]byte
-	_, err := Getcwd(buf[0:])
+	var off int64
+	off, err = Seek(fd, 0, 1 /* SEEK_CUR */)
+	if err != nil {
+		*basep = ^uintptr(0)
+		return
+	}
+	*basep = uintptr(off)
+	if unsafe.Sizeof(*basep) == 8 {
+		return
+	}
+	if off>>32 != 0 {
+		// We can't stuff the offset back into a uintptr, so any
+		// future calls would be suspect. Generate an error.
+		// EIO was allowed by getdirentries.
+		err = EIO
+	}
+	return
 	if err != nil {
 		return "", err
 	}

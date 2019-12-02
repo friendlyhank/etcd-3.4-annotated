@@ -20,9 +20,9 @@ import (
 	"path"
 	"strings"
 
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v2auth"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v2http/httptypes"
+	"go.etcd.io/etcd/etcdserver/api"
+	"go.etcd.io/etcd/etcdserver/api/v2auth"
+	"go.etcd.io/etcd/etcdserver/api/v2http/httptypes"
 
 	"go.uber.org/zap"
 )

@@ -24,12 +24,12 @@ import (
 	"strings"
 	"testing"
 
-	"hank.com/etcd-3.3.12-annotated/auth/authpb"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
-	"hank.com/etcd-3.3.12-annotated/pkg/fileutil"
-	"hank.com/etcd-3.3.12-annotated/pkg/pbutil"
-	"hank.com/etcd-3.3.12-annotated/raft/raftpb"
-	"hank.com/etcd-3.3.12-annotated/wal"
+	"go.etcd.io/etcd/auth/authpb"
+	"go.etcd.io/etcd/etcdserver/etcdserverpb"
+	"go.etcd.io/etcd/pkg/fileutil"
+	"go.etcd.io/etcd/pkg/pbutil"
+	"go.etcd.io/etcd/raft/raftpb"
+	"go.etcd.io/etcd/wal"
 	"go.uber.org/zap"
 )
 

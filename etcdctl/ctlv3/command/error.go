@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"os"
 
-	"hank.com/etcd-3.3.12-annotated/client"
+	"go.etcd.io/etcd/client"
 )
 
 const (
@@ -33,7 +33,6 @@ const (
 	ExitBadArgs = 128
 )
 
-//command错误处理
 func ExitWithError(code int, err error) {
 	fmt.Fprintln(os.Stderr, "Error:", err)
 	if cerr, ok := err.(*client.ClusterError); ok {

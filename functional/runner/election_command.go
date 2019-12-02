@@ -19,7 +19,7 @@ import (
 	"errors"
 	"fmt"
 
-	"hank.com/etcd-3.3.12-annotated/clientv3/concurrency"
+	"go.etcd.io/etcd/clientv3/concurrency"
 
 	"github.com/spf13/cobra"
 )

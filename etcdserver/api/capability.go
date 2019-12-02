@@ -17,7 +17,7 @@ package api
 import (
 	"sync"
 
-	"hank.com/etcd-3.3.12-annotated/version"
+	"go.etcd.io/etcd/version"
 	"go.uber.org/zap"
 
 	"github.com/coreos/go-semver/semver"
@@ -40,6 +40,8 @@ var (
 		"3.1.0": {AuthCapability: true, V3rpcCapability: true},
 		"3.2.0": {AuthCapability: true, V3rpcCapability: true},
 		"3.3.0": {AuthCapability: true, V3rpcCapability: true},
+		"3.4.0": {AuthCapability: true, V3rpcCapability: true},
+		"3.5.0": {AuthCapability: true, V3rpcCapability: true},
 	}
 
 	enableMapMu sync.RWMutex

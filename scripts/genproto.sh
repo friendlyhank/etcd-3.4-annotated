@@ -2,7 +2,7 @@
 #
 # Generate all etcd protobuf bindings.
 # Run from repository root.
-#set -e 编码不为0则退出
+#
 set -e
 
 if ! [[ "$0" =~ scripts/genproto.sh ]]; then
@@ -16,11 +16,9 @@ if [[ $(protoc --version | cut -f2 -d' ') != "3.7.1" ]]; then
 fi
 
 # directories containing protos to be built
-#DIRS路径设置
 DIRS="./wal/walpb ./etcdserver/etcdserverpb ./etcdserver/api/snap/snappb ./raft/raftpb ./mvcc/mvccpb ./lease/leasepb ./auth/authpb ./etcdserver/api/v3lock/v3lockpb ./etcdserver/api/v3election/v3electionpb"
 
 # disable go mod
-#disable go mod
 export GO111MODULE=off
 
 # exact version of packages to build
@@ -29,7 +27,6 @@ GRPC_GATEWAY_SHA="92583770e3f01b09a0d3e9bdf64321d8bebd48f2"
 SCHWAG_SHA="b7d0fc9aadaaae3d61aaadfc12e4a2f945514912"
 
 # set up self-contained GOPATH for building
-#自设临时GOPATH
 export GOPATH=${PWD}/gopath.proto
 export GOBIN=${PWD}/bin
 export PATH="${GOBIN}:${PATH}"
@@ -42,11 +39,10 @@ GOGOPROTO_PATH="${GOGOPROTO_ROOT}:${GOGOPROTO_ROOT}/protobuf"
 GRPC_GATEWAY_ROOT="${GOPATH}/src/github.com/grpc-ecosystem/grpc-gateway"
 
 function cleanup {
-   # Remove the whole fake GOPATH which can really confuse go mod.
-   rm -rf "${PWD}/gopath.proto"
- }
+  # Remove the whole fake GOPATH which can really confuse go mod.
+  rm -rf "${PWD}/gopath.proto"
+}
 
-#程序退出,清除gopath.proto
 cleanup
 trap cleanup EXIT
 
@@ -114,7 +110,7 @@ for pb in etcdserverpb/rpc api/v3lock/v3lockpb/v3lock api/v3election/v3electionp
 	sed -i.bak -E "s/New[A-Za-z]*Client/${pkg}.&/" ${gwfile}
 	# darwin doesn't like newlines in sed...
 	# shellcheck disable=SC1117
-	sed -i.bak -E "s|import \(|& \"hank.com/etcd-3.3.12-annotated/${pkgpath}\"|" ${gwfile}
+	sed -i.bak -E "s|import \(|& \"go.etcd.io/etcd/${pkgpath}\"|" ${gwfile}
 	mkdir -p  "${pkgpath}"/gw/
 	go fmt ${gwfile}
 	mv ${gwfile} "${pkgpath}/gw/"

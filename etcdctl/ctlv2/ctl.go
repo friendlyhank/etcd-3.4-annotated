@@ -20,8 +20,8 @@ import (
 	"os"
 	"time"
 
-	"hank.com/etcd-3.3.12-annotated/etcdctl/ctlv2/command"
-	"hank.com/etcd-3.3.12-annotated/version"
+	"go.etcd.io/etcd/etcdctl/ctlv2/command"
+	"go.etcd.io/etcd/version"
 
 	"github.com/urfave/cli"
 )

@@ -18,9 +18,9 @@ import (
 	"encoding/json"
 	"os"
 
-	"hank.com/etcd-3.3.12-annotated/clientv3"
-	"hank.com/etcd-3.3.12-annotated/clientv3/concurrency"
-	"hank.com/etcd-3.3.12-annotated/clientv3/naming"
+	"go.etcd.io/etcd/clientv3"
+	"go.etcd.io/etcd/clientv3/concurrency"
+	"go.etcd.io/etcd/clientv3/naming"
 
 	"golang.org/x/time/rate"
 	gnaming "google.golang.org/grpc/naming"

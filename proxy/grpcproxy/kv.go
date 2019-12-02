@@ -17,9 +17,9 @@ package grpcproxy
 import (
 	"context"
 
-	"hank.com/etcd-3.3.12-annotated/clientv3"
-	pb "hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
-	"hank.com/etcd-3.3.12-annotated/proxy/grpcproxy/cache"
+	"go.etcd.io/etcd/clientv3"
+	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
+	"go.etcd.io/etcd/proxy/grpcproxy/cache"
 )
 
 type kvProxy struct {
@@ -30,7 +30,7 @@ type kvProxy struct {
 func NewKvProxy(c *clientv3.Client) (pb.KVServer, <-chan struct{}) {
 	kv := &kvProxy{
 		kv:    c.KV,
-		cache: cache.NewCache(cache.DefaultMaxEntries), //用于缓存 type Cache interface
+		cache: cache.NewCache(cache.DefaultMaxEntries),
 	}
 	donec := make(chan struct{})
 	close(donec)

@@ -10,7 +10,7 @@ import (
 	"runtime"
 	"testing"
 
-	"hank.com/etcd-3.3.12-annotated/pkg/testutil"
+	"go.etcd.io/etcd/pkg/testutil"
 )
 
 var (

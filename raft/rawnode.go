@@ -17,8 +17,8 @@ package raft
 import (
 	"errors"
 
-	pb "hank.com/etcd-3.3.12-annotated/raft/raftpb"
-	"hank.com/etcd-3.3.12-annotated/raft/tracker"
+	pb "go.etcd.io/etcd/raft/raftpb"
+	"go.etcd.io/etcd/raft/tracker"
 )
 
 // ErrStepLocalMsg is returned when try to step a local raft message
@@ -45,9 +45,6 @@ type RawNode struct {
 // state manually by setting up a Storage that has a first index > 1 and which
 // stores the desired ConfState as its InitialState.
 func NewRawNode(config *Config) (*RawNode, error) {
-	if config.ID == 0 {
-		panic("config.ID must not be zero")
-	}
 	r := newRaft(config)
 	rn := &RawNode{
 		raft: r,
@@ -57,6 +54,7 @@ func NewRawNode(config *Config) (*RawNode, error) {
 	return rn, nil
 }
 
+// Tick advances the internal logical clock by a single tick.
 /**
  *RaftNode也实现了Node interface
  */

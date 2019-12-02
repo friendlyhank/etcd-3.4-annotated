@@ -19,7 +19,7 @@ import (
 	"reflect"
 	"testing"
 
-	pb "hank.com/etcd-3.3.12-annotated/raft/raftpb"
+	pb "go.etcd.io/etcd/raft/raftpb"
 )
 
 func TestStorageTerm(t *testing.T) {
@@ -106,7 +106,7 @@ func TestStorageLastIndex(t *testing.T) {
 		t.Errorf("err = %v, want nil", err)
 	}
 	if last != 5 {
-		t.Errorf("term = %d, want %d", last, 5)
+		t.Errorf("last = %d, want %d", last, 5)
 	}
 
 	s.Append([]pb.Entry{{Index: 6, Term: 5}})
@@ -115,7 +115,7 @@ func TestStorageLastIndex(t *testing.T) {
 		t.Errorf("err = %v, want nil", err)
 	}
 	if last != 6 {
-		t.Errorf("last = %d, want %d", last, 5)
+		t.Errorf("last = %d, want %d", last, 6)
 	}
 }
 

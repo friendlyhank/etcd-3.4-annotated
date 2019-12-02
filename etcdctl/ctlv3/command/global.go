@@ -25,10 +25,10 @@ import (
 	"time"
 
 	"github.com/bgentry/speakeasy"
-	"hank.com/etcd-3.3.12-annotated/clientv3"
-	"hank.com/etcd-3.3.12-annotated/pkg/flags"
-	"hank.com/etcd-3.3.12-annotated/pkg/srv"
-	"hank.com/etcd-3.3.12-annotated/pkg/transport"
+	"go.etcd.io/etcd/clientv3"
+	"go.etcd.io/etcd/pkg/flags"
+	"go.etcd.io/etcd/pkg/srv"
+	"go.etcd.io/etcd/pkg/transport"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
@@ -38,7 +38,6 @@ import (
 
 // GlobalFlags are flags that defined globally
 // and are inherited to all sub-commands.
-//GlobalFlags参数说明
 type GlobalFlags struct {
 	Insecure              bool
 	InsecureSkipVerify    bool

@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"testing"
 
-	"hank.com/etcd-3.3.12-annotated/version"
+	"go.etcd.io/etcd/version"
 )
 
 func TestV3CurlCipherSuitesValid(t *testing.T)    { testV3CurlCipherSuites(t, true) }

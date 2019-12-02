@@ -23,7 +23,7 @@ import (
 	"path/filepath"
 	"time"
 
-	"hank.com/etcd-3.3.12-annotated/pkg/fileutil"
+	"go.etcd.io/etcd/pkg/fileutil"
 
 	humanize "github.com/dustin/go-humanize"
 	"go.uber.org/zap"

@@ -17,9 +17,9 @@ package etcdserver
 import (
 	"io"
 
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/snap"
-	"hank.com/etcd-3.3.12-annotated/mvcc/backend"
-	"hank.com/etcd-3.3.12-annotated/raft/raftpb"
+	"go.etcd.io/etcd/etcdserver/api/snap"
+	"go.etcd.io/etcd/mvcc/backend"
+	"go.etcd.io/etcd/raft/raftpb"
 
 	humanize "github.com/dustin/go-humanize"
 	"go.uber.org/zap"

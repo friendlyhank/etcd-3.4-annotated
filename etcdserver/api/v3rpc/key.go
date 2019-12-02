@@ -18,10 +18,10 @@ package v3rpc
 import (
 	"context"
 
-	"hank.com/etcd-3.3.12-annotated/etcdserver"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v3rpc/rpctypes"
-	pb "hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
-	"hank.com/etcd-3.3.12-annotated/pkg/adt"
+	"go.etcd.io/etcd/etcdserver"
+	"go.etcd.io/etcd/etcdserver/api/v3rpc/rpctypes"
+	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
+	"go.etcd.io/etcd/pkg/adt"
 
 	"github.com/coreos/pkg/capnslog"
 )
@@ -179,7 +179,7 @@ func checkTxnRequest(r *pb.TxnRequest, maxTxnOps int) error {
 // there is an overlap, returns an error. If no overlap, return put and delete
 // sets for recursive evaluation.
 func checkIntervals(reqs []*pb.RequestOp) (map[string]struct{}, adt.IntervalTree, error) {
-	var dels adt.IntervalTree
+	dels := adt.NewIntervalTree()
 
 	// collect deletes from this level; build first to check lower level overlapped puts
 	for _, req := range reqs {

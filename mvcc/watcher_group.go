@@ -18,8 +18,8 @@ import (
 	"fmt"
 	"math"
 
-	"hank.com/etcd-3.3.12-annotated/mvcc/mvccpb"
-	"hank.com/etcd-3.3.12-annotated/pkg/adt"
+	"go.etcd.io/etcd/mvcc/mvccpb"
+	"go.etcd.io/etcd/pkg/adt"
 )
 
 var (
@@ -156,6 +156,7 @@ type watcherGroup struct {
 func newWatcherGroup() watcherGroup {
 	return watcherGroup{
 		keyWatchers: make(watcherSetByKey),
+		ranges:      adt.NewIntervalTree(),
 		watchers:    make(watcherSet),
 	}
 }

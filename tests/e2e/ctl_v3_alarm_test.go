@@ -21,7 +21,7 @@ import (
 	"testing"
 	"time"
 
-	"hank.com/etcd-3.3.12-annotated/clientv3"
+	"go.etcd.io/etcd/clientv3"
 )
 
 func TestCtlV3Alarm(t *testing.T) {

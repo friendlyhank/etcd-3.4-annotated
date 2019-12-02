@@ -28,25 +28,25 @@ import (
 	"testing"
 	"time"
 
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/membership"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/rafthttp"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/snap"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v2store"
-	pb "hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
-	"hank.com/etcd-3.3.12-annotated/lease"
-	"hank.com/etcd-3.3.12-annotated/mvcc"
-	"hank.com/etcd-3.3.12-annotated/mvcc/backend"
-	"hank.com/etcd-3.3.12-annotated/pkg/fileutil"
-	"hank.com/etcd-3.3.12-annotated/pkg/idutil"
-	"hank.com/etcd-3.3.12-annotated/pkg/mock/mockstorage"
-	"hank.com/etcd-3.3.12-annotated/pkg/mock/mockstore"
-	"hank.com/etcd-3.3.12-annotated/pkg/mock/mockwait"
-	"hank.com/etcd-3.3.12-annotated/pkg/pbutil"
-	"hank.com/etcd-3.3.12-annotated/pkg/testutil"
-	"hank.com/etcd-3.3.12-annotated/pkg/types"
-	"hank.com/etcd-3.3.12-annotated/pkg/wait"
-	"hank.com/etcd-3.3.12-annotated/raft"
-	"hank.com/etcd-3.3.12-annotated/raft/raftpb"
+	"go.etcd.io/etcd/etcdserver/api/membership"
+	"go.etcd.io/etcd/etcdserver/api/rafthttp"
+	"go.etcd.io/etcd/etcdserver/api/snap"
+	"go.etcd.io/etcd/etcdserver/api/v2store"
+	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
+	"go.etcd.io/etcd/lease"
+	"go.etcd.io/etcd/mvcc"
+	"go.etcd.io/etcd/mvcc/backend"
+	"go.etcd.io/etcd/pkg/fileutil"
+	"go.etcd.io/etcd/pkg/idutil"
+	"go.etcd.io/etcd/pkg/mock/mockstorage"
+	"go.etcd.io/etcd/pkg/mock/mockstore"
+	"go.etcd.io/etcd/pkg/mock/mockwait"
+	"go.etcd.io/etcd/pkg/pbutil"
+	"go.etcd.io/etcd/pkg/testutil"
+	"go.etcd.io/etcd/pkg/types"
+	"go.etcd.io/etcd/pkg/wait"
+	"go.etcd.io/etcd/raft"
+	"go.etcd.io/etcd/raft/raftpb"
 	"go.uber.org/zap"
 )
 
@@ -984,7 +984,7 @@ func TestSnapshot(t *testing.T) {
 		r:       *r,
 		v2store: st,
 	}
-	srv.kv = mvcc.New(zap.NewExample(), be, &lease.FakeLessor{}, &srv.consistIndex)
+	srv.kv = mvcc.New(zap.NewExample(), be, &lease.FakeLessor{}, &srv.consistIndex, mvcc.StoreConfig{})
 	srv.be = be
 
 	ch := make(chan struct{}, 2)
@@ -1065,7 +1065,7 @@ func TestSnapshotOrdering(t *testing.T) {
 
 	be, tmpPath := backend.NewDefaultTmpBackend()
 	defer os.RemoveAll(tmpPath)
-	s.kv = mvcc.New(zap.NewExample(), be, &lease.FakeLessor{}, &s.consistIndex)
+	s.kv = mvcc.New(zap.NewExample(), be, &lease.FakeLessor{}, &s.consistIndex, mvcc.StoreConfig{})
 	s.be = be
 
 	s.start()
@@ -1126,7 +1126,7 @@ func TestTriggerSnap(t *testing.T) {
 	}
 	srv.applyV2 = &applierV2store{store: srv.v2store, cluster: srv.cluster}
 
-	srv.kv = mvcc.New(zap.NewExample(), be, &lease.FakeLessor{}, &srv.consistIndex)
+	srv.kv = mvcc.New(zap.NewExample(), be, &lease.FakeLessor{}, &srv.consistIndex, mvcc.StoreConfig{})
 	srv.be = be
 
 	srv.start()
@@ -1198,7 +1198,7 @@ func TestConcurrentApplyAndSnapshotV3(t *testing.T) {
 	defer func() {
 		os.RemoveAll(tmpPath)
 	}()
-	s.kv = mvcc.New(zap.NewExample(), be, &lease.FakeLessor{}, &s.consistIndex)
+	s.kv = mvcc.New(zap.NewExample(), be, &lease.FakeLessor{}, &s.consistIndex, mvcc.StoreConfig{})
 	s.be = be
 
 	s.start()

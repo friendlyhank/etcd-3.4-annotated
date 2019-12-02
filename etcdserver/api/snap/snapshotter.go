@@ -25,11 +25,11 @@ import (
 	"strings"
 	"time"
 
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/snap/snappb"
-	pioutil "hank.com/etcd-3.3.12-annotated/pkg/ioutil"
-	"hank.com/etcd-3.3.12-annotated/pkg/pbutil"
-	"hank.com/etcd-3.3.12-annotated/raft"
-	"hank.com/etcd-3.3.12-annotated/raft/raftpb"
+	"go.etcd.io/etcd/etcdserver/api/snap/snappb"
+	pioutil "go.etcd.io/etcd/pkg/ioutil"
+	"go.etcd.io/etcd/pkg/pbutil"
+	"go.etcd.io/etcd/raft"
+	"go.etcd.io/etcd/raft/raftpb"
 
 	"github.com/coreos/pkg/capnslog"
 	"go.uber.org/zap"
@@ -37,12 +37,8 @@ import (
 
 const snapSuffix = ".snap"
 
-/**
- *快照信息
- */
-
 var (
-	plog = capnslog.NewPackageLogger("hank.com/etcd-3.3.12-annotated/v3", "snap")
+	plog = capnslog.NewPackageLogger("go.etcd.io/etcd/v3", "snap")
 
 	ErrNoSnapshot    = errors.New("snap: no available snapshot")
 	ErrEmptySnapshot = errors.New("snap: empty snapshot")
@@ -60,7 +56,6 @@ type Snapshotter struct {
 	dir string
 }
 
-//New快照信息
 func New(lg *zap.Logger, dir string) *Snapshotter {
 	return &Snapshotter{
 		lg:  lg,
@@ -113,7 +108,6 @@ func (s *Snapshotter) save(snapshot *raftpb.Snapshot) error {
 	return nil
 }
 
-//Load快照
 func (s *Snapshotter) Load() (*raftpb.Snapshot, error) {
 	names, err := s.snapNames()
 	if err != nil {
@@ -131,7 +125,6 @@ func (s *Snapshotter) Load() (*raftpb.Snapshot, error) {
 	return snap, nil
 }
 
-//load快照信息
 func loadSnap(lg *zap.Logger, dir, name string) (*raftpb.Snapshot, error) {
 	fpath := filepath.Join(dir, name)
 	snap, err := Read(lg, fpath)

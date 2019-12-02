@@ -10,9 +10,8 @@ import (
 	"syscall"
 )
 
-func setTimespec(sec, nsec int64) Timespec {
-	return Timespec{Sec: sec, Nsec: nsec}
-}
+//sys   ptrace(request int, pid int, addr uintptr, data uintptr) (err error)
+
 
 func setTimeval(sec, usec int64) Timeval {
 	return Timeval{Sec: sec, Usec: int32(usec)}

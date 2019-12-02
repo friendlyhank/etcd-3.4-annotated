@@ -31,14 +31,10 @@ import (
 	"strings"
 	"time"
 
-	"hank.com/etcd-3.3.12-annotated/pkg/tlsutil"
+	"go.etcd.io/etcd/pkg/tlsutil"
 
 	"go.uber.org/zap"
 )
-
-/**
- *transport listener
- */
 
 // NewListener creates a new listner.
 func NewListener(addr, scheme string, tlsinfo *TLSInfo) (l net.Listener, err error) {
@@ -60,16 +56,20 @@ func wrapTLS(scheme string, tlsinfo *TLSInfo, l net.Listener) (net.Listener, err
 	if scheme != "https" && scheme != "unixs" {
 		return l, nil
 	}
+	if tlsinfo != nil && tlsinfo.SkipClientSANVerify {
+		return NewTLSListener(l, tlsinfo)
+	}
 	return newTLSListener(l, tlsinfo, checkSAN)
 }
 
 type TLSInfo struct {
-	CertFile           string
-	KeyFile            string
-	TrustedCAFile      string
-	ClientCertAuth     bool
-	CRLFile            string
-	InsecureSkipVerify bool
+	CertFile            string
+	KeyFile             string
+	TrustedCAFile       string
+	ClientCertAuth      bool
+	CRLFile             string
+	InsecureSkipVerify  bool
+	SkipClientSANVerify bool
 
 	// ServerName ensures the cert matches the given host in case of discovery / virtual hosting
 	ServerName string
@@ -113,7 +113,7 @@ func (info TLSInfo) Empty() bool {
 	return info.CertFile == "" && info.KeyFile == ""
 }
 
-func SelfCert(lg *zap.Logger, dirpath string, hosts []string) (info TLSInfo, err error) {
+func SelfCert(lg *zap.Logger, dirpath string, hosts []string, additionalUsages ...x509.ExtKeyUsage) (info TLSInfo, err error) {
 	if err = os.MkdirAll(dirpath, 0700); err != nil {
 		return
 	}
@@ -149,7 +149,7 @@ func SelfCert(lg *zap.Logger, dirpath string, hosts []string) (info TLSInfo, err
 		NotAfter:     time.Now().Add(365 * (24 * time.Hour)),
 
 		KeyUsage:              x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature,
-		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
+		ExtKeyUsage:           append([]x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth}, additionalUsages...),
 		BasicConstraintsValid: true,
 	}
 
@@ -377,6 +377,11 @@ func (info TLSInfo) ServerConfig() (*tls.Config, error) {
 	// "h2" NextProtos is necessary for enabling HTTP2 for go's HTTP server
 	cfg.NextProtos = []string{"h2"}
 
+	// go1.13 enables TLS 1.3 by default
+	// and in TLS 1.3, cipher suites are not configurable
+	// setting Max TLS version to TLS 1.2 for go 1.13
+	cfg.MaxVersion = tls.VersionTLS12
+
 	return cfg, nil
 }
 
@@ -427,6 +432,11 @@ func (info TLSInfo) ClientConfig() (*tls.Config, error) {
 			return nil, fmt.Errorf("cert has non empty Common Name (%s)", cn)
 		}
 	}
+
+	// go1.13 enables TLS 1.3 by default
+	// and in TLS 1.3, cipher suites are not configurable
+	// setting Max TLS version to TLS 1.2 for go 1.13
+	cfg.MaxVersion = tls.VersionTLS12
 
 	return cfg, nil
 }

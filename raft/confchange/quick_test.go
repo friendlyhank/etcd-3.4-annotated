@@ -21,8 +21,8 @@ import (
 	"testing"
 	"testing/quick"
 
-	pb "hank.com/etcd-3.3.12-annotated/raft/raftpb"
-	"hank.com/etcd-3.3.12-annotated/raft/tracker"
+	pb "go.etcd.io/etcd/raft/raftpb"
+	"go.etcd.io/etcd/raft/tracker"
 )
 
 // TestConfChangeQuick uses quickcheck to verify that simple and joint config

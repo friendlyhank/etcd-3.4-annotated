@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"testing"
 
-	pb "hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
+	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
 )
 
 func TestV3CurlLeaseGrantNoTLS(t *testing.T) {

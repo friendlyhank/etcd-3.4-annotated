@@ -19,8 +19,8 @@
 //	import (
 //		"context"
 //
-//		"hank.com/etcd-3.3.12-annotated/embed"
-//		"hank.com/etcd-3.3.12-annotated/etcdserver/api/v3client"
+//		"go.etcd.io/etcd/embed"
+//		"go.etcd.io/etcd/etcdserver/api/v3client"
 //	)
 //
 //	...

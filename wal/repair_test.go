@@ -21,8 +21,8 @@ import (
 	"os"
 	"testing"
 
-	"hank.com/etcd-3.3.12-annotated/raft/raftpb"
-	"hank.com/etcd-3.3.12-annotated/wal/walpb"
+	"go.etcd.io/etcd/raft/raftpb"
+	"go.etcd.io/etcd/wal/walpb"
 
 	"go.uber.org/zap"
 )

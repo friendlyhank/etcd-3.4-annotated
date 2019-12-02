@@ -63,29 +63,9 @@ func Setgroups(gids []int) (err error) {
 	return setgroups(len(a), &a[0])
 }
 
-func ReadDirent(fd int, buf []byte) (n int, err error) {
-	// Final argument is (basep *uintptr) and the syscall doesn't take nil.
-	// 64 bits should be enough. (32 bits isn't even on 386). Since the
-	// actual system call is getdirentries64, 64 is a good guess.
-	// TODO(rsc): Can we use a single global basep for all calls?
-	var base = (*uintptr)(unsafe.Pointer(new(uint64)))
-	return Getdirentries(fd, buf, base)
-}
-
-// Wait status is 7 bits at bottom, either 0 (exited),
-// 0x7F (stopped), or a signal number that caused an exit.
-// The 0x80 bit is whether there was a core dump.
-// An extra number (exit code, signal causing a stop)
-// is in the high bits.
-
-type WaitStatus uint32
-
-const (
-	mask  = 0x7F
-	core  = 0x80
-	shift = 8
 
 	exited  = 0
+	killed  = 9
 	stopped = 0x7F
 )
 
@@ -97,10 +77,7 @@ func (w WaitStatus) ExitStatus() int {
 	}
 	return int(w >> shift)
 }
-
-func (w WaitStatus) Signaled() bool { return w&mask != stopped && w&mask != 0 }
-
-func (w WaitStatus) Signal() syscall.Signal {
+	killed  = 9
 	sig := syscall.Signal(w & mask)
 	if sig == stopped || sig == 0 {
 		return -1
@@ -111,6 +88,8 @@ func (w WaitStatus) Signal() syscall.Signal {
 func (w WaitStatus) CoreDump() bool { return w.Signaled() && w&core != 0 }
 
 func (w WaitStatus) Stopped() bool { return w&mask == stopped && syscall.Signal(w>>shift) != SIGSTOP }
+
+func (w WaitStatus) Killed() bool { return w&mask == killed && syscall.Signal(w>>shift) != SIGKILL }
 
 func (w WaitStatus) Continued() bool { return w&mask == stopped && syscall.Signal(w>>shift) == SIGSTOP }
 
@@ -125,11 +104,8 @@ func (w WaitStatus) TrapCause() int { return -1 }
 
 //sys	wait4(pid int, wstatus *_C_int, options int, rusage *Rusage) (wpid int, err error)
 
-func Wait4(pid int, wstatus *WaitStatus, options int, rusage *Rusage) (wpid int, err error) {
-	var status _C_int
-	wpid, err = wait4(pid, &status, options, rusage)
-	if wstatus != nil {
-		*wstatus = WaitStatus(status)
+func (w WaitStatus) Killed() bool { return w&mask == killed && syscall.Signal(w>>shift) != SIGKILL }
+
 	}
 	return
 }

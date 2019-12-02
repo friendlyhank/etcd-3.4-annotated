@@ -29,6 +29,7 @@ import (
 	"time"
 
 	bolt "go.etcd.io/bbolt"
+<<<<<<< HEAD
 	"hank.com/etcd-3.3.12-annotated/clientv3"
 	"hank.com/etcd-3.3.12-annotated/etcdserver"
 	"hank.com/etcd-3.3.12-annotated/etcdserver/api/membership"
@@ -44,6 +45,24 @@ import (
 	"hank.com/etcd-3.3.12-annotated/raft/raftpb"
 	"hank.com/etcd-3.3.12-annotated/wal"
 	"hank.com/etcd-3.3.12-annotated/wal/walpb"
+=======
+	"go.etcd.io/etcd/clientv3"
+	"go.etcd.io/etcd/etcdserver"
+	"go.etcd.io/etcd/etcdserver/api/membership"
+	"go.etcd.io/etcd/etcdserver/api/snap"
+	"go.etcd.io/etcd/etcdserver/api/v2store"
+	"go.etcd.io/etcd/etcdserver/etcdserverpb"
+	"go.etcd.io/etcd/lease"
+	"go.etcd.io/etcd/mvcc"
+	"go.etcd.io/etcd/mvcc/backend"
+	"go.etcd.io/etcd/pkg/fileutil"
+	"go.etcd.io/etcd/pkg/traceutil"
+	"go.etcd.io/etcd/pkg/types"
+	"go.etcd.io/etcd/raft"
+	"go.etcd.io/etcd/raft/raftpb"
+	"go.etcd.io/etcd/wal"
+	"go.etcd.io/etcd/wal/walpb"
+>>>>>>> upstream/master
 	"go.uber.org/zap"
 )
 
@@ -383,8 +402,13 @@ func (s *v3Manager) saveDB() error {
 	// a lessor never timeouts leases
 	lessor := lease.NewLessor(s.lg, be, lease.LessorConfig{MinLeaseTTL: math.MaxInt64})
 
+<<<<<<< HEAD
 	mvs := mvcc.NewStore(s.lg, be, lessor, (*initIndex)(&commit))
 	txn := mvs.Write()
+=======
+	mvs := mvcc.NewStore(s.lg, be, lessor, (*initIndex)(&commit), mvcc.StoreConfig{CompactionBatchLimit: math.MaxInt32})
+	txn := mvs.Write(traceutil.TODO())
+>>>>>>> upstream/master
 	btx := be.BatchTx()
 	del := func(k, v []byte) error {
 		txn.DeleteRange(k, nil)
