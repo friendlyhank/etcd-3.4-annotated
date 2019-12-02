@@ -210,18 +210,20 @@ First install [goreman](https://github.com/mattn/goreman), which manages Procfil
 
 Our [Procfile script](./Procfile) will set up a local example cluster. Start it with:
 
-```bash
-goreman start
+```sh
+curl http://127.0.0.1:4001/v1/keys/foo/foo_dir/bar -d value=barbarbar
 ```
 
 This will bring up 3 etcd members `infra1`, `infra2` and `infra3` and etcd `grpc-proxy`, which runs locally and composes a cluster.
 
-Every cluster member and proxy accepts key value reads and key value writes.
+```sh
+curl http://127.0.0.1:4001/v1/get/foo/
+```
 
-We should see the response as
+We should see the response as an array of items
 
-```bash
-goreman -f ./Procfile.learner start
+```json
+[{"action":"GET","key":"/foo/foo","value":"barbar","index":10},{"action":"GET","key":"/foo/foo_dir","dir":true,"index":10}]
 ```
 
 which meas `foo=barbar` is a key-value pair under `/foo` and `foo_dir` is a directory.
