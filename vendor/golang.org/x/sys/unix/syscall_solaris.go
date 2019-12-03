@@ -51,6 +51,9 @@ func direntNamlen(buf []byte) (uint64, bool) {
 	return reclen - uint64(unsafe.Offsetof(Dirent{}.Name)), true
 }
 
+//sysnb	pipe(p *[2]_C_int) (n int, err error)
+
+func Pipe(p []int) (err error) {
 	if len(p) != 2 {
 		return EINVAL
 	}
@@ -205,7 +208,10 @@ func Setgroups(gids []int) (err error) {
 // ReadDirent reads directory entries from fd and writes them into buf.
 func ReadDirent(fd int, buf []byte) (n int, err error) {
 	// Final argument is (basep *uintptr) and the syscall doesn't take nil.
-// ReadDirent reads directory entries from fd and writes them into buf.
+	// TODO(rsc): Can we use a single global basep for all calls?
+	return Getdents(fd, buf, new(uintptr))
+}
+
 // Wait status is 7 bits at bottom, either 0 (exited),
 // 0x7F (stopped), or a signal number that caused an exit.
 // The 0x80 bit is whether there was a core dump.

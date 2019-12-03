@@ -106,6 +106,9 @@ func direntNamlen(buf []byte) (uint64, bool) {
 	return readInt(buf, unsafe.Offsetof(Dirent{}.Namlen), unsafe.Sizeof(Dirent{}.Namlen))
 }
 
+func SysctlClockinfo(name string) (*Clockinfo, error) {
+	mib, err := sysctlmib(name)
+	if err != nil {
 		return nil, err
 	}
 
@@ -132,9 +135,6 @@ func Pipe(p []int) (err error) {
 //sys Getdents(fd int, buf []byte) (n int, err error)
 func Getdirentries(fd int, buf []byte, basep *uintptr) (n int, err error) {
 	n, err = Getdents(fd, buf)
-//sys Getdents(fd int, buf []byte) (n int, err error)
-func Getdirentries(fd int, buf []byte, basep *uintptr) (n int, err error) {
-	n, err = Getdents(fd, buf)
 	if err != nil || basep == nil {
 		return
 	}
@@ -156,6 +156,15 @@ func Getdirentries(fd int, buf []byte, basep *uintptr) (n int, err error) {
 		err = EIO
 	}
 	return
+}
+
+const ImplementsGetwd = true
+
+//sys	Getcwd(buf []byte) (n int, err error) = SYS___GETCWD
+
+func Getwd() (string, error) {
+	var buf [PathMax]byte
+	_, err := Getcwd(buf[0:])
 	if err != nil {
 		return "", err
 	}

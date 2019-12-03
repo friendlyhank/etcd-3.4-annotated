@@ -63,6 +63,18 @@ func Setgroups(gids []int) (err error) {
 	return setgroups(len(a), &a[0])
 }
 
+// Wait status is 7 bits at bottom, either 0 (exited),
+// 0x7F (stopped), or a signal number that caused an exit.
+// The 0x80 bit is whether there was a core dump.
+// An extra number (exit code, signal causing a stop)
+// is in the high bits.
+
+type WaitStatus uint32
+
+const (
+	mask  = 0x7F
+	core  = 0x80
+	shift = 8
 
 	exited  = 0
 	killed  = 9
@@ -77,7 +89,10 @@ func (w WaitStatus) ExitStatus() int {
 	}
 	return int(w >> shift)
 }
-	killed  = 9
+
+func (w WaitStatus) Signaled() bool { return w&mask != stopped && w&mask != 0 }
+
+func (w WaitStatus) Signal() syscall.Signal {
 	sig := syscall.Signal(w & mask)
 	if sig == stopped || sig == 0 {
 		return -1
@@ -104,8 +119,11 @@ func (w WaitStatus) TrapCause() int { return -1 }
 
 //sys	wait4(pid int, wstatus *_C_int, options int, rusage *Rusage) (wpid int, err error)
 
-func (w WaitStatus) Killed() bool { return w&mask == killed && syscall.Signal(w>>shift) != SIGKILL }
-
+func Wait4(pid int, wstatus *WaitStatus, options int, rusage *Rusage) (wpid int, err error) {
+	var status _C_int
+	wpid, err = wait4(pid, &status, options, rusage)
+	if wstatus != nil {
+		*wstatus = WaitStatus(status)
 	}
 	return
 }

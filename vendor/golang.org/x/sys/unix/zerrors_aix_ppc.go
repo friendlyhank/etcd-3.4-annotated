@@ -928,6 +928,9 @@ const (
 	TCXONC                        = 0x540b
 	TIMER_ABSTIME                 = 0x3e7
 	TIMER_MAX                     = 0x20
+	TIOC                          = 0x5400
+	TIOCCBRK                      = 0x2000747a
+	TIOCCDTR                      = 0x20007478
 	TIOCCONS                      = 0x80047462
 	TIOCEXCL                      = 0x2000740d
 	TIOCFLUSH                     = 0x80047410

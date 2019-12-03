@@ -298,6 +298,11 @@ func direntNamlen(buf []byte) (uint64, bool) {
 
 //sys	getdirent(fd int, buf []byte) (n int, err error)
 func Getdents(fd int, buf []byte) (n int, err error) {
+	return getdirent(fd, buf)
+}
+
+//sys	wait4(pid Pid_t, status *_C_int, options int, rusage *Rusage) (wpid Pid_t, err error)
+func Wait4(pid int, wstatus *WaitStatus, options int, rusage *Rusage) (wpid int, err error) {
 	var status _C_int
 	var r Pid_t
 	err = ERESTART
@@ -460,6 +465,11 @@ func IoctlGetTermios(fd int, req uint) (*Termios, error) {
 //sys	Ustat(dev int, ubuf *Ustat_t) (err error)
 //sys	write(fd int, p []byte) (n int, err error)
 //sys	readlen(fd int, p *byte, np int) (n int, err error) = read
+//sys	writelen(fd int, p *byte, np int) (n int, err error) = write
+
+//sys	Dup2(oldfd int, newfd int) (err error)
+//sys	Fadvise(fd int, offset int64, length int64, advice int) (err error) = posix_fadvise64
+//sys	Fchown(fd int, uid int, gid int) (err error)
 //sys	fstat(fd int, stat *Stat_t) (err error)
 //sys	fstatat(dirfd int, path string, stat *Stat_t, flags int) (err error) = fstatat
 //sys	Fstatfs(fd int, buf *Statfs_t) (err error)
@@ -470,8 +480,13 @@ func IoctlGetTermios(fd int, req uint) (*Termios, error) {
 //sysnb	Getuid() (uid int)
 //sys	Lchown(path string, uid int, gid int) (err error)
 //sys	Listen(s int, n int) (err error)
-//sys	fstat(fd int, stat *Stat_t) (err error)
-//sys	fstatat(dirfd int, path string, stat *Stat_t, flags int) (err error) = fstatat
+//sys	lstat(path string, stat *Stat_t) (err error)
+//sys	Pause() (err error)
+//sys	Pread(fd int, p []byte, offset int64) (n int, err error) = pread64
+//sys	Pwrite(fd int, p []byte, offset int64) (n int, err error) = pwrite64
+//sys	Select(nfd int, r *FdSet, w *FdSet, e *FdSet, timeout *Timeval) (n int, err error)
+//sys	Pselect(nfd int, r *FdSet, w *FdSet, e *FdSet, timeout *Timespec, sigmask *Sigset_t) (n int, err error)
+//sysnb	Setregid(rgid int, egid int) (err error)
 //sysnb	Setreuid(ruid int, euid int) (err error)
 //sys	Shutdown(fd int, how int) (err error)
 //sys	Splice(rfd int, roff *int64, wfd int, woff *int64, len int, flags int) (n int64, err error)
@@ -480,17 +495,30 @@ func IoctlGetTermios(fd int, req uint) (*Termios, error) {
 //sys	Truncate(path string, length int64) (err error)
 
 //sys	bind(s int, addr unsafe.Pointer, addrlen _Socklen) (err error)
-//sys	lstat(path string, stat *Stat_t) (err error)
-//sys	Pause() (err error)
-//sys	Pread(fd int, p []byte, offset int64) (n int, err error) = pread64
-//sys	Pwrite(fd int, p []byte, offset int64) (n int, err error) = pwrite64
-//sys	Select(nfd int, r *FdSet, w *FdSet, e *FdSet, timeout *Timeval) (n int, err error)
+//sys	connect(s int, addr unsafe.Pointer, addrlen _Socklen) (err error)
+//sysnb	getgroups(n int, list *_Gid_t) (nn int, err error)
+//sysnb	setgroups(n int, list *_Gid_t) (err error)
+//sys	getsockopt(s int, level int, name int, val unsafe.Pointer, vallen *_Socklen) (err error)
+//sys	setsockopt(s int, level int, name int, val unsafe.Pointer, vallen uintptr) (err error)
+//sysnb	socket(domain int, typ int, proto int) (fd int, err error)
+//sysnb	socketpair(domain int, typ int, proto int, fd *[2]int32) (err error)
+//sysnb	getpeername(fd int, rsa *RawSockaddrAny, addrlen *_Socklen) (err error)
+//sysnb	getsockname(fd int, rsa *RawSockaddrAny, addrlen *_Socklen) (err error)
+//sys	recvfrom(fd int, p []byte, flags int, from *RawSockaddrAny, fromlen *_Socklen) (n int, err error)
+//sys	sendto(s int, buf []byte, flags int, to unsafe.Pointer, addrlen _Socklen) (err error)
+
+// In order to use msghdr structure with Control, Controllen, nrecvmsg and nsendmsg must be used.
+//sys	recvmsg(s int, msg *Msghdr, flags int) (n int, err error) = nrecvmsg
 //sys	sendmsg(s int, msg *Msghdr, flags int) (n int, err error) = nsendmsg
 
 //sys	munmap(addr uintptr, length uintptr) (err error)
 
 var mapper = &mmapper{
-//sys	stat(path string, statptr *Stat_t) (err error)
+	active: make(map[*byte][]byte),
+	mmap:   mmap,
+	munmap: munmap,
+}
+
 func Mmap(fd int, offset int64, length int, prot int, flags int) (data []byte, err error) {
 	return mapper.Mmap(fd, offset, length, prot, flags)
 }
@@ -507,9 +535,14 @@ func Munmap(b []byte) (err error) {
 //sys	Munlock(b []byte) (err error)
 //sys	Munlockall() (err error)
 
-// In order to use msghdr structure with Control, Controllen, nrecvmsg and nsendmsg must be used.
-//sys	recvmsg(s int, msg *Msghdr, flags int) (n int, err error) = nrecvmsg
-//sys	sendmsg(s int, msg *Msghdr, flags int) (n int, err error) = nsendmsg
+//sysnb pipe(p *[2]_C_int) (err error)
+
+func Pipe(p []int) (err error) {
+	if len(p) != 2 {
+		return EINVAL
+	}
+	var pp [2]_C_int
+	err = pipe(&pp)
 	p[0] = int(pp[0])
 	p[1] = int(pp[1])
 	return
@@ -527,17 +560,6 @@ func Poll(fds []PollFd, timeout int) (n int, err error) {
 //sys	gettimeofday(tv *Timeval, tzp *Timezone) (err error)
 //sysnb	Time(t *Time_t) (tt Time_t, err error)
 //sys	Utime(path string, buf *Utimbuf) (err error)
-
-//sys	Getsystemcfg(label int) (n uint64)
-
-//sys	umount(target string) (err error)
-func Unmount(target string, flags int) (err error) {
-	if flags != 0 {
-		// AIX doesn't have any flags for umount.
-		return ENOSYS
-	}
-	return umount(target)
-}
 
 //sys	Getsystemcfg(label int) (n uint64)
 

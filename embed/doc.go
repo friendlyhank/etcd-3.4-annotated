@@ -21,11 +21,7 @@ Launch an embedded etcd server using the configuration defaults:
 		"log"
 		"time"
 
-<<<<<<< HEAD
-		"hank.com/etcd-3.3.12-annotated/embed"
-=======
 		"go.etcd.io/etcd/embed"
->>>>>>> upstream/master
 	)
 
 	func main() {

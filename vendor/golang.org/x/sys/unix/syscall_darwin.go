@@ -89,6 +89,10 @@ func direntNamlen(buf []byte) (uint64, bool) {
 	return readInt(buf, unsafe.Offsetof(Dirent{}.Namlen), unsafe.Sizeof(Dirent{}.Namlen))
 }
 
+func PtraceAttach(pid int) (err error) { return ptrace(PT_ATTACH, pid, 0, 0) }
+func PtraceDetach(pid int) (err error) { return ptrace(PT_DETACH, pid, 0, 0) }
+
+const (
 	attrBitMapCount = 5
 	attrCmnFullpath = 0x08000000
 )
@@ -155,10 +159,6 @@ func SysctlClockinfo(name string) (*Clockinfo, error) {
 	mib, err := sysctlmib(name)
 	if err != nil {
 		return nil, err
-func SysctlClockinfo(name string) (*Clockinfo, error) {
-	mib, err := sysctlmib(name)
-	if err != nil {
-		return nil, err
 	}
 
 	n := uintptr(SizeofClockinfo)
@@ -172,6 +172,13 @@ func SysctlClockinfo(name string) (*Clockinfo, error) {
 	return &ci, nil
 }
 
+//sysnb pipe() (r int, w int, err error)
+
+func Pipe(p []int) (err error) {
+	if len(p) != 2 {
+		return EINVAL
+	}
+	p[0], p[1], err = pipe()
 	return
 }
 

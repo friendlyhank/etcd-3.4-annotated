@@ -3,6 +3,9 @@
 
 // +build 386,openbsd
 
+package unix
+
+type mibentry struct {
 	ctlname string
 	ctloid  []_C_int
 }

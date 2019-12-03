@@ -57,11 +57,8 @@ var (
 		"3.1.0": {streamTypeMsgAppV2, streamTypeMessage},
 		"3.2.0": {streamTypeMsgAppV2, streamTypeMessage},
 		"3.3.0": {streamTypeMsgAppV2, streamTypeMessage},
-<<<<<<< HEAD
-=======
 		"3.4.0": {streamTypeMsgAppV2, streamTypeMessage},
 		"3.5.0": {streamTypeMsgAppV2, streamTypeMessage},
->>>>>>> upstream/master
 	}
 )
 
@@ -554,11 +551,7 @@ func (cr *streamReader) decodeLoop(rc io.ReadCloser, t streamType) error {
 		}
 
 		select {
-<<<<<<< HEAD
 		case recvc <- m: /* 将消息写到channel中 channel另外一段是rafthttp/peer.go startPeer*/
-=======
-		case recvc <- m:
->>>>>>> upstream/master
 		default:
 			if cr.status.isActive() {
 				if cr.lg != nil {

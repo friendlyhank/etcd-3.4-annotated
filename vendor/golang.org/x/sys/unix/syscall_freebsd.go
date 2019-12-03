@@ -94,6 +94,9 @@ func direntNamlen(buf []byte) (uint64, bool) {
 	return readInt(buf, unsafe.Offsetof(Dirent{}.Namlen), unsafe.Sizeof(Dirent{}.Namlen))
 }
 
+func Pipe(p []int) (err error) {
+	return Pipe2(p, 0)
+}
 
 //sysnb	pipe2(p *[2]_C_int, flags int) (err error)
 
@@ -374,9 +377,6 @@ func Getdirentries(fd int, buf []byte, basep *uintptr) (n int, err error) {
 		if basep == nil || unsafe.Sizeof(*basep) == 8 {
 			return getdirentries_freebsd12(fd, buf, (*uint64)(unsafe.Pointer(basep)))
 		}
-		if basep == nil || unsafe.Sizeof(*basep) == 8 {
-			return getdirentries_freebsd12(fd, buf, (*uint64)(unsafe.Pointer(basep)))
-		}
 		// The freebsd12 syscall needs a 64-bit base. On 32-bit machines
 		// we can't just use the basep passed in. See #32498.
 		var base uint64 = uint64(*basep)
@@ -389,6 +389,13 @@ func Getdirentries(fd int, buf []byte, basep *uintptr) (n int, err error) {
 			err = EIO
 		}
 		return
+	}
+
+	// The old syscall entries are smaller than the new. Use 1/4 of the original
+	// buffer size rounded up to DIRBLKSIZ (see /usr/src/lib/libc/sys/getdirentries.c).
+	oldBufLen := roundup(len(buf)/4, _dirblksiz)
+	oldBuf := make([]byte, oldBufLen)
+	n, err = getdirentries(fd, oldBuf, basep)
 	if err == nil && n > 0 {
 		n = convertFromDirents11(buf, oldBuf[:n])
 	}
@@ -430,13 +437,6 @@ func (s *Stat_t) convertFrom(old *stat_freebsd11_t) {
 		Uid:     old.Uid,
 		Gid:     old.Gid,
 		Rdev:    uint64(old.Rdev),
-		Dev:     uint64(old.Dev),
-		Ino:     uint64(old.Ino),
-		Nlink:   uint64(old.Nlink),
-		Mode:    old.Mode,
-		Uid:     old.Uid,
-		Gid:     old.Gid,
-		Rdev:    uint64(old.Rdev),
 		Atim:    old.Atim,
 		Mtim:    old.Mtim,
 		Ctim:    old.Ctim,
@@ -446,6 +446,32 @@ func (s *Stat_t) convertFrom(old *stat_freebsd11_t) {
 		Blksize: old.Blksize,
 		Flags:   old.Flags,
 		Gen:     uint64(old.Gen),
+	}
+}
+
+func (s *Statfs_t) convertFrom(old *statfs_freebsd11_t) {
+	*s = Statfs_t{
+		Version:     _statfsVersion,
+		Type:        old.Type,
+		Flags:       old.Flags,
+		Bsize:       old.Bsize,
+		Iosize:      old.Iosize,
+		Blocks:      old.Blocks,
+		Bfree:       old.Bfree,
+		Bavail:      old.Bavail,
+		Files:       old.Files,
+		Ffree:       old.Ffree,
+		Syncwrites:  old.Syncwrites,
+		Asyncwrites: old.Asyncwrites,
+		Syncreads:   old.Syncreads,
+		Asyncreads:  old.Asyncreads,
+		// Spare
+		Namemax: old.Namemax,
+		Owner:   old.Owner,
+		Fsid:    old.Fsid,
+		// Charspare
+		// Fstypename
+		// Mntfromname
 		// Mntonname
 	}
 
@@ -533,32 +559,6 @@ func PtraceGetRegs(pid int, regsout *Reg) (err error) {
 	return ptrace(PTRACE_GETREGS, pid, uintptr(unsafe.Pointer(regsout)), 0)
 }
 
-//sys	ptrace(request int, pid int, addr uintptr, data int) (err error)
-
-func PtraceAttach(pid int) (err error) {
-	return ptrace(PTRACE_ATTACH, pid, 0, 0)
-}
-
-func PtraceCont(pid int, signal int) (err error) {
-	return ptrace(PTRACE_CONT, pid, 1, signal)
-}
-
-func PtraceDetach(pid int) (err error) {
-	return ptrace(PTRACE_DETACH, pid, 1, 0)
-}
-
-func PtraceGetFpRegs(pid int, fpregsout *FpReg) (err error) {
-	return ptrace(PTRACE_GETFPREGS, pid, uintptr(unsafe.Pointer(fpregsout)), 0)
-}
-
-func PtraceGetFsBase(pid int, fsbase *int64) (err error) {
-	return ptrace(PTRACE_GETFSBASE, pid, uintptr(unsafe.Pointer(fsbase)), 0)
-}
-
-func PtraceGetRegs(pid int, regsout *Reg) (err error) {
-	return ptrace(PTRACE_GETREGS, pid, uintptr(unsafe.Pointer(regsout)), 0)
-}
-
 func PtraceIO(req int, pid int, addr uintptr, out []byte, countin int) (count int, err error) {
 	ioDesc := PtraceIoDesc{Op: int32(req), Offs: (*byte)(unsafe.Pointer(addr)), Addr: (*byte)(unsafe.Pointer(&out[0])), Len: uint(countin)}
 	err = ptrace(PTRACE_IO, pid, uintptr(unsafe.Pointer(&ioDesc)), 0)
@@ -597,6 +597,35 @@ func PtraceSingleStep(pid int) (err error) {
 	return ptrace(PTRACE_SINGLESTEP, pid, 1, 0)
 }
 
+/*
+ * Exposed directly
+ */
+//sys	Access(path string, mode uint32) (err error)
+//sys	Adjtime(delta *Timeval, olddelta *Timeval) (err error)
+//sys	CapEnter() (err error)
+//sys	capRightsGet(version int, fd int, rightsp *CapRights) (err error) = SYS___CAP_RIGHTS_GET
+//sys	capRightsLimit(fd int, rightsp *CapRights) (err error)
+//sys	Chdir(path string) (err error)
+//sys	Chflags(path string, flags int) (err error)
+//sys	Chmod(path string, mode uint32) (err error)
+//sys	Chown(path string, uid int, gid int) (err error)
+//sys	Chroot(path string) (err error)
+//sys	Close(fd int) (err error)
+//sys	Dup(fd int) (nfd int, err error)
+//sys	Dup2(from int, to int) (err error)
+//sys	Exit(code int)
+//sys	ExtattrGetFd(fd int, attrnamespace int, attrname string, data uintptr, nbytes int) (ret int, err error)
+//sys	ExtattrSetFd(fd int, attrnamespace int, attrname string, data uintptr, nbytes int) (ret int, err error)
+//sys	ExtattrDeleteFd(fd int, attrnamespace int, attrname string) (err error)
+//sys	ExtattrListFd(fd int, attrnamespace int, data uintptr, nbytes int) (ret int, err error)
+//sys	ExtattrGetFile(file string, attrnamespace int, attrname string, data uintptr, nbytes int) (ret int, err error)
+//sys	ExtattrSetFile(file string, attrnamespace int, attrname string, data uintptr, nbytes int) (ret int, err error)
+//sys	ExtattrDeleteFile(file string, attrnamespace int, attrname string) (err error)
+//sys	ExtattrListFile(file string, attrnamespace int, data uintptr, nbytes int) (ret int, err error)
+//sys	ExtattrGetLink(link string, attrnamespace int, attrname string, data uintptr, nbytes int) (ret int, err error)
+//sys	ExtattrSetLink(link string, attrnamespace int, attrname string, data uintptr, nbytes int) (ret int, err error)
+//sys	ExtattrDeleteLink(link string, attrnamespace int, attrname string) (err error)
+//sys	ExtattrListLink(link string, attrnamespace int, data uintptr, nbytes int) (ret int, err error)
 //sys	Fadvise(fd int, offset int64, length int64, advice int) (err error) = SYS_POSIX_FADVISE
 //sys	Faccessat(dirfd int, path string, mode uint32, flags int) (err error)
 //sys	Fchdir(fd int) (err error)
@@ -645,7 +674,11 @@ func PtraceSingleStep(pid int) (err error) {
 //sys	mknod(path string, mode uint32, dev int) (err error)
 //sys	mknodat(fd int, path string, mode uint32, dev int) (err error)
 //sys	mknodat_freebsd12(fd int, path string, mode uint32, dev uint64) (err error)
-//sys	getdirentries_freebsd12(fd int, buf []byte, basep *uint64) (n int, err error)
+//sys	Nanosleep(time *Timespec, leftover *Timespec) (err error)
+//sys	Open(path string, mode int, perm uint32) (fd int, err error)
+//sys	Openat(fdat int, path string, mode int, perm uint32) (fd int, err error)
+//sys	Pathconf(path string, name int) (val int, err error)
+//sys	Pread(fd int, p []byte, offset int64) (n int, err error)
 //sys	Pwrite(fd int, p []byte, offset int64) (n int, err error)
 //sys	read(fd int, p []byte) (n int, err error)
 //sys	Readlink(path string, buf []byte) (n int, err error)

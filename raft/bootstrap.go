@@ -47,19 +47,11 @@ func (rn *RawNode) Bootstrap(peers []Peer) error {
 
 	// TODO(tbg): remove StartNode and give the application the right tools to
 	// bootstrap the initial membership in a cleaner way.
-<<<<<<< HEAD
 	rn.raft.becomeFollower(1, None)//设置默认角色,为Foller 启动的第一个节点term为1
 	ents := make([]pb.Entry, len(peers))
 	for i, peer := range peers {
 		cc := pb.ConfChange{Type: pb.ConfChangeAddNode, NodeID: peer.ID, Context: peer.Context}
 		data, err := cc.Marshal()//排序
-=======
-	rn.raft.becomeFollower(1, None)
-	ents := make([]pb.Entry, len(peers))
-	for i, peer := range peers {
-		cc := pb.ConfChange{Type: pb.ConfChangeAddNode, NodeID: peer.ID, Context: peer.Context}
-		data, err := cc.Marshal()
->>>>>>> upstream/master
 		if err != nil {
 			return err
 		}

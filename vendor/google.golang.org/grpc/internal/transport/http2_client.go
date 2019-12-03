@@ -292,6 +292,7 @@ func newHTTP2Client(connectCtx, ctx context.Context, addr TargetInfo, opts Conne
 	// a dedicated goroutine which reads HTTP2 frame from network. Then it
 	// dispatches the frame to the corresponding stream entity.
 	go t.reader()
+
 	// Send connection preface to server.
 	n, err := t.conn.Write(clientPreface)
 	if err != nil {

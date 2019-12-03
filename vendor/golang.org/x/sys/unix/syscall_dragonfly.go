@@ -73,6 +73,9 @@ func direntNamlen(buf []byte) (uint64, bool) {
 	return readInt(buf, unsafe.Offsetof(Dirent{}.Namlen), unsafe.Sizeof(Dirent{}.Namlen))
 }
 
+//sysnb pipe() (r int, w int, err error)
+
+func Pipe(p []int) (err error) {
 	if len(p) != 2 {
 		return EINVAL
 	}
@@ -285,7 +288,10 @@ func Sendfile(outfd int, infd int, offset *int64, count int) (written int, err e
 //sys	Getdents(fd int, buf []byte) (n int, err error)
 //sys	Getdirentries(fd int, buf []byte, basep *uintptr) (n int, err error)
 //sys	Getdtablesize() (size int)
-//sys	Getdents(fd int, buf []byte) (n int, err error)
+//sysnb	Getegid() (egid int)
+//sysnb	Geteuid() (uid int)
+//sysnb	Getgid() (gid int)
+//sysnb	Getpgid(pid int) (pgid int, err error)
 //sysnb	Getpgrp() (pgrp int)
 //sysnb	Getpid() (pid int)
 //sysnb	Getppid() (ppid int)

@@ -305,12 +305,6 @@ type Config struct {
 	// It can be multiple when "Logger" is zap.
 	LogOutputs []string `json:"log-outputs"`
 
-<<<<<<< HEAD
-	// Debug is true, to enable debug level logging.
-	Debug bool `json:"debug"`
-
-=======
->>>>>>> upstream/master
 	// ZapLoggerBuilder is used to build the zap logger.
 	ZapLoggerBuilder func(*Config) error
 
@@ -916,17 +910,9 @@ func (cfg *Config) getMetricsURLs() (ss []string) {
 }
 
 func parseBackendFreelistType(freelistType string) bolt.FreelistType {
-<<<<<<< HEAD
-	if freelistType == freelistMapType {
-		return bolt.FreelistMapType
-	}
-
-	return bolt.FreelistArrayType
-=======
 	if freelistType == freelistArrayType {
 		return bolt.FreelistArrayType
 	}
 
 	return bolt.FreelistMapType
->>>>>>> upstream/master
 }
