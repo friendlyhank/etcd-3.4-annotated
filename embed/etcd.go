@@ -29,20 +29,6 @@ import (
 	"sync"
 	"time"
 
-<<<<<<< HEAD
-	"hank.com/etcd-3.3.12-annotated/etcdserver"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/etcdhttp"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/rafthttp"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v2http"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v2v3"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v3client"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v3rpc"
-	"hank.com/etcd-3.3.12-annotated/pkg/debugutil"
-	runtimeutil "hank.com/etcd-3.3.12-annotated/pkg/runtime"
-	"hank.com/etcd-3.3.12-annotated/pkg/transport"
-	"hank.com/etcd-3.3.12-annotated/pkg/types"
-	"hank.com/etcd-3.3.12-annotated/version"
-=======
 	"go.etcd.io/etcd/etcdserver"
 	"go.etcd.io/etcd/etcdserver/api/etcdhttp"
 	"go.etcd.io/etcd/etcdserver/api/rafthttp"
@@ -55,7 +41,6 @@ import (
 	"go.etcd.io/etcd/pkg/transport"
 	"go.etcd.io/etcd/pkg/types"
 	"go.etcd.io/etcd/version"
->>>>>>> upstream/master
 
 	"github.com/coreos/pkg/capnslog"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
@@ -83,7 +68,6 @@ const (
 
 // Etcd contains a running etcd server and its listeners.
 type Etcd struct {
-<<<<<<< HEAD
 	Peers   []*peerListener //集群Listener
 	Clients []net.Listener  //客户端Listener
 	// a map of contexts for the servers that serves client requests.
@@ -93,17 +77,6 @@ type Etcd struct {
 	Server *etcdserver.EtcdServer //Etcd Server的核心配置
 
 	cfg   Config //配置参数
-=======
-	Peers   []*peerListener
-	Clients []net.Listener
-	// a map of contexts for the servers that serves client requests.
-	sctxs            map[string]*serveCtx
-	metricsListeners []net.Listener
-
-	Server *etcdserver.EtcdServer
-
-	cfg   Config
->>>>>>> upstream/master
 	stopc chan struct{}
 	errc  chan error
 
@@ -146,10 +119,7 @@ func StartEtcd(inCfg *Config) (e *Etcd, err error) {
 			zap.Strings("listen-peer-urls", e.cfg.getLPURLs()),
 		)
 	}
-<<<<<<< HEAD
 	//集群监听Listeners
-=======
->>>>>>> upstream/master
 	if e.Peers, err = configurePeerListeners(cfg); err != nil {
 		return e, err
 	}
@@ -160,10 +130,7 @@ func StartEtcd(inCfg *Config) (e *Etcd, err error) {
 			zap.Strings("listen-client-urls", e.cfg.getLCURLs()),
 		)
 	}
-<<<<<<< HEAD
 	//客户端监听listeners
-=======
->>>>>>> upstream/master
 	if e.sctxs, err = configureClientListeners(cfg); err != nil {
 		return e, err
 	}
@@ -194,11 +161,7 @@ func StartEtcd(inCfg *Config) (e *Etcd, err error) {
 		return e, err
 	}
 
-<<<<<<< HEAD
-	backendFreelistType := parseBackendFreelistType(cfg.ExperimentalBackendFreelistType)
-=======
 	backendFreelistType := parseBackendFreelistType(cfg.BackendFreelistType)
->>>>>>> upstream/master
 
 	srvcfg := etcdserver.ServerConfig{
 		Name:                       cfg.Name,
@@ -244,15 +207,9 @@ func StartEtcd(inCfg *Config) (e *Etcd, err error) {
 		ForceNewCluster:            cfg.ForceNewCluster,
 		EnableGRPCGateway:          cfg.EnableGRPCGateway,
 		EnableLeaseCheckpoint:      cfg.ExperimentalEnableLeaseCheckpoint,
-<<<<<<< HEAD
 	}
 	print(e.cfg.logger, *cfg, srvcfg, memberInitialized)
 	//创建EtcdServer并且创建raftNode并运行raftNode
-=======
-		CompactionBatchLimit:       cfg.ExperimentalCompactionBatchLimit,
-	}
-	print(e.cfg.logger, *cfg, srvcfg, memberInitialized)
->>>>>>> upstream/master
 	if e.Server, err = etcdserver.NewServer(srvcfg); err != nil {
 		return e, err
 	}
@@ -270,7 +227,6 @@ func StartEtcd(inCfg *Config) (e *Etcd, err error) {
 			return e, err
 		}
 	}
-<<<<<<< HEAD
 
 	//EtcdServer启动
 	e.Server.Start()
@@ -281,13 +237,6 @@ func StartEtcd(inCfg *Config) (e *Etcd, err error) {
 		return e, err
 	}
 	//生成http.handle 用于处理Client请求
-=======
-	e.Server.Start()
-
-	if err = e.servePeers(); err != nil {
-		return e, err
-	}
->>>>>>> upstream/master
 	if err = e.serveClients(); err != nil {
 		return e, err
 	}
@@ -310,10 +259,7 @@ func StartEtcd(inCfg *Config) (e *Etcd, err error) {
 	return e, nil
 }
 
-<<<<<<< HEAD
 //启动etcdmain的打印配置设置信息
-=======
->>>>>>> upstream/master
 func print(lg *zap.Logger, ec Config, sc etcdserver.ServerConfig, memberInitialized bool) {
 	// TODO: remove this after dropping "capnslog"
 	if lg == nil {
@@ -511,10 +457,7 @@ func stopServers(ctx context.Context, ss *servers) {
 
 func (e *Etcd) Err() <-chan error { return e.errc }
 
-<<<<<<< HEAD
 //配置PeerListeners
-=======
->>>>>>> upstream/master
 func configurePeerListeners(cfg *Config) (peers []*peerListener, err error) {
 	if err = updateCipherSuites(&cfg.PeerTLSInfo, cfg.CipherSuites); err != nil {
 		return nil, err
@@ -578,10 +521,7 @@ func configurePeerListeners(cfg *Config) (peers []*peerListener, err error) {
 				}
 			}
 		}
-<<<<<<< HEAD
 		//peers listener
-=======
->>>>>>> upstream/master
 		peers[i] = &peerListener{close: func(context.Context) error { return nil }}
 		peers[i].Listener, err = rafthttp.NewListener(u, &cfg.PeerTLSInfo)
 		if err != nil {
@@ -596,13 +536,9 @@ func configurePeerListeners(cfg *Config) (peers []*peerListener, err error) {
 }
 
 // configure peer handlers after rafthttp.Transport started
-<<<<<<< HEAD
 //servePeers - 配置handlers在启动transport之后
 func (e *Etcd) servePeers() (err error) {
 	//e.Server  etcdserver.EtcdServer实现了etcdserver.ServerPeer接口
-=======
-func (e *Etcd) servePeers() (err error) {
->>>>>>> upstream/master
 	ph := etcdhttp.NewPeerHandler(e.GetLogger(), e.Server)
 	var peerTLScfg *tls.Config
 	if !e.cfg.PeerTLSInfo.Empty() {
@@ -613,11 +549,8 @@ func (e *Etcd) servePeers() (err error) {
 
 	for _, p := range e.Peers {
 		u := p.Listener.Addr().String()
-<<<<<<< HEAD
 
 		//遍历Peers v3 启动grpc服务
-=======
->>>>>>> upstream/master
 		gs := v3rpc.Server(e.Server, peerTLScfg)
 		m := cmux.New(p.Listener)
 		go gs.Serve(m.Match(cmux.HTTP2()))
@@ -667,10 +600,7 @@ func (e *Etcd) servePeers() (err error) {
 	return nil
 }
 
-<<<<<<< HEAD
 //
-=======
->>>>>>> upstream/master
 func configureClientListeners(cfg *Config) (sctxs map[string]*serveCtx, err error) {
 	if err = updateCipherSuites(&cfg.ClientTLSInfo, cfg.CipherSuites); err != nil {
 		return nil, err
@@ -787,10 +717,7 @@ func configureClientListeners(cfg *Config) (sctxs map[string]*serveCtx, err erro
 	return sctxs, nil
 }
 
-<<<<<<< HEAD
 //serveClients -生成http.handle 用于处理Client请求
-=======
->>>>>>> upstream/master
 func (e *Etcd) serveClients() (err error) {
 	if !e.cfg.ClientTLSInfo.Empty() {
 		if e.cfg.logger != nil {

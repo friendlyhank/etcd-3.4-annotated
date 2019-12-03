@@ -18,13 +18,8 @@ import (
 	"context"
 	"time"
 
-<<<<<<< HEAD
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v2store"
-	pb "hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
-=======
 	"go.etcd.io/etcd/etcdserver/api/v2store"
 	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
->>>>>>> upstream/master
 )
 
 type RequestV2 pb.Request

@@ -20,11 +20,7 @@ import (
 	"testing"
 	"time"
 
-<<<<<<< HEAD
-	"hank.com/etcd-3.3.12-annotated/mvcc/backend"
-=======
 	"go.etcd.io/etcd/mvcc/backend"
->>>>>>> upstream/master
 	"go.uber.org/zap"
 )
 

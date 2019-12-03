@@ -17,11 +17,7 @@ package embed
 import (
 	"path/filepath"
 
-<<<<<<< HEAD
-	"hank.com/etcd-3.3.12-annotated/wal"
-=======
 	"go.etcd.io/etcd/wal"
->>>>>>> upstream/master
 )
 
 func isMemberInitialized(cfg *Config) bool {

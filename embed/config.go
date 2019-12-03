@@ -27,16 +27,6 @@ import (
 	"sync"
 	"time"
 
-<<<<<<< HEAD
-	"hank.com/etcd-3.3.12-annotated/etcdserver"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v3compactor"
-	"hank.com/etcd-3.3.12-annotated/pkg/flags"
-	"hank.com/etcd-3.3.12-annotated/pkg/netutil"
-	"hank.com/etcd-3.3.12-annotated/pkg/srv"
-	"hank.com/etcd-3.3.12-annotated/pkg/tlsutil"
-	"hank.com/etcd-3.3.12-annotated/pkg/transport"
-	"hank.com/etcd-3.3.12-annotated/pkg/types"
-=======
 	"go.etcd.io/etcd/etcdserver"
 	"go.etcd.io/etcd/etcdserver/api/v3compactor"
 	"go.etcd.io/etcd/pkg/flags"
@@ -46,7 +36,6 @@ import (
 	"go.etcd.io/etcd/pkg/tlsutil"
 	"go.etcd.io/etcd/pkg/transport"
 	"go.etcd.io/etcd/pkg/types"
->>>>>>> upstream/master
 
 	bolt "go.etcd.io/bbolt"
 	"go.uber.org/zap"
@@ -56,41 +45,24 @@ import (
 	"sigs.k8s.io/yaml"
 )
 
-<<<<<<< HEAD
 //默认的配置信息
-=======
->>>>>>> upstream/master
 const (
 	ClusterStateFlagNew      = "new"
 	ClusterStateFlagExisting = "existing"
 
 	DefaultName                  = "default"
-<<<<<<< HEAD
-	DefaultMaxSnapshots          = 5  //快照最大数量
+	DefaultMaxSnapshots          = 5//快照最大数量
 	DefaultMaxWALs               = 5
 	DefaultMaxTxnOps             = uint(128)
-	DefaultMaxRequestBytes       = 1.5 * 1024 * 1024 //最大请求数据
-	//GRPC心跳
-=======
-	DefaultMaxSnapshots          = 5
-	DefaultMaxWALs               = 5
-	DefaultMaxTxnOps             = uint(128)
-	DefaultMaxRequestBytes       = 1.5 * 1024 * 1024
->>>>>>> upstream/master
+	DefaultMaxRequestBytes       = 1.5 * 1024 * 1024//最大请求数据
 	DefaultGRPCKeepAliveMinTime  = 5 * time.Second
 	DefaultGRPCKeepAliveInterval = 2 * time.Hour
 	DefaultGRPCKeepAliveTimeout  = 20 * time.Second
 
-<<<<<<< HEAD
 	DefaultListenPeerURLs   = "http://localhost:2380"//集群通信地址
 	DefaultListenClientURLs = "http://localhost:2379"//客户端通信地址
 
 	//输出设置
-=======
-	DefaultListenPeerURLs   = "http://localhost:2380"
-	DefaultListenClientURLs = "http://localhost:2379"
-
->>>>>>> upstream/master
 	DefaultLogOutput = "default"
 	JournalLogOutput = "systemd/journal"
 	StdErrLogOutput  = "stderr"
@@ -100,24 +72,14 @@ const (
 	// It's enabled by default.
 	DefaultStrictReconfigCheck = true
 	// DefaultEnableV2 is the default value for "--enable-v2" flag.
-<<<<<<< HEAD
-	// v2 is enabled by default.
-	// TODO: disable v2 when deprecated.
-	DefaultEnableV2 = true
-=======
 	// v2 API is disabled by default.
 	DefaultEnableV2 = false
->>>>>>> upstream/master
 
 	// maxElectionMs specifies the maximum value of election timeout.
 	// More details are listed in ../Documentation/tuning.md#time-parameters.
 	maxElectionMs = 50000
 	// backend freelist map type
-<<<<<<< HEAD
-	freelistMapType = "map"
-=======
 	freelistArrayType = "array"
->>>>>>> upstream/master
 )
 
 var (
@@ -156,17 +118,10 @@ func init() {
 // Config holds the arguments for configuring an etcd server.
 type Config struct {
 	Name   string `json:"name"`
-<<<<<<< HEAD
 	Dir    string `json:"data-dir"` //数据目录的路径
 	WalDir string `json:"wal-dir"` //WAL文件专用目录
 
 	SnapshotCount uint64 `json:"snapshot-count"` //触发一次磁盘快照的提交事务的次数
-=======
-	Dir    string `json:"data-dir"`
-	WalDir string `json:"wal-dir"`
-
-	SnapshotCount uint64 `json:"snapshot-count"`
->>>>>>> upstream/master
 
 	// SnapshotCatchUpEntries is the number of entries for a slow follower
 	// to catch-up after compacting the raft storage entries.
@@ -177,24 +132,14 @@ type Config struct {
 	// Always use "DefaultSnapshotCatchUpEntries"
 	SnapshotCatchUpEntries uint64
 
-<<<<<<< HEAD
 	MaxSnapFiles uint `json:"max-snapshots"`//etcd保存的最大快照文件数
 	MaxWalFiles  uint `json:"max-wals"`  //etcd保存的最大快照文件数
-=======
-	MaxSnapFiles uint `json:"max-snapshots"`
-	MaxWalFiles  uint `json:"max-wals"`
->>>>>>> upstream/master
 
 	// TickMs is the number of milliseconds between heartbeat ticks.
 	// TODO: decouple tickMs and heartbeat tick (current heartbeat tick = 1).
 	// make ticks a cluster wide configuration.
-<<<<<<< HEAD
 	TickMs     uint `json:"heartbeat-interval"`//Leader心跳时间间隔
 	ElectionMs uint `json:"election-timeout"` //一次等待选举的超时时间
-=======
-	TickMs     uint `json:"heartbeat-interval"`
-	ElectionMs uint `json:"election-timeout"`
->>>>>>> upstream/master
 
 	// InitialElectionTickAdvance is true, then local member fast-forwards
 	// election ticks to speed up "initial" leader election trigger. This
@@ -228,19 +173,12 @@ type Config struct {
 	// BackendBatchInterval is the maximum time before commit the backend transaction.
 	BackendBatchInterval time.Duration `json:"backend-batch-interval"`
 	// BackendBatchLimit is the maximum operations before commit the backend transaction.
-<<<<<<< HEAD
-	BackendBatchLimit int   `json:"backend-batch-limit"`
-	QuotaBackendBytes int64 `json:"quota-backend-bytes"`
-	MaxTxnOps         uint  `json:"max-txn-ops"`
-	MaxRequestBytes   uint  `json:"max-request-bytes"` //grpc最大请求书
-=======
 	BackendBatchLimit int `json:"backend-batch-limit"`
 	// BackendFreelistType specifies the type of freelist that boltdb backend uses (array and map are supported types).
 	BackendFreelistType string `json:"backend-bbolt-freelist-type"`
 	QuotaBackendBytes   int64  `json:"quota-backend-bytes"`
 	MaxTxnOps           uint   `json:"max-txn-ops"`
-	MaxRequestBytes     uint   `json:"max-request-bytes"`
->>>>>>> upstream/master
+	MaxRequestBytes     uint   `json:"max-request-bytes"`//grpc最大请求数
 
 	LPUrls, LCUrls []url.URL
 	APUrls, ACUrls []url.URL
@@ -254,7 +192,6 @@ type Config struct {
 	// Note that cipher suites are prioritized in the given order.
 	CipherSuites []string `json:"cipher-suites"`
 
-<<<<<<< HEAD
 	ClusterState          string `json:"initial-cluster-state"`//初始化集群状态
 	DNSCluster            string `json:"discovery-srv"`//最初创建一个集群的服务发现DNS src域名
 	DNSClusterServiceName string `json:"discovery-srv-name"`
@@ -264,17 +201,6 @@ type Config struct {
 	InitialClusterToken   string `json:"initial-cluster-token"` //集群初始化 token
 	StrictReconfigCheck   bool   `json:"strict-reconfig-check"`//拒绝所有会引起quorum丢失的重配置
 	EnableV2              bool   `json:"enable-v2"`//是否允许接收V2的API请求
-=======
-	ClusterState          string `json:"initial-cluster-state"`
-	DNSCluster            string `json:"discovery-srv"`
-	DNSClusterServiceName string `json:"discovery-srv-name"`
-	Dproxy                string `json:"discovery-proxy"`
-	Durl                  string `json:"discovery"`
-	InitialCluster        string `json:"initial-cluster"`
-	InitialClusterToken   string `json:"initial-cluster-token"`
-	StrictReconfigCheck   bool   `json:"strict-reconfig-check"`
-	EnableV2              bool   `json:"enable-v2"`
->>>>>>> upstream/master
 
 	// AutoCompactionMode is either 'periodic' or 'revision'.
 	AutoCompactionMode string `json:"auto-compaction-mode"`
@@ -282,11 +208,7 @@ type Config struct {
 	// (e.g. '5m' for 5-minute), or revision unit (e.g. '5000').
 	// If no time unit is provided and compaction mode is 'periodic',
 	// the unit defaults to hour. For example, '5' translates into 5-hour.
-<<<<<<< HEAD
 	AutoCompactionRetention string `json:"auto-compaction-retention"` //MVCC键值存储不被自动压缩的时间
-=======
-	AutoCompactionRetention string `json:"auto-compaction-retention"`
->>>>>>> upstream/master
 
 	// GRPCKeepAliveMinTime is the minimum interval that a client should
 	// wait before pinging server. When client pings "too fast", server
@@ -358,16 +280,9 @@ type Config struct {
 	ExperimentalInitialCorruptCheck bool          `json:"experimental-initial-corrupt-check"`
 	ExperimentalCorruptCheckTime    time.Duration `json:"experimental-corrupt-check-time"`
 	ExperimentalEnableV2V3          string        `json:"experimental-enable-v2v3"`
-<<<<<<< HEAD
-	// ExperimentalBackendFreelistType specifies the type of freelist that boltdb backend uses (array and map are supported types).
-	ExperimentalBackendFreelistType string `json:"experimental-backend-bbolt-freelist-type"`
-	// ExperimentalEnableLeaseCheckpoint enables primary lessor to persist lease remainingTTL to prevent indefinite auto-renewal of long lived leases.
-	ExperimentalEnableLeaseCheckpoint bool `json:"experimental-enable-lease-checkpoint"`
-=======
 	// ExperimentalEnableLeaseCheckpoint enables primary lessor to persist lease remainingTTL to prevent indefinite auto-renewal of long lived leases.
 	ExperimentalEnableLeaseCheckpoint bool `json:"experimental-enable-lease-checkpoint"`
 	ExperimentalCompactionBatchLimit  int  `json:"experimental-compaction-batch-limit"`
->>>>>>> upstream/master
 
 	// ForceNewCluster starts a new cluster even if previously started; unsafe.
 	ForceNewCluster bool `json:"force-new-cluster"`
@@ -380,16 +295,8 @@ type Config struct {
 	// Logger is logger options: "zap", "capnslog".
 	// WARN: "capnslog" is being deprecated in v3.5.
 	Logger string `json:"logger"`
-<<<<<<< HEAD
-
-	// DeprecatedLogOutput is to be deprecated in v3.5.
-	// Just here for safe migration in v3.4.
-	DeprecatedLogOutput []string `json:"log-output"`
-
-=======
 	// LogLevel configures log level. Only supports debug, info, warn, error, panic, or fatal. Default 'info'.
 	LogLevel string `json:"log-level"`
->>>>>>> upstream/master
 	// LogOutputs is either:
 	//  - "default" as os.Stderr,
 	//  - "stderr" as os.Stderr,
@@ -426,15 +333,12 @@ type Config struct {
 
 	// TO BE DEPRECATED
 
-<<<<<<< HEAD
-=======
 	// DeprecatedLogOutput is to be deprecated in v3.5.
 	// Just here for safe migration in v3.4.
 	DeprecatedLogOutput []string `json:"log-output"`
 	// Debug is true, to enable debug level logging.
 	// WARNING: to be deprecated in 3.5. Use "--log-level=debug" instead.
 	Debug bool `json:"debug"`
->>>>>>> upstream/master
 	// LogPkgLevels is being deprecated in v3.5.
 	// Only valid if "logger" option is "capnslog".
 	// WARN: DO NOT USE THIS!
@@ -451,11 +355,7 @@ type configYAML struct {
 type configJSON struct {
 	LPUrlsJSON string `json:"listen-peer-urls"`
 	LCUrlsJSON string `json:"listen-client-urls"`
-<<<<<<< HEAD
 	APUrlsJSON string `json:"initial-advertise-peer-urls"` //该member的perr URL地址用于etcd数据在集群内进行交互
-=======
-	APUrlsJSON string `json:"initial-advertise-peer-urls"`
->>>>>>> upstream/master
 	ACUrlsJSON string `json:"advertise-client-urls"`
 
 	CORSJSON          string `json:"cors"`
@@ -525,10 +425,7 @@ func NewConfig() *Config {
 		DeprecatedLogOutput: []string{DefaultLogOutput},
 		LogOutputs:          []string{DefaultLogOutput},
 		Debug:               false,
-<<<<<<< HEAD
-=======
 		LogLevel:            logutil.DefaultLogLevel,
->>>>>>> upstream/master
 		LogPkgLevels:        "",
 	}
 	cfg.InitialCluster = cfg.InitialClusterFromName(cfg.Name)
@@ -708,17 +605,10 @@ func (cfg *Config) Validate() error {
 	if cfg.ElectionMs <= 0 {
 		return fmt.Errorf("--election-timeout must be >0 (set to %dms)", cfg.ElectionMs)
 	}
-<<<<<<< HEAD
 	if 5*cfg.TickMs > cfg.ElectionMs {//选举超时时间必须大于五倍于心跳的时间
 		return fmt.Errorf("--election-timeout[%vms] should be at least as 5 times as --heartbeat-interval[%vms]", cfg.ElectionMs, cfg.TickMs)
 	}
 	if cfg.ElectionMs > maxElectionMs {//选举超时时间必须小于5000ms
-=======
-	if 5*cfg.TickMs > cfg.ElectionMs {
-		return fmt.Errorf("--election-timeout[%vms] should be at least as 5 times as --heartbeat-interval[%vms]", cfg.ElectionMs, cfg.TickMs)
-	}
-	if cfg.ElectionMs > maxElectionMs {
->>>>>>> upstream/master
 		return fmt.Errorf("--election-timeout[%vms] is too long, and should be set less than %vms", cfg.ElectionMs, maxElectionMs)
 	}
 
@@ -950,10 +840,7 @@ func (cfg *Config) UpdateDefaultClusterFromName(defaultInitialCluster string) (s
 }
 
 // checkBindURLs returns an error if any URL uses a domain name.
-<<<<<<< HEAD
 //校验Url
-=======
->>>>>>> upstream/master
 func checkBindURLs(urls []url.URL) error {
 	for _, url := range urls {
 		if url.Scheme == "unix" || url.Scheme == "unixs" {

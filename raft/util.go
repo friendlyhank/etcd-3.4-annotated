@@ -17,30 +17,15 @@ package raft
 import (
 	"bytes"
 	"fmt"
-<<<<<<< HEAD
-
-	pb "hank.com/etcd-3.3.12-annotated/raft/raftpb"
-=======
 	"strings"
 
 	pb "go.etcd.io/etcd/raft/raftpb"
->>>>>>> upstream/master
 )
 
 func (st StateType) MarshalJSON() ([]byte, error) {
 	return []byte(fmt.Sprintf("%q", st.String())), nil
 }
 
-<<<<<<< HEAD
-// uint64Slice implements sort interface
-type uint64Slice []uint64
-
-func (p uint64Slice) Len() int           { return len(p) }
-func (p uint64Slice) Less(i, j int) bool { return p[i] < p[j] }
-func (p uint64Slice) Swap(i, j int)      { p[i], p[j] = p[j], p[i] }
-
-=======
->>>>>>> upstream/master
 func min(a, b uint64) uint64 {
 	if a > b {
 		return b
@@ -76,8 +61,6 @@ func voteRespMsgType(msgt pb.MessageType) pb.MessageType {
 	}
 }
 
-<<<<<<< HEAD
-=======
 func DescribeHardState(hs pb.HardState) string {
 	var buf strings.Builder
 	fmt.Fprintf(&buf, "Term:%d", hs.Term)
@@ -141,7 +124,6 @@ func DescribeReady(rd Ready, f EntryFormatter) string {
 	return "<empty Ready>"
 }
 
->>>>>>> upstream/master
 // EntryFormatter can be implemented by the application to provide human-readable formatting
 // of entry data. Nil is a valid EntryFormatter and will use a default format.
 type EntryFormatter func([]byte) string
@@ -168,11 +150,7 @@ func DescribeMessage(m pb.Message, f EntryFormatter) string {
 		fmt.Fprintf(&buf, "]")
 	}
 	if !IsEmptySnap(m.Snapshot) {
-<<<<<<< HEAD
-		fmt.Fprintf(&buf, " Snapshot:%v", m.Snapshot)
-=======
 		fmt.Fprintf(&buf, " Snapshot: %s", DescribeSnapshot(m.Snapshot))
->>>>>>> upstream/master
 	}
 	return buf.String()
 }
@@ -186,15 +164,6 @@ func PayloadSize(e pb.Entry) int {
 // DescribeEntry returns a concise human-readable description of an
 // Entry for debugging.
 func DescribeEntry(e pb.Entry, f EntryFormatter) string {
-<<<<<<< HEAD
-	var formatted string
-	if e.Type == pb.EntryNormal && f != nil {
-		formatted = f(e.Data)
-	} else {
-		formatted = fmt.Sprintf("%q", e.Data)
-	}
-	return fmt.Sprintf("%d/%d %s %s", e.Term, e.Index, e.Type, formatted)
-=======
 	if f == nil {
 		f = func(data []byte) string { return fmt.Sprintf("%q", data) }
 	}
@@ -228,7 +197,6 @@ func DescribeEntry(e pb.Entry, f EntryFormatter) string {
 		formatted = " " + formatted
 	}
 	return fmt.Sprintf("%d/%d %s%s", e.Term, e.Index, e.Type, formatted)
->>>>>>> upstream/master
 }
 
 // DescribeEntries calls DescribeEntry for each Entry, adding a newline to
@@ -255,8 +223,6 @@ func limitSize(ents []pb.Entry, maxSize uint64) []pb.Entry {
 	}
 	return ents[:limit]
 }
-<<<<<<< HEAD
-=======
 
 func assertConfStatesEquivalent(l Logger, cs1, cs2 pb.ConfState) {
 	err := cs1.Equivalent(cs2)
@@ -265,4 +231,3 @@ func assertConfStatesEquivalent(l Logger, cs1, cs2 pb.ConfState) {
 	}
 	l.Panic(err)
 }
->>>>>>> upstream/master

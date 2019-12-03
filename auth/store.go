@@ -24,17 +24,10 @@ import (
 	"sync"
 	"sync/atomic"
 
-<<<<<<< HEAD
-	"hank.com/etcd-3.3.12-annotated/auth/authpb"
-	"hank.com/etcd-3.3.12-annotated/etcdserver/api/v3rpc/rpctypes"
-	pb "hank.com/etcd-3.3.12-annotated/etcdserver/etcdserverpb"
-	"hank.com/etcd-3.3.12-annotated/mvcc/backend"
-=======
 	"go.etcd.io/etcd/auth/authpb"
 	"go.etcd.io/etcd/etcdserver/api/v3rpc/rpctypes"
 	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
 	"go.etcd.io/etcd/mvcc/backend"
->>>>>>> upstream/master
 
 	"github.com/coreos/pkg/capnslog"
 	"go.uber.org/zap"
@@ -313,7 +306,7 @@ func (as *authStore) Authenticate(ctx context.Context, username, password string
 		return nil, ErrAuthFailed
 	}
 
-	if user.Options.NoPassword {
+	if user.Options != nil && user.Options.NoPassword {
 		return nil, ErrAuthFailed
 	}
 
@@ -351,7 +344,7 @@ func (as *authStore) CheckPassword(username, password string) (uint64, error) {
 		return 0, ErrAuthFailed
 	}
 
-	if user.Options.NoPassword {
+	if user.Options != nil && user.Options.NoPassword {
 		return 0, ErrAuthFailed
 	}
 
@@ -395,11 +388,7 @@ func (as *authStore) UserAdd(r *pb.AuthUserAddRequest) (*pb.AuthUserAddResponse,
 	var hashed []byte
 	var err error
 
-<<<<<<< HEAD
-	if !r.Options.NoPassword {
-=======
 	if r.Options != nil && !r.Options.NoPassword {
->>>>>>> upstream/master
 		hashed, err = bcrypt.GenerateFromPassword([]byte(r.Password), as.bcryptCost)
 		if err != nil {
 			if as.lg != nil {
