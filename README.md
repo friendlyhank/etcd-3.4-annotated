@@ -67,15 +67,11 @@ Join by phone: +1 405-792-0633‬ PIN: ‪299 906‬#
 
 The easiest way to get etcd is to use one of the pre-built release binaries which are available for OSX, Linux, Windows, and Docker on the [release page][github-release].
 
-<<<<<<< HEAD
-For more installation guides, please check out [play.etcd.io](http://play.etcd.io) and [operating etcd](https://github.com/etcd-io/etcd/tree/master/Documentation#operating-etcd-clusters).
-=======
 ```json
 {"errorCode":100,"message":"Key Not Found","cause":"/foo"}
 ```
 
 ### Watching a prefix
->>>>>>> fix(README): misc language cleanups
 
 For those wanting to try the very latest version, [build the latest version of etcd][dl-build] from the `master` branch. This first needs [*Go*](https://golang.org/) installed (version 1.13+ is required). All development occurs on `master`, including new features and bug fixes. Bug fixes are first targeted at `master` and subsequently ported to release branches, as described in the [branch management][branch-management] guide.
 
@@ -110,15 +106,12 @@ This will bring up etcd listening on port 2379 for client communication and on p
 
 Next, let's set a single key, and then retrieve it:
 
-<<<<<<< HEAD
-=======
 Etcd can be used as a centralized coordination service in a cluster and `TestAndSet` is the most basic operation to build distributed lock service. This command will set the value only if the client provided `prevValue` is equal the current key value.
 
 Here is a simple example. Let's create a key-value pair first: `testAndSet=one`.
 
 ```sh
 curl -L http://127.0.0.1:4001/v1/keys/testAndSet -d value=one
->>>>>>> fix(README): misc language cleanups
 ```
 etcdctl put mykey "this is awesome"
 etcdctl get mykey
@@ -145,11 +138,7 @@ Our [Procfile script](./Procfile) will set up a local example cluster. Start it 
 goreman start
 ```
 
-<<<<<<< HEAD
-This will bring up 3 etcd members `infra1`, `infra2` and `infra3` and etcd `grpc-proxy`, which runs locally and composes a cluster.
-=======
 Now list the keys under `/foo`
->>>>>>> fix(README): misc language cleanups
 
 Every cluster member and proxy accepts key value reads and key value writes.
 
@@ -179,16 +168,6 @@ Now it's time to dig into the full etcd API and other guides.
 [security]: ./Documentation/op-guide/security.md
 [tuning]: ./Documentation/tuning.md
 
-<<<<<<< HEAD
-## Contact
-
-- Mailing list: [etcd-dev](https://groups.google.com/forum/?hl=en#!forum/etcd-dev)
-- IRC: #[etcd](irc://irc.freenode.org:6667/#etcd) on freenode.org
-- Planning/Roadmap: [milestones](https://github.com/etcd-io/etcd/milestones), [roadmap](./ROADMAP.md)
-- Bugs: [issues](https://github.com/etcd-io/etcd/issues)
-
-## Contributing
-=======
 First, you need to have a CA cert `clientCA.crt` and signed key pair `client.crt`, `client.key`. This site has a good reference for how to generate self-signed key pairs:
 
 ```url
@@ -200,23 +179,13 @@ Next, lets configure etcd to use this keypair:
 ```sh
 ./etcd -clientCert client.crt -clientKey client.key -f
 ```
->>>>>>> fix(README): misc language cleanups
 
 See [CONTRIBUTING](CONTRIBUTING.md) for details on submitting patches and the contribution workflow.
 
-<<<<<<< HEAD
-## Reporting bugs
-
-See [reporting bugs](Documentation/reporting_bugs.md) for details about reporting any issues.
-=======
 You can now test the configuration using https:
->>>>>>> fix(README): misc language cleanups
 
 ## Reporting a security vulnerability
 
-<<<<<<< HEAD
-See [security disclosure and release process](security/README.md) for details on how to report a security vulnerability and how the etcd team manages it.
-=======
 You should be able to see the handshake succeed.
 
 ```
@@ -232,23 +201,15 @@ And also the response from the etcd server.
 ```
 
 ### Authentication with HTTPS client certificates
->>>>>>> fix(README): misc language cleanups
 
 ## Issue and PR management
 
 See [issue triage guidelines](Documentation/triage/issues.md) for details on how issues are managed.
 
-<<<<<<< HEAD
-See [PR management](Documentation/triage/PRs.md) for guidelines on how pull requests are managed.
-=======
 Try the same request to this server:
->>>>>>> fix(README): misc language cleanups
 
 ## etcd Emeritus Maintainers
 
-<<<<<<< HEAD
-These emeritus maintainers dedicated a part of their career to etcd and reviewed code, triaged bugs, and pushed the project forward over a substantial period of time. Their contribution is greatly appreciated.
-=======
 The request should be rejected by the server.
 
 ```
@@ -382,17 +343,10 @@ curl -L http://127.0.0.1:4002/v1/keys/foo
 ```json
 {"action":"GET","key":"/foo","value":"bar","index":5}
 ```
->>>>>>> fix(README): misc language cleanups
 
 * Fanmin Shi 
 * Anthony Romano 
 
-<<<<<<< HEAD
-### License
-
-etcd is under the Apache 2.0 license. See the [LICENSE](LICENSE) file for details.
-=======
 In the previous example we showed how to use SSL client certs for client to server communication. Etcd can also do internal server to server communication using SSL client certs. To do this just change the ```-client*``` flags to ```-server*```.
 
 If you are using SSL for server to server communication, you must use it on all instances of etcd.
->>>>>>> fix(README): misc language cleanups
