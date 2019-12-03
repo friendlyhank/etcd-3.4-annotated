@@ -232,7 +232,7 @@ curl http://127.0.0.1:4001/v1/keys/foo/foo_dir/bar -d value=barbarbar
 This will bring up 3 etcd members `infra1`, `infra2` and `infra3` and etcd `grpc-proxy`, which runs locally and composes a cluster.
 
 ```sh
-curl http://127.0.0.1:4001/v1/get/foo/
+curl -L http://127.0.0.1:4001/v1/keys/foo/
 ```
 
 We should see the response as an array of items
