@@ -433,6 +433,8 @@ func startClientTransport(port int, st int) {
 	http.HandleFunc("/"+version+"/watch/", WatchHttpHandler)
 	http.HandleFunc("/leader", LeaderHttpHandler)
 	http.HandleFunc("/machines", MachinesHttpHandler)
+	http.HandleFunc("/", VersionHttpHandler)
+	http.HandleFunc("/stats", StatsHttpHandler)
 
 	switch st {
 
