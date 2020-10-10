@@ -97,8 +97,8 @@ type Peer interface {
 type peer struct {
 	lg *zap.Logger
 
-	localID types.ID
-	// id of the remote raft peer node
+	localID types.ID//本地唯一节点
+	// id of the remote raft peer node 除本地节点外的某个节点(除本地节点外的其他节点都会创建一个peer)
 	id types.ID
 
 	r Raft

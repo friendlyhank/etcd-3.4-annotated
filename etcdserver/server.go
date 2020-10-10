@@ -289,8 +289,8 @@ func NewServer(cfg ServerConfig) (srv *EtcdServer, err error) {
 		w  *wal.WAL
 		n  raft.Node
 		s  *raft.MemoryStorage
-		id types.ID
-		cl *membership.RaftCluster
+		id types.ID //当前节点唯一id
+		cl *membership.RaftCluster //raft集群
 	)
 
 	if cfg.MaxRequestBytes > recommendedMaxRequestBytes {
@@ -352,6 +352,7 @@ func NewServer(cfg ServerConfig) (srv *EtcdServer, err error) {
 		if err = cfg.VerifyJoinExisting(); err != nil {
 			return nil, err
 		}
+		//设置集群节点信息和设置member
 		cl, err = membership.NewClusterFromURLsMap(cfg.Logger, cfg.InitialClusterToken, cfg.InitialPeerURLsMap)
 		if err != nil {
 			return nil, err

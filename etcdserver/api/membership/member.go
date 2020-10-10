@@ -31,6 +31,7 @@ var (
 )
 
 // RaftAttributes represents the raft related attributes of an etcd member.
+//集群的raft属性
 type RaftAttributes struct {
 	// PeerURLs is the list of peers in the raft cluster.
 	// TODO(philips): ensure these are URLs
