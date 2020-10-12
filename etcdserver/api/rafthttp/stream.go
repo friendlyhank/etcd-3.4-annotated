@@ -99,7 +99,7 @@ func isLinkHeartbeatMessage(m *raftpb.Message) bool {
 }
 
 type outgoingConn struct {
-	t streamType
+	t streamType //stream流的类型
 	io.Writer
 	http.Flusher
 	io.Closer
@@ -348,6 +348,7 @@ func (cw *streamWriter) closeUnlocked() bool {
 	return true
 }
 
+//将streamWtiter写入chan
 func (cw *streamWriter) attach(conn *outgoingConn) bool {
 	select {
 	case cw.connc <- conn:

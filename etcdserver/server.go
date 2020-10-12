@@ -625,7 +625,7 @@ func NewServer(cfg ServerConfig) (srv *EtcdServer, err error) {
 		LeaderStats: lstats,
 		ErrorC:      srv.errorc,
 	}
-	//hank-import hank-return
+	//启动etcd核心网络传输组件
 	if err = tr.Start(); err != nil {
 		return nil, err
 	}
@@ -1005,7 +1005,7 @@ func (s *EtcdServer) run() {
 			}
 		},
 	}
-	//raftNode启动 hank-import hank-return
+	//raftNode启动 这里会尝试去发送消息
 	s.r.start(rh)
 
 	ep := etcdProgress{

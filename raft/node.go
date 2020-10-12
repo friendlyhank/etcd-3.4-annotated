@@ -317,6 +317,7 @@ func (n *node) run() {
 			// handled first, but it's generally good to emit larger Readys plus
 			// it simplifies testing (by emitting less frequently and more
 			// predictably).
+			//从这里去写入消息到channel,然后channel接收端会不断循环发消息
 			rd = n.rn.readyWithoutAccept()
 			readyc = n.readyc
 		}

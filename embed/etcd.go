@@ -228,7 +228,8 @@ func StartEtcd(inCfg *Config) (e *Etcd, err error) {
 		}
 	}
 
-	//EtcdServer启动
+	//etcdserver start
+	//raftNode start raftNode启动的时候会尝试去发送消息
 	e.Server.Start()
 
 	//configure peer handlers after rafhttp.Transport started

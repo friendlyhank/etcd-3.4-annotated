@@ -162,8 +162,8 @@ func startPeer(t *Transport, urls types.URLs, peerID types.ID, fs *stats.Followe
 		r:              r,
 		status:         status,
 		picker:         picker,
-		msgAppV2Writer: startStreamWriter(t.Logger, t.ID, peerID, status, fs, r),
-		writer:         startStreamWriter(t.Logger, t.ID, peerID, status, fs, r),
+		msgAppV2Writer: startStreamWriter(t.Logger, t.ID, peerID, status, fs, r),//启动streamv2写入流
+		writer:         startStreamWriter(t.Logger, t.ID, peerID, status, fs, r),//启动stream写入流
 		pipeline:       pipeline,
 		snapSender:     newSnapshotSender(t, picker, peerID, status),
 		recvc:          make(chan raftpb.Message, recvBufSize),
@@ -229,8 +229,8 @@ func startPeer(t *Transport, urls types.URLs, peerID types.ID, fs *stats.Followe
 		rl:     rate.NewLimiter(t.DialRetryFrequency, 1),
 	}
 
-	p.msgAppV2Reader.start()//启动Reader
-	p.msgAppReader.start()//启动Reader
+	p.msgAppV2Reader.start()//启动streamv2读取流
+	p.msgAppReader.start()//启动stream读取流
 
 	return p
 }
@@ -245,6 +245,7 @@ func (p *peer) send(m raftpb.Message) {
 		return
 	}
 
+	//选择对应的发送通道 通道有streamv2,stream,pipeline
 	writec, name := p.pick(m)
 	//将消息写入channel中
 	//接收端的channel位于stream.go streamWriter.run msgc
