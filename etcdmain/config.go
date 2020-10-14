@@ -308,6 +308,7 @@ perr := cfg.cf.flagSet.Parse(arguments)
 			plog.Infof("Loading server configuration from %q. Other configuration command line flags and environment variables will be ignored if provided.", cfg.configFile)
 		}
 	} else {
+		//解析url相关参数
 		err = cfg.configFromCmdLine()
 	}
 	// now logger is set up

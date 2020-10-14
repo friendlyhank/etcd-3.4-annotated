@@ -213,7 +213,7 @@ func startPeer(t *Transport, urls types.URLs, peerID types.ID, fs *stats.Followe
 		tr:     t,
 		picker: picker,
 		status: status,
-		recvc:  p.recvc,
+		recvc:  p.recvc,//注意接收到消息答复之后会返回上层peer.recvc
 		propc:  p.propc,
 		rl:     rate.NewLimiter(t.DialRetryFrequency, 1),
 	}
@@ -224,7 +224,7 @@ func startPeer(t *Transport, urls types.URLs, peerID types.ID, fs *stats.Followe
 		tr:     t,
 		picker: picker,
 		status: status,
-		recvc:  p.recvc,
+		recvc:  p.recvc,//注意接收到消息答复之后会返回上层peer.recvc
 		propc:  p.propc,
 		rl:     rate.NewLimiter(t.DialRetryFrequency, 1),
 	}
