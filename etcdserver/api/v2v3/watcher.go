@@ -18,9 +18,9 @@ import (
 	"context"
 	"strings"
 
-	"go.etcd.io/etcd/clientv3"
-	"go.etcd.io/etcd/etcdserver/api/v2error"
-	"go.etcd.io/etcd/etcdserver/api/v2store"
+	"github.com/friendlyhank/etcd-3.4-annotated/clientv3"
+	"github.com/friendlyhank/etcd-3.4-annotated/etcdserver/api/v2error"
+	"github.com/friendlyhank/etcd-3.4-annotated/etcdserver/api/v2store"
 )
 
 func (s *v2v3Store) Watch(prefix string, recursive, stream bool, sinceIndex uint64) (v2store.Watcher, error) {

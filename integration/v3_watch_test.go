@@ -24,10 +24,10 @@ import (
 	"testing"
 	"time"
 
-	"go.etcd.io/etcd/etcdserver/api/v3rpc"
-	pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
-	"go.etcd.io/etcd/mvcc/mvccpb"
-	"go.etcd.io/etcd/pkg/testutil"
+	"github.com/friendlyhank/etcd-3.4-annotated/etcdserver/api/v3rpc"
+	pb "github.com/friendlyhank/etcd-3.4-annotated/etcdserver/etcdserverpb"
+	"github.com/friendlyhank/etcd-3.4-annotated/mvcc/mvccpb"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/testutil"
 )
 
 // TestV3WatchFromCurrentRevision tests Watch APIs from current revision.

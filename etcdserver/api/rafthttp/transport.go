@@ -20,13 +20,13 @@ import (
 	"sync"
 	"time"
 
-	"go.etcd.io/etcd/etcdserver/api/snap"
-	stats "go.etcd.io/etcd/etcdserver/api/v2stats"
-	"go.etcd.io/etcd/pkg/logutil"
-	"go.etcd.io/etcd/pkg/transport"
-	"go.etcd.io/etcd/pkg/types"
-	"go.etcd.io/etcd/raft"
-	"go.etcd.io/etcd/raft/raftpb"
+	"github.com/friendlyhank/etcd-3.4-annotated/etcdserver/api/snap"
+	stats "github.com/friendlyhank/etcd-3.4-annotated/etcdserver/api/v2stats"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/logutil"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/transport"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/types"
+	"github.com/friendlyhank/etcd-3.4-annotated/raft"
+	"github.com/friendlyhank/etcd-3.4-annotated/raft/raftpb"
 
 	"github.com/coreos/pkg/capnslog"
 	"github.com/xiang90/probing"
@@ -34,7 +34,7 @@ import (
 	"golang.org/x/time/rate"
 )
 
-var plog = logutil.NewMergeLogger(capnslog.NewPackageLogger("go.etcd.io/etcd", "rafthttp"))
+var plog = logutil.NewMergeLogger(capnslog.NewPackageLogger("github.com/friendlyhank/etcd-3.4-annotated", "rafthttp"))
 
 type Raft interface {
 	Process(ctx context.Context, m raftpb.Message) error
@@ -137,7 +137,7 @@ type Transport struct {
 func (t *Transport) Start() error {
 	var err error
 	//Transport启动会创建两个 streamRt和pipelineRt
-	//hank-return hank-problem http.RoundTripper咋用的
+	//http.RoundTripper可以用来完成一个HTTP事务
 	t.streamRt, err = newStreamRoundTripper(t.TLSInfo, t.DialTimeout)
 	if err != nil {
 		return err

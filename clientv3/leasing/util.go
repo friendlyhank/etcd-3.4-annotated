@@ -17,8 +17,8 @@ package leasing
 import (
 	"bytes"
 
-	v3 "go.etcd.io/etcd/clientv3"
-	v3pb "go.etcd.io/etcd/etcdserver/etcdserverpb"
+	v3 "github.com/friendlyhank/etcd-3.4-annotated/clientv3"
+	v3pb "github.com/friendlyhank/etcd-3.4-annotated/etcdserver/etcdserverpb"
 )
 
 func compareInt64(a, b int64) int {

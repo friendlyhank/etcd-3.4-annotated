@@ -37,7 +37,7 @@ etcd_setup_gopath() {
 	mkdir -p "${etcdGOPATH}/vendor" "${etcdGOPATH}/etcd_src/src/go.etcd.io"
 	export GOPATH=${etcdGOPATH}/vendor:${etcdGOPATH}/etcd_src${GOPATH}
 	ln -s "${CDIR}/vendor" "${etcdGOPATH}/vendor/src"
-	ln -s "${CDIR}" "${etcdGOPATH}/etcd_src/src/go.etcd.io/etcd"
+	ln -s "${CDIR}" "${etcdGOPATH}/etcd_src/src/github.com/friendlyhank/etcd-3.4-annotated"
 }
 
 toggle_failpoints_default() {

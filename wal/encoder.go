@@ -21,9 +21,9 @@ import (
 	"os"
 	"sync"
 
-	"go.etcd.io/etcd/pkg/crc"
-	"go.etcd.io/etcd/pkg/ioutil"
-	"go.etcd.io/etcd/wal/walpb"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/crc"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/ioutil"
+	"github.com/friendlyhank/etcd-3.4-annotated/wal/walpb"
 )
 
 // walPageBytes is the alignment for flushing records to the backing Writer.

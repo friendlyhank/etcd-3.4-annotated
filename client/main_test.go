@@ -23,9 +23,9 @@ import (
 	"testing"
 	"time"
 
-	"go.etcd.io/etcd/integration"
-	"go.etcd.io/etcd/pkg/testutil"
-	"go.etcd.io/etcd/pkg/transport"
+	"github.com/friendlyhank/etcd-3.4-annotated/integration"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/testutil"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/transport"
 )
 
 var exampleEndpoints []string

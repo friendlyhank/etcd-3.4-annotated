@@ -21,9 +21,9 @@ import (
 	"testing"
 	"time"
 
-	"go.etcd.io/etcd/pkg/fileutil"
-	"go.etcd.io/etcd/pkg/testutil"
-	"go.etcd.io/etcd/version"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/fileutil"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/testutil"
+	"github.com/friendlyhank/etcd-3.4-annotated/version"
 )
 
 // TestReleaseUpgrade ensures that changes to master branch does not affect

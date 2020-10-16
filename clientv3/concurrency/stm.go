@@ -18,7 +18,7 @@ import (
 	"context"
 	"math"
 
-	v3 "go.etcd.io/etcd/clientv3"
+	v3 "github.com/friendlyhank/etcd-3.4-annotated/clientv3"
 )
 
 // STM is an interface for software transactional memory.

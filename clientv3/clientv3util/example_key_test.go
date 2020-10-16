@@ -18,8 +18,8 @@ import (
 	"context"
 	"log"
 
-	"go.etcd.io/etcd/clientv3"
-	"go.etcd.io/etcd/clientv3/clientv3util"
+	"github.com/friendlyhank/etcd-3.4-annotated/clientv3"
+	"github.com/friendlyhank/etcd-3.4-annotated/clientv3/clientv3util"
 )
 
 func ExampleKeyMissing() {

@@ -19,8 +19,8 @@ import (
 	"fmt"
 	"os"
 
-	"go.etcd.io/etcd/etcdctl/ctlv2"
-	"go.etcd.io/etcd/etcdctl/ctlv3"
+	"github.com/friendlyhank/etcd-3.4-annotated/etcdctl/ctlv2"
+	"github.com/friendlyhank/etcd-3.4-annotated/etcdctl/ctlv3"
 )
 
 const (

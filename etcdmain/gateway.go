@@ -21,7 +21,7 @@ import (
 	"os"
 	"time"
 
-	"go.etcd.io/etcd/proxy/tcpproxy"
+	"github.com/friendlyhank/etcd-3.4-annotated/proxy/tcpproxy"
 
 	"github.com/spf13/cobra"
 	"go.uber.org/zap"

@@ -18,10 +18,10 @@ import (
 	"sync"
 	"time"
 
-	"go.etcd.io/etcd/lease"
-	"go.etcd.io/etcd/mvcc/backend"
-	"go.etcd.io/etcd/mvcc/mvccpb"
-	"go.etcd.io/etcd/pkg/traceutil"
+	"github.com/friendlyhank/etcd-3.4-annotated/lease"
+	"github.com/friendlyhank/etcd-3.4-annotated/mvcc/backend"
+	"github.com/friendlyhank/etcd-3.4-annotated/mvcc/mvccpb"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/traceutil"
 	"go.uber.org/zap"
 )
 

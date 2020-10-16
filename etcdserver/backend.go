@@ -19,11 +19,11 @@ import (
 	"os"
 	"time"
 
-	"go.etcd.io/etcd/etcdserver/api/snap"
-	"go.etcd.io/etcd/lease"
-	"go.etcd.io/etcd/mvcc"
-	"go.etcd.io/etcd/mvcc/backend"
-	"go.etcd.io/etcd/raft/raftpb"
+	"github.com/friendlyhank/etcd-3.4-annotated/etcdserver/api/snap"
+	"github.com/friendlyhank/etcd-3.4-annotated/lease"
+	"github.com/friendlyhank/etcd-3.4-annotated/mvcc"
+	"github.com/friendlyhank/etcd-3.4-annotated/mvcc/backend"
+	"github.com/friendlyhank/etcd-3.4-annotated/raft/raftpb"
 
 	"go.uber.org/zap"
 )

@@ -20,9 +20,9 @@ import (
 	"reflect"
 	"testing"
 
-	etcd "go.etcd.io/etcd/clientv3"
-	"go.etcd.io/etcd/integration"
-	"go.etcd.io/etcd/pkg/testutil"
+	etcd "github.com/friendlyhank/etcd-3.4-annotated/clientv3"
+	"github.com/friendlyhank/etcd-3.4-annotated/integration"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/testutil"
 
 	"google.golang.org/grpc/naming"
 )

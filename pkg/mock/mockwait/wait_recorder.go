@@ -15,8 +15,8 @@
 package mockwait
 
 import (
-	"go.etcd.io/etcd/pkg/testutil"
-	"go.etcd.io/etcd/pkg/wait"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/testutil"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/wait"
 )
 
 type WaitRecorder struct {

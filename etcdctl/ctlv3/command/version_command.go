@@ -17,7 +17,7 @@ package command
 import (
 	"fmt"
 
-	"go.etcd.io/etcd/version"
+	"github.com/friendlyhank/etcd-3.4-annotated/version"
 
 	"github.com/spf13/cobra"
 )

@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"testing"
 
-	"go.etcd.io/etcd/version"
+	"github.com/friendlyhank/etcd-3.4-annotated/version"
 )
 
 func TestV3MetricsSecure(t *testing.T) {

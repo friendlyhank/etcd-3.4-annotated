@@ -18,9 +18,9 @@ import (
 	"context"
 	"errors"
 
-	"go.etcd.io/etcd/clientv3"
-	"go.etcd.io/etcd/clientv3/concurrency"
-	epb "go.etcd.io/etcd/etcdserver/api/v3election/v3electionpb"
+	"github.com/friendlyhank/etcd-3.4-annotated/clientv3"
+	"github.com/friendlyhank/etcd-3.4-annotated/clientv3/concurrency"
+	epb "github.com/friendlyhank/etcd-3.4-annotated/etcdserver/api/v3election/v3electionpb"
 )
 
 // ErrMissingLeaderKey is returned when election API request

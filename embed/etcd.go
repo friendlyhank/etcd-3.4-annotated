@@ -29,18 +29,18 @@ import (
 	"sync"
 	"time"
 
-	"go.etcd.io/etcd/etcdserver"
-	"go.etcd.io/etcd/etcdserver/api/etcdhttp"
-	"go.etcd.io/etcd/etcdserver/api/rafthttp"
-	"go.etcd.io/etcd/etcdserver/api/v2http"
-	"go.etcd.io/etcd/etcdserver/api/v2v3"
-	"go.etcd.io/etcd/etcdserver/api/v3client"
-	"go.etcd.io/etcd/etcdserver/api/v3rpc"
-	"go.etcd.io/etcd/pkg/debugutil"
-	runtimeutil "go.etcd.io/etcd/pkg/runtime"
-	"go.etcd.io/etcd/pkg/transport"
-	"go.etcd.io/etcd/pkg/types"
-	"go.etcd.io/etcd/version"
+	"github.com/friendlyhank/etcd-3.4-annotated/etcdserver"
+	"github.com/friendlyhank/etcd-3.4-annotated/etcdserver/api/etcdhttp"
+	"github.com/friendlyhank/etcd-3.4-annotated/etcdserver/api/rafthttp"
+	"github.com/friendlyhank/etcd-3.4-annotated/etcdserver/api/v2http"
+	"github.com/friendlyhank/etcd-3.4-annotated/etcdserver/api/v2v3"
+	"github.com/friendlyhank/etcd-3.4-annotated/etcdserver/api/v3client"
+	"github.com/friendlyhank/etcd-3.4-annotated/etcdserver/api/v3rpc"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/debugutil"
+	runtimeutil "github.com/friendlyhank/etcd-3.4-annotated/pkg/runtime"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/transport"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/types"
+	"github.com/friendlyhank/etcd-3.4-annotated/version"
 
 	"github.com/coreos/pkg/capnslog"
 	grpc_prometheus "github.com/grpc-ecosystem/go-grpc-prometheus"
@@ -50,7 +50,7 @@ import (
 	"google.golang.org/grpc/keepalive"
 )
 
-var plog = capnslog.NewPackageLogger("go.etcd.io/etcd", "embed")
+var plog = capnslog.NewPackageLogger("github.com/friendlyhank/etcd-3.4-annotated", "embed")
 
 const (
 	// internal fd usage includes disk usage and transport usage.
@@ -71,7 +71,7 @@ type Etcd struct {
 	Peers   []*peerListener //集群Listener
 	Clients []net.Listener  //客户端Listener
 	// a map of contexts for the servers that serves client requests.
-	sctxs            map[string]*serveCtx//用map去装Peers或Clients listener
+	sctxs            map[string]*serveCtx//用map去装Clients listener
 	metricsListeners []net.Listener
 
 	Server *etcdserver.EtcdServer //Etcd Server的核心配置
@@ -143,6 +143,8 @@ func StartEtcd(inCfg *Config) (e *Etcd, err error) {
 		urlsmap types.URLsMap
 		token   string
 	)
+
+	//如果集群的成员还没持久化到文件,说明集群成员还没设置，则生成map的url用于生成集群成员
 	memberInitialized := true
 	if !isMemberInitialized(cfg) {
 		memberInitialized = false
@@ -209,7 +211,10 @@ func StartEtcd(inCfg *Config) (e *Etcd, err error) {
 		EnableLeaseCheckpoint:      cfg.ExperimentalEnableLeaseCheckpoint,
 	}
 	print(e.cfg.logger, *cfg, srvcfg, memberInitialized)
-	//创建EtcdServer并且创建raftNode并运行raftNode
+
+	//这里注意做的事情特别多
+	//node start
+	//transport start
 	if e.Server, err = etcdserver.NewServer(srvcfg); err != nil {
 		return e, err
 	}

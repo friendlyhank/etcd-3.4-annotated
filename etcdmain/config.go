@@ -24,10 +24,10 @@ import (
 	"os"
 	"runtime"
 
-	"go.etcd.io/etcd/embed"
-	"go.etcd.io/etcd/pkg/flags"
-	"go.etcd.io/etcd/pkg/logutil"
-	"go.etcd.io/etcd/version"
+	"github.com/friendlyhank/etcd-3.4-annotated/embed"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/flags"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/logutil"
+	"github.com/friendlyhank/etcd-3.4-annotated/version"
 
 	"go.uber.org/zap"
 	"sigs.k8s.io/yaml"

@@ -19,8 +19,8 @@ import (
 	"sort"
 	"strings"
 
-	"go.etcd.io/etcd/raft/quorum"
-	pb "go.etcd.io/etcd/raft/raftpb"
+	"github.com/friendlyhank/etcd-3.4-annotated/raft/quorum"
+	pb "github.com/friendlyhank/etcd-3.4-annotated/raft/raftpb"
 )
 
 // Config reflects the configuration tracked in a ProgressTracker.

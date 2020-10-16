@@ -13,6 +13,6 @@ go get -v -u github.com/coreos/license-bill-of-materials
 echo "generating bill-of-materials.json"
 license-bill-of-materials \
     --override-file ./bill-of-materials.override.json \
-    go.etcd.io/etcd go.etcd.io/etcd/etcdctl > bill-of-materials.json
+    github.com/friendlyhank/etcd-3.4-annotated github.com/friendlyhank/etcd-3.4-annotated/etcdctl > bill-of-materials.json
 
 echo "generated bill-of-materials.json"

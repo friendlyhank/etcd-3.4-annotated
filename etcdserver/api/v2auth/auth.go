@@ -26,10 +26,10 @@ import (
 	"strings"
 	"time"
 
-	"go.etcd.io/etcd/etcdserver"
-	"go.etcd.io/etcd/etcdserver/api/v2error"
-	"go.etcd.io/etcd/etcdserver/etcdserverpb"
-	"go.etcd.io/etcd/pkg/types"
+	"github.com/friendlyhank/etcd-3.4-annotated/etcdserver"
+	"github.com/friendlyhank/etcd-3.4-annotated/etcdserver/api/v2error"
+	"github.com/friendlyhank/etcd-3.4-annotated/etcdserver/etcdserverpb"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/types"
 
 	"github.com/coreos/pkg/capnslog"
 	"go.uber.org/zap"
@@ -48,7 +48,7 @@ const (
 )
 
 var (
-	plog = capnslog.NewPackageLogger("go.etcd.io/etcd/v3", "etcdserver/auth")
+	plog = capnslog.NewPackageLogger("github.com/friendlyhank/etcd-3.4-annotated/v3", "etcdserver/auth")
 )
 
 var rootRole = Role{

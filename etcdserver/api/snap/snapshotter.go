@@ -25,11 +25,11 @@ import (
 	"strings"
 	"time"
 
-	"go.etcd.io/etcd/etcdserver/api/snap/snappb"
-	pioutil "go.etcd.io/etcd/pkg/ioutil"
-	"go.etcd.io/etcd/pkg/pbutil"
-	"go.etcd.io/etcd/raft"
-	"go.etcd.io/etcd/raft/raftpb"
+	"github.com/friendlyhank/etcd-3.4-annotated/etcdserver/api/snap/snappb"
+	pioutil "github.com/friendlyhank/etcd-3.4-annotated/pkg/ioutil"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/pbutil"
+	"github.com/friendlyhank/etcd-3.4-annotated/raft"
+	"github.com/friendlyhank/etcd-3.4-annotated/raft/raftpb"
 
 	"github.com/coreos/pkg/capnslog"
 	"go.uber.org/zap"
@@ -38,7 +38,7 @@ import (
 const snapSuffix = ".snap"
 
 var (
-	plog = capnslog.NewPackageLogger("go.etcd.io/etcd/v3", "snap")
+	plog = capnslog.NewPackageLogger("github.com/friendlyhank/etcd-3.4-annotated/v3", "snap")
 
 	ErrNoSnapshot    = errors.New("snap: no available snapshot")
 	ErrEmptySnapshot = errors.New("snap: empty snapshot")

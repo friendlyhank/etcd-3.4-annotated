@@ -17,8 +17,8 @@ package mockstore
 import (
 	"time"
 
-	"go.etcd.io/etcd/etcdserver/api/v2store"
-	"go.etcd.io/etcd/pkg/testutil"
+	"github.com/friendlyhank/etcd-3.4-annotated/etcdserver/api/v2store"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/testutil"
 )
 
 // StoreRecorder provides a Store interface with a testutil.Recorder

@@ -26,11 +26,11 @@ import (
 	"testing"
 	"time"
 
-	"go.etcd.io/etcd/etcdserver/api/snap"
-	"go.etcd.io/etcd/pkg/pbutil"
-	"go.etcd.io/etcd/pkg/types"
-	"go.etcd.io/etcd/raft/raftpb"
-	"go.etcd.io/etcd/version"
+	"github.com/friendlyhank/etcd-3.4-annotated/etcdserver/api/snap"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/pbutil"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/types"
+	"github.com/friendlyhank/etcd-3.4-annotated/raft/raftpb"
+	"github.com/friendlyhank/etcd-3.4-annotated/version"
 
 	"go.uber.org/zap"
 )

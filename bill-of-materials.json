@@ -324,7 +324,7 @@
 		]
 	},
 	{
-		"project": "go.etcd.io/etcd",
+		"project": "github.com/friendlyhank/etcd-3.4-annotated",
 		"licenses": [
 			{
 				"type": "Apache License 2.0",

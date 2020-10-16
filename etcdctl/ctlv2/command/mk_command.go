@@ -20,7 +20,7 @@ import (
 	"time"
 
 	"github.com/urfave/cli"
-	"go.etcd.io/etcd/client"
+	"github.com/friendlyhank/etcd-3.4-annotated/client"
 )
 
 // NewMakeCommand returns the CLI command for "mk".

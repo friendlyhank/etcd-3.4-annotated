@@ -1,4 +1,4 @@
-module go.etcd.io/etcd
+module github.com/friendlyhank/etcd-3.4-annotated
 
 require (
 	github.com/bgentry/speakeasy v0.1.0

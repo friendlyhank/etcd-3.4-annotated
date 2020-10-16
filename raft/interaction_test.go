@@ -18,7 +18,7 @@ import (
 	"testing"
 
 	"github.com/cockroachdb/datadriven"
-	"go.etcd.io/etcd/raft/rafttest"
+	"github.com/friendlyhank/etcd-3.4-annotated/raft/rafttest"
 )
 
 func TestInteraction(t *testing.T) {

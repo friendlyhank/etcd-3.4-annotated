@@ -17,7 +17,7 @@ package adt_test
 import (
 	"fmt"
 
-	"go.etcd.io/etcd/pkg/adt"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/adt"
 )
 
 func Example() {

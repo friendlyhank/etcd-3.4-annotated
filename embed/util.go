@@ -17,7 +17,7 @@ package embed
 import (
 	"path/filepath"
 
-	"go.etcd.io/etcd/wal"
+	"github.com/friendlyhank/etcd-3.4-annotated/wal"
 )
 
 func isMemberInitialized(cfg *Config) bool {

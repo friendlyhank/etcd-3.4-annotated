@@ -23,20 +23,20 @@ import (
 	"net/http"
 	"strings"
 
-	"go.etcd.io/etcd/clientv3/credentials"
-	"go.etcd.io/etcd/etcdserver"
-	"go.etcd.io/etcd/etcdserver/api/v3client"
-	"go.etcd.io/etcd/etcdserver/api/v3election"
-	"go.etcd.io/etcd/etcdserver/api/v3election/v3electionpb"
-	v3electiongw "go.etcd.io/etcd/etcdserver/api/v3election/v3electionpb/gw"
-	"go.etcd.io/etcd/etcdserver/api/v3lock"
-	"go.etcd.io/etcd/etcdserver/api/v3lock/v3lockpb"
-	v3lockgw "go.etcd.io/etcd/etcdserver/api/v3lock/v3lockpb/gw"
-	"go.etcd.io/etcd/etcdserver/api/v3rpc"
-	etcdservergw "go.etcd.io/etcd/etcdserver/etcdserverpb/gw"
-	"go.etcd.io/etcd/pkg/debugutil"
-	"go.etcd.io/etcd/pkg/httputil"
-	"go.etcd.io/etcd/pkg/transport"
+	"github.com/friendlyhank/etcd-3.4-annotated/clientv3/credentials"
+	"github.com/friendlyhank/etcd-3.4-annotated/etcdserver"
+	"github.com/friendlyhank/etcd-3.4-annotated/etcdserver/api/v3client"
+	"github.com/friendlyhank/etcd-3.4-annotated/etcdserver/api/v3election"
+	"github.com/friendlyhank/etcd-3.4-annotated/etcdserver/api/v3election/v3electionpb"
+	v3electiongw "github.com/friendlyhank/etcd-3.4-annotated/etcdserver/api/v3election/v3electionpb/gw"
+	"github.com/friendlyhank/etcd-3.4-annotated/etcdserver/api/v3lock"
+	"github.com/friendlyhank/etcd-3.4-annotated/etcdserver/api/v3lock/v3lockpb"
+	v3lockgw "github.com/friendlyhank/etcd-3.4-annotated/etcdserver/api/v3lock/v3lockpb/gw"
+	"github.com/friendlyhank/etcd-3.4-annotated/etcdserver/api/v3rpc"
+	etcdservergw "github.com/friendlyhank/etcd-3.4-annotated/etcdserver/etcdserverpb/gw"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/debugutil"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/httputil"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/transport"
 
 	gw "github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/soheilhy/cmux"
@@ -51,8 +51,8 @@ type serveCtx struct {
 	l        net.Listener
 	addr     string
 	network  string
-	secure   bool
-	insecure bool
+	secure   bool //标记网络的安全性 https||unixs为安全
+	insecure bool //标记网络是否不安全
 
 	ctx    context.Context
 	cancel context.CancelFunc

@@ -20,7 +20,7 @@ import (
 	"reflect"
 	"testing"
 
-	"go.etcd.io/etcd/pkg/types"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/types"
 )
 
 func TestMemberUnmarshal(t *testing.T) {

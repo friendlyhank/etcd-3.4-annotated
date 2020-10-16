@@ -8,11 +8,11 @@ raftexample is an example usage of etcd's [raft library](../../raft). It provide
 
 ### Building raftexample
 
-Clone `etcd` to `<directory>/src/go.etcd.io/etcd`
+Clone `etcd` to `<directory>/src/github.com/friendlyhank/etcd-3.4-annotated`
 
 ```sh
 export GOPATH=<directory>
-cd <directory>/src/go.etcd.io/etcd/contrib/raftexample
+cd <directory>/src/github.com/friendlyhank/etcd-3.4-annotated/contrib/raftexample
 go build -o raftexample
 ```
 

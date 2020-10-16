@@ -26,17 +26,17 @@ import (
 	"strings"
 	"time"
 
-	"go.etcd.io/etcd/embed"
-	"go.etcd.io/etcd/etcdserver"
-	"go.etcd.io/etcd/etcdserver/api/etcdhttp"
-	"go.etcd.io/etcd/etcdserver/api/v2discovery"
-	"go.etcd.io/etcd/pkg/fileutil"
-	pkgioutil "go.etcd.io/etcd/pkg/ioutil"
-	"go.etcd.io/etcd/pkg/osutil"
-	"go.etcd.io/etcd/pkg/transport"
-	"go.etcd.io/etcd/pkg/types"
-	"go.etcd.io/etcd/proxy/httpproxy"
-	"go.etcd.io/etcd/version"
+	"github.com/friendlyhank/etcd-3.4-annotated/embed"
+	"github.com/friendlyhank/etcd-3.4-annotated/etcdserver"
+	"github.com/friendlyhank/etcd-3.4-annotated/etcdserver/api/etcdhttp"
+	"github.com/friendlyhank/etcd-3.4-annotated/etcdserver/api/v2discovery"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/fileutil"
+	pkgioutil "github.com/friendlyhank/etcd-3.4-annotated/pkg/ioutil"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/osutil"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/transport"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/types"
+	"github.com/friendlyhank/etcd-3.4-annotated/proxy/httpproxy"
+	"github.com/friendlyhank/etcd-3.4-annotated/version"
 
 	"github.com/coreos/pkg/capnslog"
 	"go.uber.org/zap"
@@ -45,7 +45,7 @@ import (
 
 type dirType string
 
-var plog = capnslog.NewPackageLogger("go.etcd.io/etcd", "etcdmain")
+var plog = capnslog.NewPackageLogger("github.com/friendlyhank/etcd-3.4-annotated", "etcdmain")
 
 var (
 	dirMember = dirType("member")

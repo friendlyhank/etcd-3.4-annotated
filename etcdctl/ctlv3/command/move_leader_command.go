@@ -19,7 +19,7 @@ import (
 	"strconv"
 
 	"github.com/spf13/cobra"
-	"go.etcd.io/etcd/clientv3"
+	"github.com/friendlyhank/etcd-3.4-annotated/clientv3"
 )
 
 // NewMoveLeaderCommand returns the cobra command for "move-leader".

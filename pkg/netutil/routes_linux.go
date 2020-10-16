@@ -24,7 +24,7 @@ import (
 	"sort"
 	"syscall"
 
-	"go.etcd.io/etcd/pkg/cpuutil"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/cpuutil"
 )
 
 var errNoDefaultRoute = fmt.Errorf("could not find default route")

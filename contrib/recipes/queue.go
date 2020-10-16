@@ -17,8 +17,8 @@ package recipe
 import (
 	"context"
 
-	v3 "go.etcd.io/etcd/clientv3"
-	"go.etcd.io/etcd/mvcc/mvccpb"
+	v3 "github.com/friendlyhank/etcd-3.4-annotated/clientv3"
+	"github.com/friendlyhank/etcd-3.4-annotated/mvcc/mvccpb"
 )
 
 // Queue implements a multi-reader, multi-writer distributed queue.

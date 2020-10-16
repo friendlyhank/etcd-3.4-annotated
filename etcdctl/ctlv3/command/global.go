@@ -25,10 +25,10 @@ import (
 	"time"
 
 	"github.com/bgentry/speakeasy"
-	"go.etcd.io/etcd/clientv3"
-	"go.etcd.io/etcd/pkg/flags"
-	"go.etcd.io/etcd/pkg/srv"
-	"go.etcd.io/etcd/pkg/transport"
+	"github.com/friendlyhank/etcd-3.4-annotated/clientv3"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/flags"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/srv"
+	"github.com/friendlyhank/etcd-3.4-annotated/pkg/transport"
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"

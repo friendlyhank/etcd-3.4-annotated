@@ -18,8 +18,8 @@ import (
 	"testing"
 	"time"
 
-	"go.etcd.io/etcd/clientv3/concurrency"
-	"go.etcd.io/etcd/contrib/recipes"
+	"github.com/friendlyhank/etcd-3.4-annotated/clientv3/concurrency"
+	"github.com/friendlyhank/etcd-3.4-annotated/contrib/recipes"
 )
 
 func TestDoubleBarrier(t *testing.T) {

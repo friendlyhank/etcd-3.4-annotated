@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"os"
 
-	"go.etcd.io/etcd/tools/benchmark/cmd"
+	"github.com/friendlyhank/etcd-3.4-annotated/tools/benchmark/cmd"
 )
 
 func main() {
