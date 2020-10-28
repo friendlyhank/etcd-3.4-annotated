@@ -176,7 +176,7 @@ func startPeer(t *Transport, urls types.URLs, peerID types.ID, fs *stats.Followe
 	go func() {
 		for {
 			select {
-			case mm := <-p.recvc:
+			case mm := <-p.recvc://从底层stream返回数据到peer
 				if err := r.Process(ctx, mm); err != nil {
 					if t.Logger != nil {
 						t.Logger.Warn("failed to process Raft message", zap.Error(err))
@@ -214,8 +214,8 @@ func startPeer(t *Transport, urls types.URLs, peerID types.ID, fs *stats.Followe
 		picker: picker,
 		status: status,
 		recvc:  p.recvc,//注意接收到消息答复之后会返回上层peer.recvc
-		propc:  p.propc,
-		rl:     rate.NewLimiter(t.DialRetryFrequency, 1),
+		propc:  p.propc,//注意接收到消息答复之后会返回上层peer.propc
+		rl:     rate.NewLimiter(t.DialRetryFrequency, 1),//拨号限制频率
 	}
 	p.msgAppReader = &streamReader{
 		lg:     t.Logger,
@@ -225,8 +225,8 @@ func startPeer(t *Transport, urls types.URLs, peerID types.ID, fs *stats.Followe
 		picker: picker,
 		status: status,
 		recvc:  p.recvc,//注意接收到消息答复之后会返回上层peer.recvc
-		propc:  p.propc,
-		rl:     rate.NewLimiter(t.DialRetryFrequency, 1),
+		propc:  p.propc,//注意接收到消息答复之后会返回上层peer.propc
+		rl:     rate.NewLimiter(t.DialRetryFrequency, 1),//拨号限制频率
 	}
 
 	p.msgAppV2Reader.start()//启动streamv2读取流

@@ -86,7 +86,7 @@ type config struct {
 // configFlags has the set of flags used for command line parsing a Config
 type configFlags struct {
 	flagSet      *flag.FlagSet
-	clusterState *flags.SelectiveStringValue
+	clusterState *flags.SelectiveStringValue //"new","existing"
 	fallback     *flags.SelectiveStringValue
 	proxy        *flags.SelectiveStringValue
 }

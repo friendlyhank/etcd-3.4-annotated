@@ -367,7 +367,7 @@ func NewServer(cfg ServerConfig) (srv *EtcdServer, err error) {
 		if !isCompatibleWithCluster(cfg.Logger, cl, cl.MemberByName(cfg.Name).ID, prt) {
 			return nil, fmt.Errorf("incompatible with current running cluster")
 		}
-
+		//排除掉当前的远端节点
 		remotes = existingCluster.Members()
 		cl.SetID(types.ID(0), existingCluster.ID())
 		cl.SetStore(st)
@@ -629,7 +629,7 @@ func NewServer(cfg ServerConfig) (srv *EtcdServer, err error) {
 	if err = tr.Start(); err != nil {
 		return nil, err
 	}
-	// add all remotes into transport
+
 	for _, m := range remotes {
 		if m.ID != id {
 			tr.AddRemote(m.ID, m.PeerURLs)

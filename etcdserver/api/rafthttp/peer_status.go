@@ -43,6 +43,7 @@ func newPeerStatus(lg *zap.Logger, local, id types.ID) *peerStatus {
 	return &peerStatus{lg: lg, local: local, id: id}
 }
 
+//节点建立连接后会被设置为活跃状态
 func (s *peerStatus) activate() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -59,6 +60,7 @@ func (s *peerStatus) activate() {
 	}
 }
 
+//节点未能建立连接节点被设置为不活跃状态
 func (s *peerStatus) deactivate(failure failureType, reason string) {
 	s.mu.Lock()
 	defer s.mu.Unlock()

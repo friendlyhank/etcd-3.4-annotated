@@ -27,7 +27,7 @@ import (
 )
 
 const (
-	msgTypeLinkHeartbeat uint8 = 0
+	msgTypeLinkHeartbeat uint8 = 0 //心跳类型消息
 	msgTypeAppEntries    uint8 = 1
 	msgTypeApp           uint8 = 2
 
@@ -39,37 +39,40 @@ const (
 // replicate state in raft, whose index and term are fully predictable.
 //
 // Data format of linkHeartbeatMessage:
+//心跳的格式为1个字节，只记录心跳的类型
 // | offset | bytes | description |
 // +--------+-------+-------------+
 // | 0      | 1     | \x00        |
 //
 // Data format of AppEntries:
+//多条entries消息的格式
 // | offset | bytes | description |
 // +--------+-------+-------------+
-// | 0      | 1     | \x01        |
-// | 1      | 8     | length of entries |
-// | 9      | 8     | length of first entry |
-// | 17     | n1    | first entry |
+// | 0      | 1     | \x01        |//1字节的消息类型
+// | 1      | 8     | length of entries |//8个字节的entries消息条数
+// | 9      | 8     | length of first entry |//第9自己到第16字节记录每条entry消息的数据大小
+// | 17     | n1    | first entry |//第17字节开始记录每条entry消息数据
 // ...
 // | x      | 8     | length of k-th entry data |
 // | x+8    | nk    | k-th entry data |
-// | x+8+nk | 8     | commit index |
+// | x+8+nk | 8     | commit index | //8字节记录commit index
 //
 // Data format of MsgApp:
+//单条主消息的格式
 // | offset | bytes | description |
 // +--------+-------+-------------+
-// | 0      | 1     | \x02        |
-// | 1      | 8     | length of encoded message |
-// | 9      | n     | encoded message |
+// | 0      | 1     | \x02        |//1字节的消息类型
+// | 1      | 8     | length of encoded message |//8记录消息的长度
+// | 9      | n     | encoded message |//第9字节开始记录具体的消息数据
 type msgAppV2Encoder struct {
 	w  io.Writer
-	fs *stats.FollowerStats
+	fs *stats.FollowerStats //相关统计
 
 	term      uint64
 	index     uint64
 	buf       []byte
-	uint64buf []byte
-	uint8buf  []byte
+	uint64buf []byte //这个感觉是无用的中间变量
+	uint8buf  []byte //存储消息类型
 }
 
 func newMsgAppV2Encoder(w io.Writer, fs *stats.FollowerStats) *msgAppV2Encoder {
@@ -127,14 +130,17 @@ func (enc *msgAppV2Encoder) encode(m *raftpb.Message) error {
 		}
 		enc.fs.Succ(time.Since(start))
 	default:
+		//使用大端序存储1字节的数据类型
 		if err := binary.Write(enc.w, binary.BigEndian, msgTypeApp); err != nil {
 			return err
 		}
 		// write size of message
+		//使用大端序存储8个字节存储数据的大小
 		if err := binary.Write(enc.w, binary.BigEndian, uint64(m.Size())); err != nil {
 			return err
 		}
 		// write message
+		//存储数据
 		if _, err := enc.w.Write(pbutil.MustMarshal(m)); err != nil {
 			return err
 		}
@@ -149,6 +155,7 @@ func (enc *msgAppV2Encoder) encode(m *raftpb.Message) error {
 	return nil
 }
 
+//v2 msg消息解码器
 type msgAppV2Decoder struct {
 	r             io.Reader
 	local, remote types.ID
@@ -166,8 +173,8 @@ func newMsgAppV2Decoder(r io.Reader, local, remote types.ID) *msgAppV2Decoder {
 		local:     local,
 		remote:    remote,
 		buf:       make([]byte, msgAppV2BufSize),
-		uint64buf: make([]byte, 8),
-		uint8buf:  make([]byte, 1),
+		uint64buf: make([]byte, 8),//entries 8个字节存储entries
+		uint8buf:  make([]byte, 1),//1个字节用于存储消息的类型
 	}
 }
 
@@ -176,6 +183,7 @@ func (dec *msgAppV2Decoder) decode() (raftpb.Message, error) {
 		m   raftpb.Message
 		typ uint8
 	)
+	//读取第一个字节的消息类型
 	if _, err := io.ReadFull(dec.r, dec.uint8buf); err != nil {
 		return m, err
 	}
@@ -238,7 +246,7 @@ func (dec *msgAppV2Decoder) decode() (raftpb.Message, error) {
 
 		dec.term = m.Term
 		dec.index = m.Index
-		if l := len(m.Entries); l > 0 {
+		if l := len(m.Entries); l > 0 { 
 			dec.index = m.Entries[l-1].Index
 		}
 	default:

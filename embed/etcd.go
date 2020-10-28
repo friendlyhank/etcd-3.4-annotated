@@ -237,8 +237,8 @@ func StartEtcd(inCfg *Config) (e *Etcd, err error) {
 	//raftNode start raftNode启动的时候会尝试去发送消息
 	e.Server.Start()
 
-	//configure peer handlers after rafhttp.Transport started
 	//生成http.handle 用于处理peer请求
+	//configure peer handlers after rafhttp.Transport started
 	if err = e.servePeers(); err != nil {
 		return e, err
 	}
@@ -468,6 +468,7 @@ func configurePeerListeners(cfg *Config) (peers []*peerListener, err error) {
 	if err = updateCipherSuites(&cfg.PeerTLSInfo, cfg.CipherSuites); err != nil {
 		return nil, err
 	}
+	//自动生成相应的peel tls
 	if err = cfg.PeerSelfCert(); err != nil {
 		if cfg.logger != nil {
 			cfg.logger.Fatal("failed to get peer self-signed certs", zap.Error(err))
@@ -541,8 +542,8 @@ func configurePeerListeners(cfg *Config) (peers []*peerListener, err error) {
 	return peers, nil
 }
 
-// configure peer handlers after rafthttp.Transport started
 //servePeers - 配置handlers在启动transport之后
+// configure peer handlers after rafthttp.Transport started
 func (e *Etcd) servePeers() (err error) {
 	//e.Server  etcdserver.EtcdServer实现了etcdserver.ServerPeer接口
 	ph := etcdhttp.NewPeerHandler(e.GetLogger(), e.Server)

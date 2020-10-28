@@ -101,6 +101,10 @@ func (h *pipelineHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	addRemoteFromRequest(h.tr, r)
 
+	/*
+	 限制每次从底层连接读取字节数上限，默认是64KB,因为快照数据可能非常大，为了防止超时,
+	 只能每次读取一部分数据到缓冲区中，最后将全部数据拼接起来，得到完整的快照资源
+	 */
 	// Limit the data size that could be read from the request body, which ensures that read from
 	// connection will not time out accidentally due to possible blocking in underlying implementation.
 	limitedr := pioutil.NewLimitedBufferReader(r.Body, connReadLimitByte)

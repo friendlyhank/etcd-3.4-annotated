@@ -183,9 +183,9 @@ type Config struct {
 	LPUrls, LCUrls []url.URL
 	APUrls, ACUrls []url.URL
 	ClientTLSInfo  transport.TLSInfo
-	ClientAutoTLS  bool
+	ClientAutoTLS  bool //是否自动生成Client TLS
 	PeerTLSInfo    transport.TLSInfo
-	PeerAutoTLS    bool
+	PeerAutoTLS    bool //是否自动生成Peer TLS
 
 	// CipherSuites is a list of supported TLS cipher suites between
 	// client/server and peers. If empty, Go auto-populates the list.
@@ -355,8 +355,8 @@ type configJSON struct {
 	CORSJSON          string `json:"cors"`
 	HostWhitelistJSON string `json:"host-whitelist"`
 
-	ClientSecurityJSON securityConfig `json:"client-transport-security"`
-	PeerSecurityJSON   securityConfig `json:"peer-transport-security"`
+	ClientSecurityJSON securityConfig `json:"client-transport-security"` //用于更好编写测试用例用于client得网络安全校验tls
+	PeerSecurityJSON   securityConfig `json:"peer-transport-security"` //用于更好编写测试用例用于peer得网路安全校验tls
 }
 
 type securityConfig struct {

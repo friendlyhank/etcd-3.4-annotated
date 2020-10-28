@@ -91,6 +91,7 @@ var (
 	// linkHeartbeatMessage is a special message used as heartbeat message in
 	// link layer. It never conflicts with messages from raft because raft
 	// doesn't send out messages without From and To fields.
+	//心跳消息
 	linkHeartbeatMessage = raftpb.Message{Type: raftpb.MsgHeartbeat}
 )
 
@@ -121,7 +122,7 @@ type streamWriter struct {
 
 	mu      sync.Mutex // guard field working and closer
 	closer  io.Closer
-	working bool
+	working bool //标记是否工作状态，只有工作状态才能发送数据
 
 	msgc  chan raftpb.Message
 	connc chan *outgoingConn
@@ -179,11 +180,11 @@ func (cw *streamWriter) run() {
 			err := enc.encode(&linkHeartbeatMessage)
 			unflushed += linkHeartbeatMessage.Size()
 			if err == nil {
-				flusher.Flush()
+				flusher.Flush()//将缓冲区的数据发送到对端
 				batched = 0
 				sentBytes.WithLabelValues(cw.peerID.String()).Add(float64(unflushed))
 				unflushed = 0
-				continue
+				continue //并没有设置阻塞，避免多个Goroutine造成资源消耗
 			}
 
 			cw.status.deactivate(failureType{source: t.String(), action: "heartbeat"}, err.Error())
@@ -208,7 +209,7 @@ func (cw *streamWriter) run() {
 				unflushed += m.Size()
 
 				if len(msgc) == 0 || batched > streamBufSize/2 {
-					flusher.Flush()//刷新缓冲区,发送到对端
+					flusher.Flush()//将缓冲区的数据发送到对端
 					sentBytes.WithLabelValues(cw.peerID.String()).Add(float64(unflushed))
 					unflushed = 0
 					batched = 0
@@ -218,7 +219,7 @@ func (cw *streamWriter) run() {
 
 				continue//发送完成之后返回上层 并没有结束对话
 			}
-
+			//消息解析发生错误,关闭连接
 			cw.status.deactivate(failureType{source: t.String(), action: "write"}, err.Error())
 			cw.close()//本次发送结束,即http会话结束
 			if cw.lg != nil {
@@ -235,7 +236,7 @@ func (cw *streamWriter) run() {
 			cw.r.ReportUnreachable(m.To)
 			sentFailures.WithLabelValues(cw.peerID.String()).Inc()
 
-		case conn := <-cw.connc:
+		case conn := <-cw.connc://只有在建立连接之后才能发送心跳和消息
 			cw.mu.Lock()
 			closed := cw.closeUnlocked()
 			t = conn.t
@@ -373,7 +374,7 @@ type streamReader struct {
 
 	tr     *Transport
 	picker *urlPicker
-	status *peerStatus
+	status *peerStatus //节点的状态
 	recvc  chan<- raftpb.Message
 	propc  chan<- raftpb.Message
 
@@ -424,6 +425,7 @@ func (cr *streamReader) run() {
 				cr.status.deactivate(failureType{source: t.String(), action: "dial"}, err.Error())
 			}
 		} else {
+			//设置节点的状态
 			cr.status.activate()
 			if cr.lg != nil {
 				cr.lg.Info(
@@ -457,6 +459,7 @@ func (cr *streamReader) run() {
 			}
 		}
 		// Wait for a while before new dial attempt
+		//限制调用dial的频率,防止stack溢出
 		err = cr.rl.Wait(cr.ctx)
 		if cr.ctx.Err() != nil {
 			if cr.lg != nil {
@@ -539,6 +542,7 @@ func (cr *streamReader) decodeLoop(rc io.ReadCloser, t streamType) error {
 			continue
 		}
 
+		//如果是心跳消息直接跳过
 		if isLinkHeartbeatMessage(&m) {
 			// raft is not interested in link layer
 			// heartbeat message, so we should ignore

@@ -161,6 +161,12 @@ func (t *Transport) Start() error {
 }
 
 func (t *Transport) Handler() http.Handler {
+	/*
+	 *三大Handler模块
+	 *PipelineHandler
+	 *StreamHandler
+	 *SnapHandler
+	 */
 	pipelineHandler := newPipelineHandler(t, t.Raft, t.ClusterID)
 	streamHandler := newStreamHandler(t, t, t.Raft, t.ID, t.ClusterID)
 	snapHandler := newSnapshotHandler(t, t.Raft, t.Snapshotter, t.ClusterID)
