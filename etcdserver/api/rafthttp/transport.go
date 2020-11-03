@@ -37,59 +37,60 @@ import (
 var plog = logutil.NewMergeLogger(capnslog.NewPackageLogger("github.com/friendlyhank/etcd-3.4-annotated", "rafthttp"))
 
 type Raft interface {
+	//将指定的消息实例传递到底层的etcd-raft模块进行处理
 	Process(ctx context.Context, m raftpb.Message) error
-	IsIDRemoved(id uint64) bool
-	ReportUnreachable(id uint64)
-	ReportSnapshot(id uint64, status raft.SnapshotStatus)
+	IsIDRemoved(id uint64) bool//检测指定节点是否从当前集群中移除
+	ReportUnreachable(id uint64)//通知底层etcd-raft模块,当前节点与指定的节点无法连通
+	ReportSnapshot(id uint64, status raft.SnapshotStatus)//通知底层etcd-raft模块,快照数据是否发送成功
 }
 
 type Transporter interface {
 	// Start starts the given Transporter.
 	// Start MUST be called before calling other functions in the interface.
-	Start() error
+	Start() error//初始化操作
 	// Handler returns the HTTP handler of the transporter.
 	// A transporter HTTP handler handles the HTTP requests
 	// from remote peers.
 	// The handler MUST be used to handle RaftPrefix(/raft)
 	// endpoint.
-	Handler() http.Handler
+	Handler() http.Handler//创建Handler实例，并关联到指定的URL上
 	// Send sends out the given messages to the remote peers.
 	// Each message has a To field, which is an id that maps
 	// to an existing peer in the transport.
 	// If the id cannot be found in the transport, the message
 	// will be ignored.
-	Send(m []raftpb.Message)
+	Send(m []raftpb.Message) //发送消息
 	// SendSnapshot sends out the given snapshot message to a remote peer.
 	// The behavior of SendSnapshot is similar to Send.
-	SendSnapshot(m snap.Message)
+	SendSnapshot(m snap.Message)//发送快照数据
 	// AddRemote adds a remote with given peer urls into the transport.
 	// A remote helps newly joined member to catch up the progress of cluster,
 	// and will not be used after that.
 	// It is the caller's responsibility to ensure the urls are all valid,
 	// or it panics.
-	AddRemote(id types.ID, urls []string)
+	AddRemote(id types.ID, urls []string)//在集群中添加一个节点时，其他节点会通过该方法添加该新节点消息
 	// AddPeer adds a peer with given peer urls into the transport.
 	// It is the caller's responsibility to ensure the urls are all valid,
 	// or it panics.
 	// Peer urls are used to connect to the remote peer.
-	AddPeer(id types.ID, urls []string)
+	AddPeer(id types.ID, urls []string)//添加指定集群节点(自己除外)
 	// RemovePeer removes the peer with given id.
-	RemovePeer(id types.ID)
+	RemovePeer(id types.ID) //移除集群指定节点
 	// RemoveAllPeers removes all the existing peers in the transport.
-	RemoveAllPeers()
+	RemoveAllPeers()//移除所有的节点
 	// UpdatePeer updates the peer urls of the peer with the given id.
 	// It is the caller's responsibility to ensure the urls are all valid,
 	// or it panics.
-	UpdatePeer(id types.ID, urls []string)
+	UpdatePeer(id types.ID, urls []string)//修改节点信息
 	// ActiveSince returns the time that the connection with the peer
 	// of the given id becomes active.
 	// If the connection is active since peer was added, it returns the adding time.
 	// If the connection is currently inactive, it returns zero time.
-	ActiveSince(id types.ID) time.Time
+	ActiveSince(id types.ID) time.Time//节点存活时长的统计
 	// ActivePeers returns the number of active peers.
-	ActivePeers() int
+	ActivePeers() int//处于活跃状态得节点数
 	// Stop closes the connections and stops the transporter.
-	Stop()
+	Stop()//关闭所有连接
 }
 
 // Transport implements Transporter interface. It provides the functionality
@@ -101,18 +102,19 @@ type Transporter interface {
 type Transport struct {
 	Logger *zap.Logger
 
-	DialTimeout time.Duration // maximum duration before timing out dial of the request
+	DialTimeout time.Duration //拨号超时的时间 maximum duration before timing out dial of the request
 	// DialRetryFrequency defines the frequency of streamReader dial retrial attempts;
 	// a distinct rate limiter is created per every peer (default value: 10 events/sec)
-	DialRetryFrequency rate.Limit
+	DialRetryFrequency rate.Limit//拨号重试的频率
 
-	TLSInfo transport.TLSInfo // TLS information used when creating connection
+	TLSInfo transport.TLSInfo //tls信息安全 TLS information used when creating connection
 
-	ID          types.ID   // local member ID
-	URLs        types.URLs // local peer URLs
-	ClusterID   types.ID   // raft cluster ID for request validation
+	ID          types.ID   //当前节点自己的ID local member ID
+	URLs        types.URLs //当前节点与集群其他节点交互时使用的URL地址 local peer URLs
+	ClusterID   types.ID   //当前节点所在的集群ID raft cluster ID for request validation
+	//Raft是一个接口，其实现的底层封装了etcd-raft模块，当rafthttp.Transport收到消息之后，会将其交给raft实例进行处理。
 	Raft        Raft       // raft state machine, to which the Transport forwards received messages and reports status
-	Snapshotter *snap.Snapshotter
+	Snapshotter *snap.Snapshotter//负责管理快照文件
 	ServerStats *stats.ServerStats // used to record general transportation statistics
 	// used to record transportation statistics with followers when
 	// performing as leader in raft protocol
@@ -122,32 +124,40 @@ type Transport struct {
 	// When an error is received from ErrorC, user should stop raft state
 	// machine and thus stop the Transport.
 	ErrorC chan error
-
+	//stream消息通道中使用http.RoundTripper,默认是现实http.Transport,用来完成一个HTTP事务
 	streamRt   http.RoundTripper // roundTripper used by streams
+	//pipeline消息通道中使用http.RoundTripper,默认是现实http.Transport,用来完成一个HTTP事务
 	pipelineRt http.RoundTripper // roundTripper used by pipelines
 
 	mu      sync.RWMutex         // protect the remote and peer map
+	//remotes中只封装了pipeline实例，remote主要负责发送快照数据，帮助新加入的节点快速追赶其他节点的数据。
 	remotes map[types.ID]*remote // remotes map that helps newly joined member to catch up
+	//Peer接口是当前节点对集群中其他节点的抽象表示。对于当前节点来说，集群中其他节点在本地都会有一个Peer实例与之对应，peers字段维护了节点ID到对应Peer实例之间的映射关系。
 	peers   map[types.ID]Peer    // peers map
-
+	//用于探测pipeline通道是否可用
 	pipelineProber probing.Prober
+	//用于探测stream通道是否可用
 	streamProber   probing.Prober
 }
 
 func (t *Transport) Start() error {
 	var err error
-	//Transport启动会创建两个 streamRt和pipelineRt
-	//http.RoundTripper可以用来完成一个HTTP事务
+	//创建Stream消息通道使用http.RoundTripper实例，底层实际上是创建http.Transport实例
+	//这里创建连接的超时时间(根据配置指定),读写请求的超时时间(默认5s),keepAlive时间(默认30s)
 	t.streamRt, err = newStreamRoundTripper(t.TLSInfo, t.DialTimeout)
 	if err != nil {
 		return err
 	}
+	//创建Pipeline消息通道使用http.RoundTripper实例，底层实际上是创建http.Transport实例
+	//创建连接的超时时间(根据配置指定),keepAlive时间(默认30s),与stream不同的是读写请求的超时时间设置为永不过期
 	t.pipelineRt, err = NewRoundTripper(t.TLSInfo, t.DialTimeout)
 	if err != nil {
 		return err
 	}
+	//初始化remotes和peers两个map字段
 	t.remotes = make(map[types.ID]*remote)
 	t.peers = make(map[types.ID]Peer)
+	//初始化prober实例用于探测pipeline和stream消息是否可用
 	t.pipelineProber = probing.NewProber(t.pipelineRt)
 	t.streamProber = probing.NewProber(t.streamRt)
 
@@ -155,7 +165,7 @@ func (t *Transport) Start() error {
 	// (100ms backoff between attempts to create a new stream),
 	// so it doesn't bring too much overhead when retry.
 	if t.DialRetryFrequency == 0 {
-		t.DialRetryFrequency = rate.Every(100 * time.Millisecond)
+		t.DialRetryFrequency = rate.Every(100 * time.Millisecond)//拨号频次限定间隔100毫秒
 	}
 	return nil
 }
@@ -186,11 +196,12 @@ func (t *Transport) Get(id types.ID) Peer {
 
 //发送消息
 func (t *Transport) Send(msgs []raftpb.Message) {
-	for _, m := range msgs {
+	for _, m := range msgs {//遍历msgs切片中的全部消息
 		if m.To == 0 {
 			// ignore intentionally dropped message
 			continue
 		}
+		//根据raftpb.Message.To字段,获取目标节点对应的Peer实例
 		to := types.ID(m.To)
 
 		t.mu.RLock()
@@ -198,16 +209,16 @@ func (t *Transport) Send(msgs []raftpb.Message) {
 		g, rok := t.remotes[to]
 		t.mu.RUnlock()
 
-		if pok {
+		if pok {//如果存在对应的Peer实例，则使用Peer发送消息
 			if m.Type == raftpb.MsgApp {
 				t.ServerStats.SendAppendReq(m.Size())
 			}
-			p.send(m)
+			p.send(m)//通过peer.send()方法完成消息的发送
 			continue
 		}
 
-		if rok {
-			g.send(m)
+		if rok {//如果指定节点ID不存在对应的Peer实例，则尝试使用查找对应的remote实例
+			g.send(m)//通过remote.send()方法完成消息的发送
 			continue
 		}
 
@@ -320,7 +331,7 @@ func (t *Transport) AddPeer(id types.ID, us []string) {
 	if _, ok := t.peers[id]; ok {
 		return
 	}
-	urls, err := types.NewURLs(us)
+	urls, err := types.NewURLs(us)//解析us切片中指定URL连接
 	if err != nil {
 		if t.Logger != nil {
 			t.Logger.Panic("failed NewURLs", zap.Strings("urls", us), zap.Error(err))
@@ -329,7 +340,9 @@ func (t *Transport) AddPeer(id types.ID, us []string) {
 		}
 	}
 	fs := t.LeaderStats.Follower(id.String())
+	//创建指定节点对应的Peer实例，其中会相关的Stream消息通道和Pipeline消息通道
 	t.peers[id] = startPeer(t, urls, id, fs)
+	//每隔一段时间，prober会向该节点发送探测消息，检查对端的健康状况
 	addPeerToProber(t.Logger, t.pipelineProber, id.String(), us, RoundTripperNameSnapshot, rttSec)
 	addPeerToProber(t.Logger, t.streamProber, id.String(), us, RoundTripperNameRaftMessage, rttSec)
 

@@ -85,12 +85,14 @@ func (s *peerStatus) deactivate(failure failureType, reason string) {
 	}
 }
 
+//节点是否活跃状态
 func (s *peerStatus) isActive() bool {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	return s.active
 }
 
+//用于统计节点活跃的时长
 func (s *peerStatus) activeSince() time.Time {
 	s.mu.Lock()
 	defer s.mu.Unlock()

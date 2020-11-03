@@ -86,6 +86,7 @@ func newPipelineHandler(t *Transport, r Raft, cid types.ID) http.Handler {
 }
 
 func (h *pipelineHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	//pipeline使用的是POST方法
 	if r.Method != "POST" {
 		w.Header().Set("Allow", "POST")
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
@@ -124,6 +125,7 @@ func (h *pipelineHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//反序列化得到raftpb.Message
 	var m raftpb.Message
 	if err := m.Unmarshal(b); err != nil {
 		if h.lg != nil {
@@ -142,6 +144,7 @@ func (h *pipelineHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	receivedBytes.WithLabelValues(types.ID(m.From).String()).Add(float64(len(b)))
 
+	//最后将得到的raftpb.Message消息对象交由etcd-raft模块处理消息
 	if err := h.r.Process(context.TODO(), m); err != nil {
 		switch v := err.(type) {
 		case writerToResponse:
@@ -220,7 +223,9 @@ func (h *snapshotHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	addRemoteFromRequest(h.tr, r)
-
+	/*
+		限制读取缓冲区数据最大为1TB
+	*/
 	dec := &messageDecoder{r: r.Body}
 	// let snapshots be very large since they can exceed 512MB for large installations
 	m, err := dec.decodeLimit(uint64(1 << 63))
@@ -280,6 +285,7 @@ func (h *snapshotHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		plog.Infof("receiving database snapshot [index:%d, from %s] ...", m.Snapshot.Metadata.Index, types.ID(m.From))
 	}
 
+	//持久化数据到硬盘
 	// save incoming database snapshot.
 	n, err := h.snapshotter.SaveDBFrom(r.Body, m.Snapshot.Metadata.Index)
 	if err != nil {
@@ -314,7 +320,7 @@ func (h *snapshotHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	} else {
 		plog.Infof("received and saved database snapshot [index: %d, from: %s] successfully", m.Snapshot.Metadata.Index, types.ID(m.From))
 	}
-
+	//最后将得到的raftpb.Message消息对象交由etcd-raft模块处理消息
 	if err := h.r.Process(context.TODO(), m); err != nil {
 		switch v := err.(type) {
 		// Process may return writerToResponse error when doing some
@@ -368,6 +374,7 @@ func newStreamHandler(t *Transport, pg peerGetter, r Raft, id, cid types.ID) htt
 }
 
 func (h *streamHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	//streamHandler用的是GET方法
 	if r.Method != "GET" {
 		w.Header().Set("Allow", "GET")
 		http.Error(w, "Method Not Allowed", http.StatusMethodNotAllowed)
@@ -382,6 +389,7 @@ func (h *streamHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//根据不同的版本获取streamType
 	var t streamType
 	switch path.Dir(r.URL.Path) {
 	case streamTypeMsgAppV2.endpoint():
@@ -403,6 +411,7 @@ func (h *streamHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//获取对端节点的ID
 	fromStr := path.Base(r.URL.Path)
 	from, err := types.IDFromString(fromStr)
 	if err != nil {
@@ -434,6 +443,7 @@ func (h *streamHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "removed member", http.StatusGone)
 		return
 	}
+	//根据对端节点ID获取对应的Peer实例
 	p := h.peerGetter.Get(from)
 	if p == nil {
 		// This may happen in following cases:
@@ -477,12 +487,11 @@ func (h *streamHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-//hank-return hank-problem http的flush用法是啥
-	w.(http.Flusher).Flush()
+	w.WriteHeader(http.StatusOK)//返回成功状态码200
+	w.(http.Flusher).Flush()//调用Flush()方法将响应数据发送到对端节点
 
 	c := newCloseNotifier()
-	conn := &outgoingConn{
+	conn := &outgoingConn{//创建outgoingConn实例
 		t:       t,//连接类型
 		Writer:  w,
 		Flusher: w.(http.Flusher),

@@ -366,14 +366,17 @@ func (p *peer) pick(m raftpb.Message) (writec chan<- raftpb.Message, picked stri
 	var ok bool
 	// Considering MsgSnap may have a big size, e.g., 1G, and will block
 	// stream for a long time, only use one of the N pipelines to send MsgSnap.
-	//如果消息类型是snapshot则返回pipeline,如果是MsgApp则返回msgAppV2Writer,否则返回writer
+	//如果消息类型是snapshot则返回pipeline
 	if isMsgSnap(m) {
 		return p.pipeline.msgc, pipelineMsg
 	} else if writec, ok = p.msgAppV2Writer.writec(); ok && isMsgApp(m) {
+		//如果streamAppV2处于工作状态，并且消息类型是MsgApp
 		return writec, streamAppV2
 	} else if writec, ok = p.writer.writec(); ok {
+		//如果streamV3处于工作状态
 		return writec, streamMsg
 	}
+	//否则默认使用pipeline
 	return p.pipeline.msgc, pipelineMsg
 }
 

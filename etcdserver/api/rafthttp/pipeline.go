@@ -80,7 +80,7 @@ func (p *pipeline) start() {
 
 func (p *pipeline) stop() {
 	close(p.stopc)
-	p.wg.Wait()
+	p.wg.Wait()//等待执行完成
 
 	if p.tr != nil && p.tr.Logger != nil {
 		p.tr.Logger.Info(
