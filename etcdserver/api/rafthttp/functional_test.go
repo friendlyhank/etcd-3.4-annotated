@@ -27,6 +27,7 @@ import (
 	"github.com/friendlyhank/etcd-3.4-annotated/raft/raftpb"
 )
 
+//调用httptest测试包测试,而且可以知道etcd网络很方便调试
 func TestSendMessage(t *testing.T) {
 	// member 1
 	tr := &Transport{
